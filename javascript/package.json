@@ -1,0 +1,17 @@
+{
+  "name": "uno",
+  "version": "0.0.1",
+  "description": "Uno game implementation in JavaScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava"
+  },
+  "keywords": [
+    "uno",
+    "card-game",
+    "cards",
+    "game"
+  ],
+  "author": "danguilherme",
+  "license": "MIT"
+}
