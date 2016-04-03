@@ -13,5 +13,11 @@
     "game"
   ],
   "author": "danguilherme",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "shuffle": "^0.2.2"
+  },
+  "devDependencies": {
+    "ava": "^0.13.0"
+  }
 }
