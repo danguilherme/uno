@@ -15,6 +15,7 @@
   "author": "danguilherme",
   "license": "MIT",
   "dependencies": {
+    "enum": "^2.3.0",
     "shuffle": "^0.2.2"
   },
   "devDependencies": {
