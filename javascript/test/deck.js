@@ -13,8 +13,7 @@ var filterByValue = (value) => {
 }
 
 describe('deck', function() {
-
-  let deck;
+  let deck = null;
 
   beforeEach(function createDeck() {
     deck = Deck();
@@ -23,34 +22,42 @@ describe('deck', function() {
   it('should have 108 cards', function() {
     deck.should.have.length(108);
   });
+
   it('should have 76 numbers', function() {
     let numbers = (card) => card.value.value >= Values.ZERO && card.value.value <= Values.NINE;
     deck.filter(numbers).should.to.have.length(76);
   });
+
   it('should have 4 zeros', function() {
     let zeroes = deck.filter(filterByValue(Values.ZERO));
     zeroes.should.have.length(4);
   });
+
   it('should have 8 nines', function() {
     let nines = deck.filter(filterByValue(Values.NINE));
     nines.should.to.have.length(8);
   });
+
   it('should have 8 draw two', function() {
     let drawTwos = deck.filter(filterByValue(Values.DRAW_TWO))
     drawTwos.should.have.length(8);
   });
+
   it('should have 8 skip', function() {
     let skips = deck.filter(filterByValue(Values.SKIP));
     skips.should.to.have.length(8);
   });
+
   it('should have 8 reverse', function() {
     let reverses = deck.filter(filterByValue(Values.REVERSE));
     reverses.should.have.length(8);
   });
+
   it('should have 4 wild', function() {
     let wilds = deck.filter(filterByValue(Values.WILD));
     wilds.should.to.have.length(4);
   });
+
   it('should have 4 wild draw four', function() {
     let wildDrawFours = deck.filter(filterByValue(Values.WILD_DRAW_FOUR))
     wildDrawFours.should.have.length(4);
@@ -63,11 +70,13 @@ describe('deck', function() {
         redEight.value.should.be.equal(Values.EIGHT);
         redEight.color.should.be.equal(Colors.RED);
       });
+
       it('should create a wild card', function() {
         let wild = Card(Values.WILD);
         wild.value.should.be.equal(Values.WILD);
         should.not.exist(wild.color);
       });
+
       it('should throw when creating a normal card with no color', function() {
         should.throw(() => Card(Values.SIX));
       });
@@ -78,22 +87,27 @@ describe('deck', function() {
         let redSkip = Card(Values.SKIP, Colors.RED);
         redSkip.match(Card(Values.SKIP, Colors.RED)).should.be.true;
       });
+
       it('should match a card with same value', function() {
         let redSkip = Card(Values.SKIP, Colors.RED);
         redSkip.match(Card(Values.SKIP, Colors.BLUE)).should.be.true;
       });
+
       it('should match a card with same color', function() {
         let redSkip = Card(Values.SKIP, Colors.RED);
         redSkip.match(Card(Values.REVERSE, Colors.RED)).should.be.true;
       });
+
       it('should not match a card with different value and color', function() {
         let redSkip = Card(Values.SKIP, Colors.RED);
         redSkip.match(Card(Values.REVERSE, Colors.YELLOW)).should.be.false;
       });
+
       it('should match wild card with same color', function() {
         let redSkip = Card(Values.SKIP, Colors.RED);
         redSkip.match(Card(Values.WILD, Colors.RED)).should.be.true;
       });
+
       it('should throw when one or more cards do not have a color set', function() {
         let wild1 = Card(Values.WILD);
         let wild2 = Card(Values.WILD_DRAW_FOUR);
@@ -110,6 +124,7 @@ describe('deck', function() {
         let yellowReverse = Card(Values.REVERSE, Colors.YELLOW);
         should.throw(() => yellowReverse.setColor(Colors.RED));
       });
+
       it('should change color from none to green to a wild card', function() {
         let wild = Card(Values.WILD);
         should.not.exist(wild.color);
@@ -119,6 +134,7 @@ describe('deck', function() {
         should.exist(wild.color);
         wild.color.should.be.equal(Colors.GREEN);
       });
+
       it('should change color from red to yellow to a wild draw four card', function() {
         let wildDrawFour = Card(Values.WILD_DRAW_FOUR, Colors.RED);
         should.exist(wildDrawFour.color);
