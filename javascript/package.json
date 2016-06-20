@@ -4,7 +4,7 @@
   "description": "Uno game implementation in JavaScript",
   "main": "index.js",
   "scripts": {
-    "test": "ava"
+    "test": "mocha test/"
   },
   "keywords": [
     "uno",
@@ -19,6 +19,7 @@
     "shuffle": "^0.2.2"
   },
   "devDependencies": {
-    "ava": "^0.13.0"
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3"
   }
 }
