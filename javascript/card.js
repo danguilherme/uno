@@ -10,16 +10,26 @@ function card(value, color) {
     throw new Error("The parameter must be an enum.");
 
   let instance = {
-    value: value,
-    color: color
+    value: value
   };
 
-  if(!(value.is(Values.WILD) || value.is(Values.WILD_DRAW_FOUR)) &&
-    !instance.color) {
-      throw Error("Only wild cards can be initialized with no color");
-    }
+  if (!color)
+    instance.color = null;
+  else
+    instance.color = color;
 
-    return instance;
+  if (!(value.is(Values.WILD) || value.is(Values.WILD_DRAW_FOUR)) && !instance.color) {
+    throw Error("Only wild cards can be initialized with no color");
+  }
+
+  instance.match = function match(otherCard) {
+    if (this.color == null || otherCard.color == null)
+      throw new Error("Both cards must have theirs colors set");
+
+    return otherCard.value == this.value || otherCard.color == this.color;
+  }
+
+  return instance;
 }
 
 card.isWildCard = function(card) {
