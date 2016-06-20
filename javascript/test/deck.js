@@ -76,23 +76,23 @@ describe('deck', function() {
     describe('#match()', function() {
       it('should match a card with same value and color', function() {
         let redSkip = Card(Values.SKIP, Colors.RED);
-        redSkip.match(Card(Values.SKIP, Colors.RED)).should.be.equal(true);
+        redSkip.match(Card(Values.SKIP, Colors.RED)).should.be.true;
       });
       it('should match a card with same value', function() {
         let redSkip = Card(Values.SKIP, Colors.RED);
-        redSkip.match(Card(Values.SKIP, Colors.BLUE)).should.be.equal(true);
+        redSkip.match(Card(Values.SKIP, Colors.BLUE)).should.be.true;
       });
       it('should match a card with same color', function() {
         let redSkip = Card(Values.SKIP, Colors.RED);
-        redSkip.match(Card(Values.REVERSE, Colors.RED)).should.be.equal(true);
+        redSkip.match(Card(Values.REVERSE, Colors.RED)).should.be.true;
       });
       it('should not match a card with different value and color', function() {
         let redSkip = Card(Values.SKIP, Colors.RED);
-        redSkip.match(Card(Values.REVERSE, Colors.YELLOW)).should.be.equal(false);
+        redSkip.match(Card(Values.REVERSE, Colors.YELLOW)).should.be.false;
       });
       it('should match wild card with same color', function() {
         let redSkip = Card(Values.SKIP, Colors.RED);
-        redSkip.match(Card(Values.WILD, Colors.RED)).should.be.equal(true);
+        redSkip.match(Card(Values.WILD, Colors.RED)).should.be.true;
       });
       it('should throw when one or more cards do not have a color set', function() {
         let wild1 = Card(Values.WILD);
@@ -106,9 +106,29 @@ describe('deck', function() {
     });
 
     describe('#setColor()', function() {
-      it('should throw exception when called from normal card');
-      it('should change color from none to blue to a wild card');
-      it('should change color from red to yellow to a wild draw four card');
+      it('should throw exception when called from normal card', function() {
+        let yellowReverse = Card(Values.REVERSE, Colors.YELLOW);
+        should.throw(() => yellowReverse.setColor(Colors.RED));
+      });
+      it('should change color from none to green to a wild card', function() {
+        let wild = Card(Values.WILD);
+        should.not.exist(wild.color);
+
+        should.not.throw(() => wild.setColor(Colors.GREEN));
+
+        should.exist(wild.color);
+        wild.color.should.be.equal(Colors.GREEN);
+      });
+      it('should change color from red to yellow to a wild draw four card', function() {
+        let wildDrawFour = Card(Values.WILD_DRAW_FOUR, Colors.RED);
+        should.exist(wildDrawFour.color);
+        wildDrawFour.color.should.be.equal(Colors.RED);
+
+        should.not.throw(() => wildDrawFour.setColor(Colors.YELLOW));
+
+        should.exist(wildDrawFour.color);
+        wildDrawFour.color.should.be.equal(Colors.YELLOW);
+      });
     });
   });
 });

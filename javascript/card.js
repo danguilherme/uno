@@ -18,7 +18,11 @@ function card(value, color) {
   else
     instance.color = color;
 
-  if (!(value.is(Values.WILD) || value.is(Values.WILD_DRAW_FOUR)) && !instance.color) {
+  instance.isWildCard = function isWildCard() {
+    return instance.value.is(Values.WILD) || instance.value.is(Values.WILD_DRAW_FOUR);
+  }
+
+  if (!instance.isWildCard(instance) && !instance.color) {
     throw Error("Only wild cards can be initialized with no color");
   }
 
@@ -29,11 +33,13 @@ function card(value, color) {
     return otherCard.value == this.value || otherCard.color == this.color;
   }
 
-  return instance;
-}
+  instance.setColor = function setColor(newColor) {
+    if (!this.isWildCard())
+      throw new Error("Only wild cards can have theirs colors changed.")
+    this.color = newColor;
+  }
 
-card.isWildCard = function(card) {
-  return card.value.is(Values.WILD) || card.value.is(Values.WILD_DRAW_FOUR);
+  return instance;
 }
 
 module.exports = card;
