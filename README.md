@@ -3,9 +3,9 @@
 
 ## [Game Rules](http://www.unorules.com/)
 - **Cards** _(108 cards)_
-  - **Number cards**_(all colors)_
-    - 36x cards (0-9, 19 each color)
-  - **Action cards**_(all colors)_
+  - **Number cards** _(for each color)_
+    - 19x cards (0-9, only one 0)
+  - **Action cards** _(for each color)_
     - 2x Draw Two
       ```
       When a person places this card, the next player will have to pick up two cards and forfeit his/her turn.
@@ -42,7 +42,7 @@
     ```
     There are two different ways to play regarding drawing new cards. The Official Uno Rules states that after a card is drawn the player can discard it if it is a match, or if not, play passes on to the next player. The other type is where players continue to draw cards until they have a match, even if it is 10 times.
     ```
-  - if the first card from the Discard Pile (choosen by the system, from Draw Pile) is an Action Card, its action must be carried out
+  - if the first card from the Discard Pile (chosen by the system, from Draw Pile) is an Action Card, its action must be carried out
     - exception is for wild cards. If one is the first card from the Discard Pile, return them to the Draw Pile, shuffle it, and try to get first card
   - game continues until a player has one card left. The moment a player has just one card they must yell “**UNO!**”
     - If they are caught not saying “Uno” by another player before any card has been played, the player must draw two new cards.
