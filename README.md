@@ -1,5 +1,5 @@
 # UNO
-> A multiplayer game for any client
+> A multiplayer game for any client [![Build Status](https://travis-ci.org/danguilherme/uno.svg?branch=master)](https://travis-ci.org/danguilherme/uno)
 
 ## [Game Rules](http://www.unorules.com/)
 - **Cards** _(108 cards)_
