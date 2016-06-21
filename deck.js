@@ -1,6 +1,5 @@
 "use strict";
 
-var Enum = require('Enum');
 var Shuffle = require('shuffle');
 var Values = require('./values');
 var Colors = require('./colors');
