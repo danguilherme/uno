@@ -1,6 +1,6 @@
 "use strict";
 
-let Enum = require('Enum');
+let Enum = require('enum');
 
 module.exports = new Enum({
     'RED': 1,
