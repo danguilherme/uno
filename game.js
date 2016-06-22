@@ -5,6 +5,7 @@ const EventEmitter = require('events').EventEmitter;
 
 const Deck = require('./deck');
 const Card = require('./card');
+const Values = require('./values');
 const Player = require('./player');
 const GameDirections = require('./game_directions');
 
@@ -80,7 +81,15 @@ const game = function (playerNames) {
   instance.getCurrentPlayer = () => currentPlayer;
   instance.getDiscardedCard = () => discardedCard;
   instance.draw = () => {
+    let currentPlayer = instance.getCurrentPlayer();
+
+    currentPlayer.hand = currentPlayer.hand.concat(drawPile.draw(cardsToDraw || 1));
     drawn = true;
+
+    if (cardsToDraw > 0) {
+      cardsToDraw = 0;
+      goToNextPlayer();
+    }
   };
   instance.pass = () => {
     if (!drawn)
@@ -96,7 +105,7 @@ const game = function (playerNames) {
     if (!currentPlayer.hasCard(card))
       throw new Error(`${currentPlayer} does not have card ${card} at hand`);
     // check if there isn't any pendent draw amount...
-    if (cardsToDraw > 0)
+    if (cardsToDraw > 0 && card.value != Values.DRAW_TWO)
       throw new Error(`${currentPlayer} must draw cards`);
     // check if the played card matches the card from the discard pile...
     if (!discardedCard.matches(card))
@@ -104,6 +113,19 @@ const game = function (playerNames) {
 
     currentPlayer.removeCard(card);
     discardedCard = card;
+
+    switch (discardedCard.value) {
+      case Values.DRAW_TWO:
+        cardsToDraw += 2;
+        break;
+      case Values.SKIP:
+        goToNextPlayer();
+        break;
+      case Values.REVERSE:
+        reverseGame();
+        break;
+    }
+
     goToNextPlayer();
   };
 
@@ -129,9 +151,6 @@ const game = function (playerNames) {
    * (`draw`, `cardsToDraw`, ...)
    */
   function goToNextPlayer() {
-    cardsToDraw = 0;
-    drawn = false;
-
     currentPlayer = getNextPlayer();
   }
 

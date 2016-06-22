@@ -4,6 +4,7 @@ let Enum = require('enum');
 
 module.exports = new Enum(
   {
+    // numbers
     'ZERO': 0,
     'ONE': 1,
     'TWO': 2,
@@ -14,6 +15,7 @@ module.exports = new Enum(
     'SEVEN': 7,
     'EIGHT': 8,
     'NINE': 9,
+    // special cards
     'DRAW_TWO': 10,
     'REVERSE': 11,
     'SKIP': 12,
