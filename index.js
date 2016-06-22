@@ -1,9 +1,5 @@
 "use strict";
 
-let game = require('./game');
+const Game = require('./game');
 
-function olar() {
-    console.log(`olar`);
-}
-
-olar();
+module.exports = Game;

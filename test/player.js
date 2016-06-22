@@ -11,5 +11,5 @@ describe('Player', function() {
 
   describe('#play()', function() {
     it('should remove 1 card from player deck');
-  })
+  });
 });
