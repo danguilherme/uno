@@ -26,7 +26,7 @@ function createUnoDeck() {
       cards.push(card(value, color));
 
     return cards;
-  }
+  };
 
   // for each color...
   for(let i = 1; i <= Colors.size; i++) {
@@ -49,4 +49,35 @@ function createUnoDeck() {
   return deck;
 }
 
-module.exports = createUnoDeck;
+const deck = function() {
+  let instance = Shuffle.shuffle({ deck: createUnoDeck() });
+
+  let originalDraw = instance.draw;
+
+  instance.draw = function(num) {
+    let cards = [];
+
+    // if the amount to draw is more than the cards we have...
+    if(num >= instance.length) {
+      let length = instance.length;
+
+      // draw all we have...
+      cards = cards.concat(originalDraw.call(instance, length));
+
+      // regenerate the draw pile
+      instance.reset();
+      instance.shuffle();
+
+      // then draw the rest we need
+      num = num - length;
+      if(num == 0)
+        return cards;
+    }
+
+    return cards.concat(originalDraw.call(instance, num));
+  };
+
+  return instance;
+};
+
+module.exports = deck;

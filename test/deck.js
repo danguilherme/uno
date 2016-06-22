@@ -1,21 +1,21 @@
 "use strict";
 
-var should = require('chai').should();
+const should = require('chai').should();
 
-let Colors = require('../colors');
-let Values = require('../values');
-let Card = require('../card');
-let Deck = require('../deck');
+const Colors = require('../colors');
+const Values = require('../values');
+const Card = require('../card');
+const Deck = require('../deck');
 
-var filterByValue = (value) => {
+const filterByValue = (value) => {
   return (card) => card.value.is(value);
-}
+};
 
 describe('Deck', function() {
   let deck = null;
 
   beforeEach(function createDeck() {
-    deck = Deck();
+    deck = Deck(); 
   });
 
   it('should have 108 cards', function() {
@@ -24,46 +24,61 @@ describe('Deck', function() {
 
   it('should have 76 numbers', function() {
     let numbers = (card) => card.value.value >= Values.ZERO && card.value.value <= Values.NINE;
-    deck.filter(numbers).should.to.have.length(76);
+    deck.cards.filter(numbers).should.to.have.length(76);
   });
 
   it('should have 4 zeros', function() {
-    let zeroes = deck.filter(filterByValue(Values.ZERO));
+    let zeroes = deck.cards.filter(filterByValue(Values.ZERO));
     zeroes.should.have.length(4);
   });
 
   it('should have 8 nines', function() {
-    let nines = deck.filter(filterByValue(Values.NINE));
+    let nines = deck.cards.filter(filterByValue(Values.NINE));
     nines.should.to.have.length(8);
   });
 
   it('should have 8 draw two', function() {
-    let drawTwos = deck.filter(filterByValue(Values.DRAW_TWO))
+    let drawTwos = deck.cards.filter(filterByValue(Values.DRAW_TWO))
     drawTwos.should.have.length(8);
   });
 
   it('should have 8 skip', function() {
-    let skips = deck.filter(filterByValue(Values.SKIP));
+    let skips = deck.cards.filter(filterByValue(Values.SKIP));
     skips.should.to.have.length(8);
   });
 
   it('should have 8 reverse', function() {
-    let reverses = deck.filter(filterByValue(Values.REVERSE));
+    let reverses = deck.cards.filter(filterByValue(Values.REVERSE));
     reverses.should.have.length(8);
   });
 
   it('should have 4 wild', function() {
-    let wilds = deck.filter(filterByValue(Values.WILD));
+    let wilds = deck.cards.filter(filterByValue(Values.WILD));
     wilds.should.to.have.length(4);
   });
 
   it('should have 4 wild draw four', function() {
-    let wildDrawFours = deck.filter(filterByValue(Values.WILD_DRAW_FOUR))
+    let wildDrawFours = deck.cards.filter(filterByValue(Values.WILD_DRAW_FOUR))
     wildDrawFours.should.have.length(4);
   });
 
-  it('should have 107 cards after a draw');
-  it('should have 108 cards after all cards are drawn');
+  it('should have 107 cards after a draw', function() {
+    deck.should.have.length(108);
+    deck.draw(1);
+    deck.should.have.length(107);
+  });
+
+  it('should have 108 cards after all cards are drawn', function() {
+    deck.should.have.length(108);
+    deck.draw(108);
+    deck.should.have.length(108);
+  });
+
+  it('should have 107 cards after all cards + 1 are drawn', function() {
+    deck.should.have.length(108);
+    deck.draw(109);
+    deck.should.have.length(107);
+  });
 
   describe('Card', function() {
     describe('#constructor', function() {
