@@ -1,6 +1,5 @@
 "use strict";
 
-var assert = require('chai').assert;
 var should = require('chai').should();
 
 let Colors = require('../colors');
@@ -12,7 +11,7 @@ var filterByValue = (value) => {
   return (card) => card.value.is(value);
 }
 
-describe('deck', function() {
+describe('Deck', function() {
   let deck = null;
 
   beforeEach(function createDeck() {
@@ -62,6 +61,9 @@ describe('deck', function() {
     let wildDrawFours = deck.filter(filterByValue(Values.WILD_DRAW_FOUR))
     wildDrawFours.should.have.length(4);
   });
+
+  it('should have 107 cards after a draw');
+  it('should have 108 cards after all cards are drawn');
 
   describe('Card', function() {
     describe('#constructor', function() {
