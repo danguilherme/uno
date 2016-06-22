@@ -99,30 +99,30 @@ describe('Deck', function() {
       });
     });
 
-    describe('#match()', function() {
+    describe('#matches()', function() {
       it('should match a card with same value and color', function() {
         let redSkip = Card(Values.SKIP, Colors.RED);
-        redSkip.match(Card(Values.SKIP, Colors.RED)).should.be.true;
+        redSkip.matches(Card(Values.SKIP, Colors.RED)).should.be.true;
       });
 
       it('should match a card with same value', function() {
         let redSkip = Card(Values.SKIP, Colors.RED);
-        redSkip.match(Card(Values.SKIP, Colors.BLUE)).should.be.true;
+        redSkip.matches(Card(Values.SKIP, Colors.BLUE)).should.be.true;
       });
 
       it('should match a card with same color', function() {
         let redSkip = Card(Values.SKIP, Colors.RED);
-        redSkip.match(Card(Values.REVERSE, Colors.RED)).should.be.true;
+        redSkip.matches(Card(Values.REVERSE, Colors.RED)).should.be.true;
       });
 
       it('should not match a card with different value and color', function() {
         let redSkip = Card(Values.SKIP, Colors.RED);
-        redSkip.match(Card(Values.REVERSE, Colors.YELLOW)).should.be.false;
+        redSkip.matches(Card(Values.REVERSE, Colors.YELLOW)).should.be.false;
       });
 
       it('should match wild card with same color', function() {
         let redSkip = Card(Values.SKIP, Colors.RED);
-        redSkip.match(Card(Values.WILD, Colors.RED)).should.be.true;
+        redSkip.matches(Card(Values.WILD, Colors.RED)).should.be.true;
       });
 
       it('should throw when one or more cards do not have a color set', function() {
@@ -130,9 +130,9 @@ describe('Deck', function() {
         let wild2 = Card(Values.WILD_DRAW_FOUR);
         let wild3 = Card(Values.WILD_DRAW_FOUR, Colors.BLUE);
 
-        should.throw(() => wild1.match(wild2));
-        should.throw(() => wild1.match(wild3));
-        should.throw(() => wild3.match(wild1));
+        should.throw(() => wild1.matches(wild2));
+        should.throw(() => wild1.matches(wild3));
+        should.throw(() => wild3.matches(wild1));
       });
     });
 

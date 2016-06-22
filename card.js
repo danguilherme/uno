@@ -19,24 +19,31 @@ function card(value, color) {
 
   instance.isWildCard = function isWildCard() {
     return instance.value.is(Values.WILD) || instance.value.is(Values.WILD_DRAW_FOUR);
-  }
+  };
+
+  instance.isSpecialCard = function isSpecialCard() {
+    return instance.isWildCard() || instance.value.is(Values.DRAW_TWO) ||
+      instance.value.is(Values.REVERSE) || instance.value.is(Values.SKIP);
+  };
 
   if (!instance.isWildCard(instance) && !instance.color) {
     throw Error("Only wild cards can be initialized with no color");
   }
 
-  instance.match = function match(otherCard) {
-    if (this.color == null || otherCard.color == null)
-      throw new Error("Both cards must have theirs colors set");
+  instance.matches = function matches(otherCard) {
+    if (instance.color == null || otherCard.color == null)
+      throw new Error("Both cards must have theirs colors set before comparing");
 
-    return otherCard.value == this.value || otherCard.color == this.color;
-  }
+    return otherCard.value == instance.value || otherCard.color == instance.color;
+  };
 
   instance.setColor = function setColor(newColor) {
     if (!this.isWildCard())
-      throw new Error("Only wild cards can have theirs colors changed.")
+      throw new Error("Only wild cards can have theirs colors changed.");
     this.color = newColor;
-  }
+  };
+
+  instance.toString = _ => `${instance.color} ${instance.value}`;
 
   return instance;
 }
