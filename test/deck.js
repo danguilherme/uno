@@ -125,14 +125,14 @@ describe('Deck', function() {
         redSkip.matches(Card(Values.WILD, Colors.RED)).should.be.true;
       });
 
-      it('should throw when one or more cards do not have a color set', function() {
+      it('should throw when one or more cards do not have a color set and it is not a wild', function() {
         let wild1 = Card(Values.WILD);
         let wild2 = Card(Values.WILD_DRAW_FOUR);
         let wild3 = Card(Values.WILD_DRAW_FOUR, Colors.BLUE);
 
-        should.throw(() => wild1.matches(wild2));
-        should.throw(() => wild1.matches(wild3));
-        should.throw(() => wild3.matches(wild1));
+        should.not.throw(() => wild1.matches(wild2));
+        should.not.throw(() => wild1.matches(wild3));
+        should.not.throw(() => wild3.matches(wild1));
       });
     });
 

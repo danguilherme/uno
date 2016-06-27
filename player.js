@@ -12,6 +12,13 @@ const player = function (name) {
     hand: []
   };
 
+  instance.getCardByValue = value => {
+    if (!value)
+      return null;
+    
+    return instance.hand.find(c => c.value === value);
+  };
+
   instance.hasCard = card => {
     if (!card)
       return false;
@@ -23,18 +30,13 @@ const player = function (name) {
     if (!instance.hasCard(card))
       return;
     
-    let c = instance.hand.find(c => c.value === card.value && c.color === card.color);
-    let i = instance.hand.indexOf(c);
+    let i = instance.hand.findIndex(c => c.value === card.value && c.color === card.color);
     instance.hand.splice(i, 1);
   };
 
-  instance.valueOf = function () {
-    return this.name;
-  };
+  instance.valueOf = () => instance.name;
 
-  instance.toString = function () {
-    return this.name;
-  };
+  instance.toString = () => instance.name;
 
   return instance;
 };

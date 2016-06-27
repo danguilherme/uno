@@ -31,7 +31,9 @@ function card(value, color) {
   }
 
   instance.matches = function matches(otherCard) {
-    if (instance.color == null || otherCard.color == null)
+    if (instance.isWildCard() || otherCard.isWildCard())
+      return true;
+    else if (instance.color == null || otherCard.color == null)
       throw new Error("Both cards must have theirs colors set before comparing");
 
     return otherCard.value == instance.value || otherCard.color == instance.color;
@@ -43,7 +45,7 @@ function card(value, color) {
     this.color = newColor;
   };
 
-  instance.toString = _ => `${instance.color} ${instance.value}`;
+  instance.toString = _ => `${instance.color || 'NO_COLOR'} ${instance.value}`;
 
   return instance;
 }

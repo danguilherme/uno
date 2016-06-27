@@ -15,7 +15,7 @@ const game = function (playerNames) {
   // extends EventEmitter
   // events:
   // - start (players)
-  // - card-play (card)
+  // - cardplay (player, card)
   // - uno (player)
   // - end (winner)
 
@@ -79,7 +79,7 @@ const game = function (playerNames) {
   };
 
   instance.getCurrentPlayer = () => currentPlayer;
-  
+
   instance.getDiscardedCard = () => discardedCard;
 
   instance.draw = () => {
@@ -90,8 +90,8 @@ const game = function (playerNames) {
 
     if (cardsToDraw > 0) {
       cardsToDraw = 0;
-      goToNextPlayer();
-    }
+        goToNextPlayer();
+      } 
   };
 
   instance.pass = () => {
@@ -100,7 +100,6 @@ const game = function (playerNames) {
     if (cardsToDraw > 0)
       throw new Error(`${currentPlayer} must draw cards before passing`);
 
-    drawn = false;
     goToNextPlayer();
   };
 
@@ -111,6 +110,8 @@ const game = function (playerNames) {
     // check if player has the card at hand...
     if (!currentPlayer.hasCard(card))
       throw new Error(`${currentPlayer} does not have card ${card} at hand`);
+    if (card.color == null)
+      throw new Error("Card must have its color set before playing");
     // check if there isn't any pendent draw amount...
     if (cardsToDraw > 0 && card.value != Values.DRAW_TWO)
       throw new Error(`${currentPlayer} must draw cards`);
@@ -120,6 +121,15 @@ const game = function (playerNames) {
 
     currentPlayer.removeCard(card);
     discardedCard = card;
+
+    instance.emit('cardplay', null, card, currentPlayer);
+
+    if (currentPlayer.hand.length == 0) {
+      let score = 0; // TODO: implement score calculation
+      // game is over, we have a winner!
+      instance.emit('end', null, currentPlayer, score);
+      // TODO: how to stop game after it's finished? Finished variable? >.<
+    }
 
     switch (discardedCard.value) {
       case Values.DRAW_TWO:
@@ -158,6 +168,8 @@ const game = function (playerNames) {
    * (`draw`, `cardsToDraw`, ...)
    */
   function goToNextPlayer(silent) {
+    drawn = false;
+
     currentPlayer = getNextPlayer();
     if (!silent)
       instance.emit('nextplayer', null, currentPlayer);

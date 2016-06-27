@@ -70,6 +70,16 @@ describe('Game', function () {
         should.throw(_ => game.play(playerCard));
       });
 
+      it('should throw if the played wild card does not have a color set', function () {
+        let curr = game.getCurrentPlayer();
+        let discardedCard = game.getDiscardedCard();
+        let playerCard = Card(Values.WILD);
+
+        curr.hand = [playerCard];
+
+        should.throw(_ => game.play(playerCard));
+      });
+
       it('should remove played card from player hand', function () {
         let curr = game.getCurrentPlayer();
         let discardedCard = game.getDiscardedCard();
@@ -103,6 +113,30 @@ describe('Game', function () {
         game.getCurrentPlayer().name.should.equal(curr.name);
         should.not.throw(_ => game.play(playerCard));
         game.getCurrentPlayer().name.should.not.equal(curr.name);
+      });
+
+      it('should accept WILD cards no matter their colors', function () {
+        let curr = game.getCurrentPlayer();
+        let discardedCard = game.getDiscardedCard();
+        let wildCard = Card(Values.WILD,
+          discardedCard.color == Colors.RED ? Colors.BLUE : Colors.RED
+        );
+
+        curr.hand = [wildCard];
+
+        wildCard.matches(discardedCard).should.be.true;
+        should.not.throw(_ => game.play(wildCard));
+
+        curr = game.getCurrentPlayer();
+        discardedCard = game.getDiscardedCard();
+        wildCard = Card(Values.WILD_DRAW_FOUR,
+          discardedCard.color == Colors.RED ? Colors.BLUE : Colors.RED
+        );
+
+        curr.hand = [wildCard];
+
+        wildCard.matches(discardedCard).should.be.true;
+        should.not.throw(_ => game.play(wildCard));
       });
 
       it('should skip next player if thrown SKIP', function () {
