@@ -65,6 +65,6 @@
 
 For two players, there is a slight change of game play rules:
 
-- Reverse works like Skip
 - Play Skip, and you may immediately play another card
+- Reverse works like Skip
 - If you play a Draw Two or Wild Draw Four card, your opponent has to draw the number of cards required, and then play immediately resumes back on your turn.

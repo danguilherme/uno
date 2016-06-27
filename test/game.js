@@ -159,7 +159,7 @@ describe('Game', function () {
         game.getCurrentPlayer().name.should.equal(`Player ${pnum}`);
       });
 
-      it('should change the playing direction when REVERSE card is accepted', function () {
+      it('should change the playing direction if thrown REVERSE', function () {
         let curr = game.getCurrentPlayer();
         let discardedCard = game.getDiscardedCard();
         let reverse = Card(Values.REVERSE, discardedCard.color);
@@ -177,6 +177,24 @@ describe('Game', function () {
         game.getCurrentPlayer().name.should.equal(curr.name);
         should.not.throw(_ => game.play(reverse));
         game.getCurrentPlayer().name.should.equal(`Player ${pnum}`);
+      });
+
+      it('should skip next player if thrown REVERSE with 2 players', function (done) {
+        game = Game(["Player 1", "Player 2"]);
+
+        game.on('start', () => {
+          let curr = game.getCurrentPlayer();
+          let discardedCard = game.getDiscardedCard();
+          let reverse = Card(Values.REVERSE, discardedCard.color);
+
+          curr.hand = [reverse];
+
+          game.getCurrentPlayer().name.should.equal(curr.name);
+          should.not.throw(_ => game.play(reverse));
+          game.getCurrentPlayer().name.should.equal(curr.name);
+
+          done();
+        });
       });
 
       it('should force player to draw after a DRAW TWO', function () {

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha test/",
-    "test-watch": "mocha test/ -w --full-trace"
+    "test-watch": "mocha test/ -w"
   },
   "keywords": [
     "uno",

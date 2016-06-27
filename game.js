@@ -140,6 +140,9 @@ const game = function (playerNames) {
         break;
       case Values.REVERSE:
         reverseGame();
+        if (players.length == 2)
+          // Reverse works like Skip
+          goToNextPlayer();
         break;
     }
 
