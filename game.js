@@ -100,11 +100,14 @@ const game = function (playerNames) {
     if (cardsToDraw > 0)
       throw new Error(`${currentPlayer} must draw cards before passing`);
 
+    drawn = false;
     goToNextPlayer();
   };
 
   instance.play = card => {
     let currentPlayer = instance.getCurrentPlayer();
+    if (!card)
+      return;
     // check if player has the card at hand...
     if (!currentPlayer.hasCard(card))
       throw new Error(`${currentPlayer} does not have card ${card} at hand`);
@@ -123,7 +126,7 @@ const game = function (playerNames) {
         cardsToDraw += 2;
         break;
       case Values.SKIP:
-        goToNextPlayer();
+        goToNextPlayer(true);
         break;
       case Values.REVERSE:
         reverseGame();
@@ -154,8 +157,10 @@ const game = function (playerNames) {
    * with no validations, reseting all per-turn controllers
    * (`draw`, `cardsToDraw`, ...)
    */
-  function goToNextPlayer() {
+  function goToNextPlayer(silent) {
     currentPlayer = getNextPlayer();
+    if (!silent)
+      instance.emit('nextplayer', null, currentPlayer);
   }
 
   function reverseGame() {

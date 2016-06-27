@@ -195,6 +195,9 @@ describe('Game', function () {
     describe('#pass()', function () {
       it('should throw if player did not draw before passing', function () {
         should.throw(game.pass);
+        should.not.throw(game.draw);
+        should.not.throw(game.pass);
+        should.throw(game.pass);
       });
 
       it('should pass the play to the next player', function () {
@@ -218,6 +221,10 @@ describe('Game', function () {
     beforeEach(function (done) {
       game = Game(["Player 1", "Player 2"]);
       game.on('start', done);
+
+      it('should come back to the same player when played REVERSE');
+      // TODO: check rules for this
+      it('should allow user to pass after throwing a REVERSE card');
     });
   });
 });
