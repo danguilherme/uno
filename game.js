@@ -113,7 +113,7 @@ const game = function (playerNames) {
     if (card.color == null)
       throw new Error("Card must have its color set before playing");
     // check if there isn't any pendent draw amount...
-    if (cardsToDraw > 0 && card.value != Values.DRAW_TWO)
+    if (cardsToDraw > 0 && card.value != Values.DRAW_TWO) // TODO: can throw DRAW_TWO on WILD_DRAW_FOUR?
       throw new Error(`${currentPlayer} must draw cards`);
     // check if the played card matches the card from the discard pile...
     if (!discardedCard.matches(card))
