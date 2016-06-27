@@ -79,7 +79,9 @@ const game = function (playerNames) {
   };
 
   instance.getCurrentPlayer = () => currentPlayer;
+  
   instance.getDiscardedCard = () => discardedCard;
+
   instance.draw = () => {
     let currentPlayer = instance.getCurrentPlayer();
 
@@ -91,6 +93,7 @@ const game = function (playerNames) {
       goToNextPlayer();
     }
   };
+
   instance.pass = () => {
     if (!drawn)
       throw new Error("User must draw at least one card before passing");
@@ -99,6 +102,7 @@ const game = function (playerNames) {
 
     goToNextPlayer();
   };
+
   instance.play = card => {
     let currentPlayer = instance.getCurrentPlayer();
     // check if player has the card at hand...
@@ -161,9 +165,7 @@ const game = function (playerNames) {
       GameDirections.CLOCKWISE;
   }
 
-  process.nextTick(() => {
-    init();
-  });
+  process.nextTick(() => init());
 
   return instance;
 };
