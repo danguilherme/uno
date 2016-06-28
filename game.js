@@ -19,8 +19,6 @@ const game = function (playerNames) {
   // - uno (player)
   // - end (winner)
 
-  let instance = Object.create(EventEmitter.prototype);
-
   let drawPile = null;
   let direction = null;
   let currentPlayer = null;
@@ -45,166 +43,172 @@ const game = function (playerNames) {
    */
   let yellers = {};
 
+  let instance = Object.create(EventEmitter.prototype, {
+    newGame: {
+      value: function newGame() {
+        drawPile = Deck();
+        direction = GameDirections.CLOCKWISE;
+
+        players.forEach(p => p.hand = drawPile.draw(CARDS_PER_PLAYER));
+
+        // do not start with special cards (REVERSE, DRAW, etc)
+        do {
+          discardedCard = drawPile.draw()[0];
+        } while (discardedCard.isSpecialCard());
+
+        // select starting player
+        currentPlayer = players[getRandomInt(0, players.length - 1)];
+      }
+    },
+    getPlayer: {
+      value: function (name) {
+        let player = players[getPlayerIndex(name)];
+        if (!player)
+          return null;
+        return player;
+      }
+    },
+    getCurrentPlayer: {
+      value: () => currentPlayer
+    },
+    getNextPlayer: {
+      value: () => getNextPlayer()
+    },
+    getDiscardedCard: {
+      value: () => discardedCard
+    },
+    getPlayingDirection: {
+      value: () => direction
+    },
+    draw: {
+      value: function() {
+        let currentPlayer = instance.getCurrentPlayer();
+
+        draw(currentPlayer, cardsToDraw || 1);
+
+        drawn = true;
+        // reset UNO! yell state
+        yellers[currentPlayer.name] = false;
+
+        if (cardsToDraw > 0) {
+          cardsToDraw = 0;
+          goToNextPlayer();
+        }
+      }
+    },
+    pass: {
+      value: function pass() {
+        if (cardsToDraw > 0)
+          throw new Error(`There are ${cardsToDraw} cards to draw before passing`);
+        if (!drawn)
+          throw new Error(`${currentPlayer} must draw at least one card before passing`);
+
+        goToNextPlayer();
+      }
+    },
+    play: {
+      value: function play(card) {
+        let currentPlayer = this.getCurrentPlayer();
+        if (!card)
+          return;
+        // check if player has the card at hand...
+        if (!currentPlayer.hasCard(card))
+          throw new Error(`${currentPlayer} does not have card ${card} at hand`);
+        if (card.color == null)
+          throw new Error("Card must have its color set before playing");
+        // check if there isn't any pendent draw amount...
+        if (cardsToDraw > 0 && card.value != Values.DRAW_TWO) // TODO: can throw DRAW_TWO on WILD_DRAW_FOUR?
+          throw new Error(`${currentPlayer} must draw cards`);
+        // check if the played card matches the card from the discard pile...
+        if (!card.matches(discardedCard))
+          throw new Error(`${discardedCard}, from discard pile, does not match ${card}`);
+
+        currentPlayer.removeCard(card);
+        discardedCard = card;
+
+        this.emit('cardplay', null, card, currentPlayer);
+
+        if (currentPlayer.hand.length == 0) {
+          let score = 0; // TODO: implement score calculation
+          // game is over, we have a winner!
+          this.emit('end', null, currentPlayer, score);
+          // TODO: how to stop game after it's finished? Finished variable? >.<
+          return;
+        }
+
+        switch (discardedCard.value) {
+          case Values.WILD_DRAW_FOUR:
+            cardsToDraw += 4;
+            break;
+          case Values.DRAW_TWO:
+            cardsToDraw += 2;
+            break;
+          case Values.SKIP:
+            goToNextPlayer(true);
+            break;
+          case Values.REVERSE:
+            reverseGame();
+            if (players.length == 2)
+              // Reverse works like Skip
+              goToNextPlayer();
+            break;
+        }
+
+        goToNextPlayer();
+      }
+    },
+    uno: {
+      value: function uno(yellingPlayer) {
+        yellingPlayer = yellingPlayer || instance.getCurrentPlayer();
+
+        // the users that will draw;
+        let drawingPlayers;
+
+        // if player is the one who has 1 card, just mark as yelled
+        // (he may yell UNO! before throwing his card, so he may have
+        // 2 cards at hand when yelling uno)
+        if (yellingPlayer.hand.length <= 2 && !yellers[yellingPlayer.name]) {
+          yellers[yellingPlayer.name] = true;
+          return [];
+        } else {
+          // else if the user has already yelled or if he has more than 2 cards...
+
+          // is there anyone with 1 card at hand that did not yell uno?
+          drawingPlayers = players.filter(p => p.hand.length == 1 && !yellers[p.name]);
+
+          // if there isn't anyone...
+          if (drawingPlayers.length == 0) {
+            // the player was lying, so he will draw
+            drawingPlayers = [yellingPlayer];
+          }
+        }
+
+        drawingPlayers.forEach(p => draw(p, 2));
+
+        // return who drawn
+        return drawingPlayers;
+      }
+    }
+  });
+
   function init() {
+    players = fixPlayers(playerNames);
     instance.newGame();
   };
 
-  instance.newGame = () => {
-    try {
-      drawPile = Deck();
-      direction = GameDirections.CLOCKWISE;
-      players = [];
-      initPlayers();
-      // do not start with special cards (REVERSE, DRAW, etc)
-      do {
-        discardedCard = drawPile.draw()[0];
-      } while (discardedCard.isSpecialCard());
-
-      // select starting player
-      currentPlayer = players[getRandomInt(0, players.length - 1)];
-    } catch (e) {
-      instance.emit('error', e);
-      return;
-    }
-
-    instance.emit('start', null, players);
-  };
-
-  function initPlayers() {
+  function fixPlayers(playerNames) {
     if (!playerNames || !playerNames.length ||
       playerNames.length < 2 || playerNames.length > 10)
       throw new Error("There must be 2 to 10 players in the game");
     else if (findDuplicates(playerNames).length)
       throw new Error("Player names must be different");
 
-    players = playerNames.map(player => {
+    return playerNames.map(player => {
       if (typeof player == 'string')
         player = Player(player);
 
-      player.hand = drawPile.draw(CARDS_PER_PLAYER);
-
       return player;
     });
-  };
-
-  instance.getPlayer = name => {
-    let player = players[getPlayerIndex(name)];
-    if (!player)
-      return null;
-    return player;
-  };
-
-  instance.getCurrentPlayer = () => currentPlayer;
-
-  instance.getNextPlayer = () => getNextPlayer();
-
-  instance.getDiscardedCard = () => discardedCard;
-
-  instance.getPlayingDirection = () => direction;
-
-  instance.draw = () => {
-    let currentPlayer = instance.getCurrentPlayer();
-
-    draw(currentPlayer, cardsToDraw || 1);
-
-    drawn = true;
-    // reset UNO! yell state
-    yellers[currentPlayer.name] = false;
-
-    if (cardsToDraw > 0) {
-      cardsToDraw = 0;
-      goToNextPlayer();
-    }
-  };
-
-  instance.pass = () => {
-    if (cardsToDraw > 0)
-      throw new Error(`There are ${cardsToDraw} cards to draw before passing`);
-    if (!drawn)
-      throw new Error(`${currentPlayer} must draw at least one card before passing`);
-
-    goToNextPlayer();
-  };
-
-  instance.play = card => {
-    let currentPlayer = instance.getCurrentPlayer();
-    if (!card)
-      return;
-    // check if player has the card at hand...
-    if (!currentPlayer.hasCard(card))
-      throw new Error(`${currentPlayer} does not have card ${card} at hand`);
-    if (card.color == null)
-      throw new Error("Card must have its color set before playing");
-    // check if there isn't any pendent draw amount...
-    if (cardsToDraw > 0 && card.value != Values.DRAW_TWO) // TODO: can throw DRAW_TWO on WILD_DRAW_FOUR?
-      throw new Error(`${currentPlayer} must draw cards`);
-    // check if the played card matches the card from the discard pile...
-    if (!card.matches(discardedCard))
-      throw new Error(`${discardedCard}, from discard pile, does not match ${card}`);
-
-    currentPlayer.removeCard(card);
-    discardedCard = card;
-
-    instance.emit('cardplay', null, card, currentPlayer);
-
-    if (currentPlayer.hand.length == 0) {
-      let score = 0; // TODO: implement score calculation
-      // game is over, we have a winner!
-      instance.emit('end', null, currentPlayer, score);
-      // TODO: how to stop game after it's finished? Finished variable? >.<
-      return;
-    }
-
-    switch (discardedCard.value) {
-      case Values.WILD_DRAW_FOUR:
-        cardsToDraw += 4;
-        break;
-      case Values.DRAW_TWO:
-        cardsToDraw += 2;
-        break;
-      case Values.SKIP:
-        goToNextPlayer(true);
-        break;
-      case Values.REVERSE:
-        reverseGame();
-        if (players.length == 2)
-          // Reverse works like Skip
-          goToNextPlayer();
-        break;
-    }
-
-    goToNextPlayer();
-  };
-
-  instance.uno = yellingPlayer => {
-    yellingPlayer = yellingPlayer || instance.getCurrentPlayer();
-
-    // the users that will draw;
-    let drawingPlayers;
-
-    // if player is the one who has 1 card, just mark as yelled
-    // (he may yell UNO! before throwing his card, so he may have
-    // 2 cards at hand when yelling uno)
-    if (yellingPlayer.hand.length <= 2 && !yellers[yellingPlayer.name]) {
-      yellers[yellingPlayer.name] = true;
-      return [];
-    } else {
-      // else if the user has already yelled or if he has more than 2 cards...
-
-      // is there anyone with 1 card at hand that did not yell uno?
-      drawingPlayers = players.filter(p => p.hand.length == 1 && !yellers[p.name]);
-
-      // if there isn't anyone...
-      if (drawingPlayers.length == 0) {
-        // the player was lying, so he will draw
-        drawingPlayers = [yellingPlayer];
-      }
-    }
-
-    drawingPlayers.forEach(p => draw(p, 2));
-
-    // return who drawn
-    return drawingPlayers;
   };
 
   function getNextPlayer() {
@@ -250,7 +254,7 @@ const game = function (playerNames) {
     player.hand = player.hand.concat(drawPile.draw(amount));
   }
 
-  process.nextTick(() => init());
+  init();
 
   return instance;
 };

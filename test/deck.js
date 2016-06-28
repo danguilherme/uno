@@ -136,17 +136,17 @@ describe('Deck', function() {
       });
     });
 
-    describe('#setColor()', function() {
-      it('should throw exception when called from normal card', function() {
+    describe('#color', function() {
+      it('should throw exception when setting color of a normal card', function() {
         let yellowReverse = Card(Values.REVERSE, Colors.YELLOW);
-        should.throw(() => yellowReverse.setColor(Colors.RED));
+        should.throw(() => yellowReverse.color = Colors.RED);
       });
 
       it('should change color from none to green to a wild card', function() {
         let wild = Card(Values.WILD);
         should.not.exist(wild.color);
 
-        should.not.throw(() => wild.setColor(Colors.GREEN));
+        should.not.throw(() => wild.color = Colors.GREEN);
 
         should.exist(wild.color);
         wild.color.should.be.equal(Colors.GREEN);
@@ -157,7 +157,7 @@ describe('Deck', function() {
         should.exist(wildDrawFour.color);
         wildDrawFour.color.should.be.equal(Colors.RED);
 
-        should.not.throw(() => wildDrawFour.setColor(Colors.YELLOW));
+        should.not.throw(() => wildDrawFour.color = Colors.YELLOW);
 
         should.exist(wildDrawFour.color);
         wildDrawFour.color.should.be.equal(Colors.YELLOW);

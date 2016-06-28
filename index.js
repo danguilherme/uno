@@ -21,9 +21,7 @@ function startGame() {
 
   const play = players => {
     let game = Game(players);
-    game.on('start', () => {
-      playerTurn(game);
-    });
+    playerTurn(game);
 
     game.on('end', (err, winner, score) => {
       console.log("\n\n");
@@ -162,7 +160,7 @@ function playerTurn(game) {
               card = player.getCardByValue(Values.get(entries[1].toUpperCase()));
               if (!card)
                 throw new Error(`${player.name} has no ${card.value}`);
-              card.setColor(Colors.get(entries[2].toUpperCase()));
+              card.color = Colors.get(entries[2].toUpperCase());
               console.log("Color set:", card.toString());
               break;
             case 'uno':

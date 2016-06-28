@@ -8,64 +8,52 @@ const Colors = require('../colors');
 
 describe('Game', function () {
 
-  it('should have a public API', function (done) {
+  it('should have a public API', function () {
     let game = Game(["Guilherme", "Maria"]);
-    game.on('start', e => {
-      game.should.respondTo('on');
-      game.should.respondTo('newGame');
-      game.should.respondTo('getPlayer');
-      game.should.respondTo('getCurrentPlayer');
-      game.should.respondTo('getNextPlayer');
-      game.should.respondTo('getDiscardedCard');
-      game.should.respondTo('getPlayingDirection');
-      game.should.respondTo('play');
-      game.should.respondTo('draw');
-      game.should.respondTo('pass');
-      game.should.respondTo('uno');
-      done();
-    });
+
+    game.should.respondTo('on');
+    game.should.respondTo('newGame');
+    game.should.respondTo('getPlayer');
+    game.should.respondTo('getCurrentPlayer');
+    game.should.respondTo('getNextPlayer');
+    game.should.respondTo('getDiscardedCard');
+    game.should.respondTo('getPlayingDirection');
+    game.should.respondTo('play');
+    game.should.respondTo('draw');
+    game.should.respondTo('pass');
+    game.should.respondTo('uno');
   });
 
-  it('should error if started with less than 2 players', function (done) {
-    let game = Game(["Guilherme"]);
-    game.on('error', e => done());
-    game.on('start', e => done(e == null ? new Error("Error expected") : null));
+  it('should error if started with less than 2 players', function () {
+    should.throw(() => Game(["Guilherme"]));
   });
 
-  it('should error if started with more than 10 players', function (done) {
-    let game = Game([
+  it('should error if started with more than 10 players', function () {
+    should.throw(() => Game([
       "Player 0", "Player 1", "Player 2", "Player 3", "Player 4",
-      "Player 5", "Player 6", "Player 7", "Player 8", "Player 9", "Excess"]);
-    game.on('error', e => done());
-    game.on('start', e => done(e == null ? new Error("Error expected") : null));
+      "Player 5", "Player 6", "Player 7", "Player 8", "Player 9", "Excess"]));
   });
 
-  it('should error if player names repeat', function (done) {
-    let game = Game(["Player 0", "Player 0"]);
-    game.on('error', e => done());
-    game.on('start', e => done(e == null ? new Error("Error expected") : null));
+  it('should error if player names repeat', function () {
+    should.throw(() => Game(["Player 0", "Player 0"]));
   });
 
-  it('should not start with a wild card', function (done) {
-    let game = Game(["Player 1", "Player 2", "Player 3", "Player 4"]);
-    game.on('start', _ => {
-      game.getDiscardedCard().isWildCard().should.be.false;
-      done();
-    });
-  });
-
-  it('should start', function (done) {
+  it('should not start with a wild card', function () {
     let game = null;
-    should.not.throw(() => game = Game(["Guilherme", "Thamy Top", "André Marques"]));
-    game.on('start', done);
+    should.not.throw(() => game = Game(["Player 1", "Player 2", "Player 3", "Player 4"]));
+
+    game.getDiscardedCard().isWildCard().should.be.false;
+  });
+
+  it('should start', function () {
+    should.not.throw(() => Game(["Guilherme", "Thamy Top", "André Marques"]));
   });
 
   describe("with more than two players", function () {
     let game = null;
 
-    beforeEach(function (done) {
+    beforeEach(function () {
       game = Game(["Player 1", "Player 2", "Player 3", "Player 4"]);
-      game.on('start', done);
     });
 
     describe("#play()", function () {
@@ -202,22 +190,18 @@ describe('Game', function () {
         game.getCurrentPlayer().name.should.equal(`Player ${pnum}`);
       });
 
-      it('should skip next player if thrown REVERSE with 2 players', function (done) {
+      it('should skip next player if thrown REVERSE with 2 players', function () {
         game = Game(["Player 1", "Player 2"]);
 
-        game.on('start', () => {
-          let curr = game.getCurrentPlayer();
-          let discardedCard = game.getDiscardedCard();
-          let reverse = Card(Values.REVERSE, discardedCard.color);
+        let curr = game.getCurrentPlayer();
+        let discardedCard = game.getDiscardedCard();
+        let reverse = Card(Values.REVERSE, discardedCard.color);
 
-          curr.hand = [reverse];
+        curr.hand = [reverse];
 
-          game.getCurrentPlayer().name.should.equal(curr.name);
-          should.not.throw(_ => game.play(reverse));
-          game.getCurrentPlayer().name.should.equal(curr.name);
-
-          done();
-        });
+        game.getCurrentPlayer().name.should.equal(curr.name);
+        should.not.throw(_ => game.play(reverse));
+        game.getCurrentPlayer().name.should.equal(curr.name);
       });
 
       it('should force player to draw after a DRAW TWO', function () {
@@ -359,9 +343,8 @@ describe('Game', function () {
   describe("with two players", function () {
     let game = null;
 
-    beforeEach(function (done) {
+    beforeEach(function () {
       game = Game(["Player 1", "Player 2"]);
-      game.on('start', done);
 
       it('should come back to the same player when played REVERSE');
       // TODO: check rules for this
