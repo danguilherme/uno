@@ -39,6 +39,7 @@ const game = function (playerNames) {
   let cardsToDraw = 0;
   /**
    * Who yelled uno?
+   *
    * key: player name
    * value: true/false
    */
@@ -86,7 +87,16 @@ const game = function (playerNames) {
     });
   };
 
+  instance.getPlayer = name => {
+    let player = players[getPlayerIndex(name)];
+    if (!player)
+      return null;
+    return player;
+  };
+
   instance.getCurrentPlayer = () => currentPlayer;
+
+  instance.getNextPlayer = () => getNextPlayer();
 
   instance.getDiscardedCard = () => discardedCard;
 
@@ -95,8 +105,11 @@ const game = function (playerNames) {
   instance.draw = () => {
     let currentPlayer = instance.getCurrentPlayer();
 
-    currentPlayer.hand = currentPlayer.hand.concat(drawPile.draw(cardsToDraw || 1));
+    draw(currentPlayer, cardsToDraw || 1);
+
     drawn = true;
+    // reset UNO! yell state
+    yellers[currentPlayer.name] = false;
 
     if (cardsToDraw > 0) {
       cardsToDraw = 0;
@@ -105,10 +118,10 @@ const game = function (playerNames) {
   };
 
   instance.pass = () => {
-    if (!drawn)
-      throw new Error("User must draw at least one card before passing");
     if (cardsToDraw > 0)
-      throw new Error(`${currentPlayer} must draw cards before passing`);
+      throw new Error(`There are ${cardsToDraw} cards to draw before passing`);
+    if (!drawn)
+      throw new Error(`${currentPlayer} must draw at least one card before passing`);
 
     goToNextPlayer();
   };
@@ -126,8 +139,8 @@ const game = function (playerNames) {
     if (cardsToDraw > 0 && card.value != Values.DRAW_TWO) // TODO: can throw DRAW_TWO on WILD_DRAW_FOUR?
       throw new Error(`${currentPlayer} must draw cards`);
     // check if the played card matches the card from the discard pile...
-    if (!discardedCard.matches(card))
-      throw new Error(`${card} does not match ${discardedCard} from discard pile`);
+    if (!card.matches(discardedCard))
+      throw new Error(`${discardedCard}, from discard pile, does not match ${card}`);
 
     currentPlayer.removeCard(card);
     discardedCard = card;
@@ -139,9 +152,13 @@ const game = function (playerNames) {
       // game is over, we have a winner!
       instance.emit('end', null, currentPlayer, score);
       // TODO: how to stop game after it's finished? Finished variable? >.<
+      return;
     }
 
     switch (discardedCard.value) {
+      case Values.WILD_DRAW_FOUR:
+        cardsToDraw += 4;
+        break;
       case Values.DRAW_TWO:
         cardsToDraw += 2;
         break;
@@ -157,6 +174,37 @@ const game = function (playerNames) {
     }
 
     goToNextPlayer();
+  };
+
+  instance.uno = yellingPlayer => {
+    yellingPlayer = yellingPlayer || instance.getCurrentPlayer();
+
+    // the users that will draw;
+    let drawingPlayers;
+
+    // if player is the one who has 1 card, just mark as yelled
+    // (he may yell UNO! before throwing his card, so he may have
+    // 2 cards at hand when yelling uno)
+    if (yellingPlayer.hand.length <= 2 && !yellers[yellingPlayer.name]) {
+      yellers[yellingPlayer.name] = true;
+      return [];
+    } else {
+      // else if the user has already yelled or if he has more than 2 cards...
+
+      // is there anyone with 1 card at hand that did not yell uno?
+      drawingPlayers = players.filter(p => p.hand.length == 1 && !yellers[p.name]);
+
+      // if there isn't anyone...
+      if (drawingPlayers.length == 0) {
+        // the player was lying, so he will draw
+        drawingPlayers = [yellingPlayer];
+      }
+    }
+
+    drawingPlayers.forEach(p => draw(p, 2));
+
+    // return who drawn
+    return drawingPlayers;
   };
 
   function getNextPlayer() {
@@ -193,6 +241,13 @@ const game = function (playerNames) {
     direction = direction == GameDirections.CLOCKWISE ?
       GameDirections.COUNTER_CLOCKWISE :
       GameDirections.CLOCKWISE;
+  }
+
+  function draw(player, amount) {
+    if (!player)
+      throw new Error('Player is mandatory');
+
+    player.hand = player.hand.concat(drawPile.draw(amount));
   }
 
   process.nextTick(() => init());

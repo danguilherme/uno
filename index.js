@@ -17,6 +17,8 @@ function prompt(str, tag) {
 }
 
 function startGame() {
+  console.log("\n\n\n");
+
   const play = players => {
     let game = Game(players);
     game.on('start', () => {
@@ -24,8 +26,15 @@ function startGame() {
     });
 
     game.on('end', (err, winner, score) => {
-      console.log(`Congratulatios ${winner}! You are the big winner! Score: ${score}`);
+      console.log("\n\n");
+      console.log("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+      console.log(`      Congratulatios ${winner}! You are the big winner! Score: ${score}`);
+      console.log("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+      console.log("\n\n");
+
       game = null;
+      console.log();
+      console.log("Starting another game:");
       play(players);
     });
   };
@@ -72,14 +81,15 @@ function playerTurn(game) {
           "\n\tplay {CARD}          => Play the specified card",
           "\n\tdraw                 => Draw a card from draw pile",
           "\n\tpass                 => Pass your turn",
-          "\n\tcolor {CARD} {COLOR} => Set the color of the WILD or WILD_DRAW_FOUR card");
+          "\n\tcolor {CARD} {COLOR} => Set the color of the WILD or WILD_DRAW_FOUR card",
+          "\n\tuno                  => Yell UNO!");
       },
 
       info: () => {
-        console.log("-----");
-        console.log(".....You are:", player.name);
-        console.log("...Your hand:", player.hand.map(card => card.toString()).join(', '));
-        console.log("...Discarded:", discarded.toString());
+        console.log();
+        console.log("- Your hand:\n    ", player.hand.map(card => card.toString()).join(', '));
+        console.log("- Discarded:\n    ", discarded.toString());
+        console.log();
       },
 
       table: () => {
@@ -97,14 +107,23 @@ function playerTurn(game) {
 
     commands.info();
     game.on('nextplayer', () => {
-      player = game.getCurrentPlayer();
-      discarded = game.getDiscardedCard();
+      // if game is not finished...
+      if (game != null) {
+        player = game.getCurrentPlayer();
+        discarded = game.getDiscardedCard();
 
-      commands.info();
+        commands.info();
+      }
+    });
+
+    game.on('end', () => {
+      readline.close();
     });
 
     readline.setPrompt(prompt`${player.name}`);
     readline.prompt();
+
+    let card = null;
 
     readline
       .on('line', line => {
@@ -115,21 +134,46 @@ function playerTurn(game) {
           switch (entries[0]) {
             case 'play':
               let cardStr = entries.splice(1).join(' ');
-              game.play(str2card(cardStr));
+              try {
+                card = str2card(cardStr);
+              } catch (e) {
+                console.log("ERROR: error creating card");
+              }
+
+              game.play(card);
               break;
             case 'draw':
+              let oldPlayer = player;
+              let oldLength = oldPlayer.hand.length;
+
               game.draw();
-              console.log("Your hand:", player.hand.map(card => card.toString()).join(', '));
+
+              oldPlayer = game.getPlayer(oldPlayer.name);
+              console.log(`Drawn ${oldPlayer.hand.length - oldLength} card(s).`);
+
+              // show cards at hand if the turn is still of the player that drawn
+              if (game.getCurrentPlayer() == oldPlayer)
+                commands.hand();
               break;
             case 'pass':
               game.pass();
               break;
             case 'color':
-              let card = player.getCardByValue(Values.get(entries[1].toUpperCase()));
+              card = player.getCardByValue(Values.get(entries[1].toUpperCase()));
               if (!card)
                 throw new Error(`${player.name} has no ${card.value}`);
               card.setColor(Colors.get(entries[2].toUpperCase()));
               console.log("Color set:", card.toString());
+              break;
+            case 'uno':
+              let bought = game.uno();
+              if (bought.length) {
+                bought.forEach(p => {
+                  console.log(`\t${p.name} bought 2 cards`);
+                });
+              } else {
+                console.log(`${player.name}: UNO!!!`);
+              }
               break;
             default:
               if (entries[0] in commands)
@@ -139,17 +183,13 @@ function playerTurn(game) {
           console.error("ERROR:", error.message);
         }
 
-        // if (line == 'done') {
-        //   if (players.length >= 2)
-        //     return readline.close();
-        // } else if (!!line)
-        //   players.push(line.trim());
-
-        readline.setPrompt(prompt`${player.name}`);
-        readline.prompt();
+        // if game is not finished yet...
+        if (game != null) {
+          readline.setPrompt(prompt`${player.name}`);
+          readline.prompt();
+        }
       })
-      .on('error', err => console.error(err.message))
-      .on('close', () => resolve(players));
+      .on('error', err => console.error(err.message));
   });
 }
 

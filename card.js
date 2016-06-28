@@ -31,7 +31,7 @@ function card(value, color) {
   }
 
   instance.matches = function matches(otherCard) {
-    if (instance.isWildCard() || otherCard.isWildCard())
+    if (instance.isWildCard())
       return true;
     else if (instance.color == null || otherCard.color == null)
       throw new Error("Both cards must have theirs colors set before comparing");

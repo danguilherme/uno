@@ -13,7 +13,9 @@ describe('Game', function () {
     game.on('start', e => {
       game.should.respondTo('on');
       game.should.respondTo('newGame');
+      game.should.respondTo('getPlayer');
       game.should.respondTo('getCurrentPlayer');
+      game.should.respondTo('getNextPlayer');
       game.should.respondTo('getDiscardedCard');
       game.should.respondTo('getPlayingDirection');
       game.should.respondTo('play');
@@ -38,7 +40,7 @@ describe('Game', function () {
     game.on('start', e => done(e == null ? new Error("Error expected") : null));
   });
 
-  it('should error if player names repeat', function(done) {
+  it('should error if player names repeat', function (done) {
     let game = Game(["Player 0", "Player 0"]);
     game.on('error', e => done());
     game.on('start', e => done(e == null ? new Error("Error expected") : null));
@@ -127,7 +129,7 @@ describe('Game', function () {
         let playerCard = Card(discardedCard.value,
           discardedCard.color == Colors.BLUE ? Colors.RED : Colors.BLUE);
 
-        curr.hand = [playerCard];
+        curr.hand = [playerCard, playerCard];
 
         playerCard.matches(discardedCard).should.be.true;
 
@@ -173,7 +175,7 @@ describe('Game', function () {
         else
           pnum += 2;
 
-        curr.hand = [skip];
+        curr.hand = [skip, skip];
 
         game.getCurrentPlayer().name.should.equal(curr.name);
         should.not.throw(_ => game.play(skip));
@@ -193,7 +195,7 @@ describe('Game', function () {
         else
           pnum--;
 
-        curr.hand = [reverse];
+        curr.hand = [reverse, reverse];
 
         game.getCurrentPlayer().name.should.equal(curr.name);
         should.not.throw(_ => game.play(reverse));
@@ -224,18 +226,21 @@ describe('Game', function () {
         let drawTwo = Card(Values.DRAW_TWO, discardedCard.color);
         let reverse = Card(Values.REVERSE, discardedCard.color);
 
-        curr.hand = [drawTwo];
+        curr.hand = [drawTwo, drawTwo];
 
         should.not.throw(_ => game.play(drawTwo));
 
         // add reverse to new player hand
         curr = game.getCurrentPlayer();
-        curr.hand = [reverse];
+        curr.hand = [reverse, reverse];
 
+        // cannot pass
         should.throw(game.pass);
+        // cannot play no-DRAW card
         should.throw(_ => game.play(reverse));
         should.not.throw(game.draw);
-        curr.hand.should.have.length(3);
+        curr.hand.should.have.length(4);
+        // lost his turn
         game.getCurrentPlayer().name.should.not.equal(curr.name);
       });
 
@@ -245,22 +250,22 @@ describe('Game', function () {
         let drawTwo = Card(Values.DRAW_TWO, discardedCard.color);
         let reverse = Card(Values.REVERSE, discardedCard.color);
 
-        curr.hand = [drawTwo];
+        curr.hand = [drawTwo, drawTwo];
         should.not.throw(_ => game.play(drawTwo));
 
         // add reverse to new player hand
         curr = game.getCurrentPlayer();
-        curr.hand = [drawTwo];
+        curr.hand = [drawTwo, drawTwo];
         should.not.throw(_ => game.play(drawTwo));
 
         // add reverse to new player hand
         curr = game.getCurrentPlayer();
-        curr.hand = [reverse];
+        curr.hand = [reverse, reverse];
 
         should.throw(game.pass);
         should.throw(_ => game.play(reverse));
         should.not.throw(game.draw);
-        curr.hand.should.have.length(5);
+        curr.hand.should.have.length(6);
         game.getCurrentPlayer().name.should.not.equal(curr.name);
       });
     });
@@ -285,6 +290,69 @@ describe('Game', function () {
     describe('#draw()', function () {
       it('should pass to next player if draw card was at place (draw two, wild draw four)');
       it('should add a card to player hand');
+    });
+
+    describe('#uno()', function () {
+      it('should make "UNO" yeller to draw 2 cards if there isn\'t any player with 1 card', function () {
+        let currentPlayer = game.getCurrentPlayer();
+
+        currentPlayer.hand.should.have.length(7);
+        game.uno();
+        currentPlayer.hand.should.have.length(9);
+      });
+
+      it('should make user with 1 card that not yelled UNO! to draw 2 cards', function () {
+        let curr = game.getCurrentPlayer();
+        let discardedCard = game.getDiscardedCard();
+        let drawTwo = Card(Values.DRAW_TWO, discardedCard.color);
+        let reverse = Card(Values.REVERSE, discardedCard.color);
+
+        curr.hand = [reverse, drawTwo];
+
+        should.not.throw(_ => game.play(reverse));
+        curr.hand.should.have.length(1);
+
+        discardedCard = game.getDiscardedCard();
+
+        game.uno();
+        curr.hand.should.have.length(3);
+      });
+
+      it('should not make user draw if he has already drawn', function () {
+        let curr = game.getCurrentPlayer();
+        let discardedCard = game.getDiscardedCard();
+        let drawTwo = Card(Values.DRAW_TWO, discardedCard.color);
+        let reverse = Card(Values.REVERSE, discardedCard.color);
+
+        curr.hand = [reverse, drawTwo];
+
+        should.not.throw(_ => game.play(reverse));
+        curr.hand.should.have.length(1);
+
+        game.uno();
+        curr.hand.should.have.length(3);
+
+        game.uno();
+        // the other player has already drawn, this player will draw now
+        game.getCurrentPlayer().hand.should.have.length(9);
+      });
+
+      it('should not make user draw if he has already yelled UNO!', function () {
+        let curr = game.getCurrentPlayer();
+        let discardedCard = game.getDiscardedCard();
+        let drawTwo = Card(Values.DRAW_TWO, discardedCard.color);
+        let reverse = Card(Values.REVERSE, discardedCard.color);
+
+        curr.hand = [reverse, drawTwo];
+        game.uno();
+
+        should.not.throw(_ => game.play(reverse));
+        curr.hand.should.have.length(1);
+
+        game.uno();
+        // the other player has already yelled UNO!, this player will draw now
+        game.getCurrentPlayer().hand.should.have.length(9);
+      });
     });
   });
 
