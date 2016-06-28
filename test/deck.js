@@ -38,7 +38,7 @@ describe('Deck', function() {
   });
 
   it('should have 8 draw two', function() {
-    let drawTwos = deck.cards.filter(filterByValue(Values.DRAW_TWO))
+    let drawTwos = deck.cards.filter(filterByValue(Values.DRAW_TWO));
     drawTwos.should.have.length(8);
   });
 
@@ -58,7 +58,7 @@ describe('Deck', function() {
   });
 
   it('should have 4 wild draw four', function() {
-    let wildDrawFours = deck.cards.filter(filterByValue(Values.WILD_DRAW_FOUR))
+    let wildDrawFours = deck.cards.filter(filterByValue(Values.WILD_DRAW_FOUR));
     wildDrawFours.should.have.length(4);
   });
 
@@ -88,7 +88,7 @@ describe('Deck', function() {
         redEight.color.should.be.equal(Colors.RED);
       });
 
-      it('should create a wild card', function() {
+      it('should create a wild card with no color', function() {
         let wild = Card(Values.WILD);
         wild.value.should.be.equal(Values.WILD);
         should.not.exist(wild.color);

@@ -37,6 +37,12 @@ const game = function (playerNames) {
    * It's used when there's a row of DRAW_TWO running.
    */
   let cardsToDraw = 0;
+  /**
+   * Who yelled uno?
+   * key: player name
+   * value: true/false
+   */
+  let yellers = {};
 
   function init() {
     instance.newGame();
@@ -67,6 +73,8 @@ const game = function (playerNames) {
     if (!playerNames || !playerNames.length ||
       playerNames.length < 2 || playerNames.length > 10)
       throw new Error("There must be 2 to 10 players in the game");
+    else if (findDuplicates(playerNames).length)
+      throw new Error("Player names must be different");
 
     players = playerNames.map(player => {
       if (typeof player == 'string')
@@ -82,6 +90,8 @@ const game = function (playerNames) {
 
   instance.getDiscardedCard = () => discardedCard;
 
+  instance.getPlayingDirection = () => direction;
+
   instance.draw = () => {
     let currentPlayer = instance.getCurrentPlayer();
 
@@ -90,8 +100,8 @@ const game = function (playerNames) {
 
     if (cardsToDraw > 0) {
       cardsToDraw = 0;
-        goToNextPlayer();
-      } 
+      goToNextPlayer();
+    }
   };
 
   instance.pass = () => {
@@ -196,6 +206,23 @@ const game = function (playerNames) {
  */
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// http://stackoverflow.com/a/840812/1574059
+function findDuplicates(array) {
+  // expects an string array
+  var uniq = array
+    .map((name, idx) => {
+      return { count: 1, name: name };
+    })
+    .reduce((a, b) => {
+      a[b.name] = (a[b.name] || 0) + b.count;
+      return a;
+    }, {});
+
+  var duplicates = Object.keys(uniq).filter((a) => uniq[a] > 1);
+
+  return duplicates;
 }
 
 module.exports = game;

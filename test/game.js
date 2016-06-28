@@ -7,6 +7,23 @@ const Values = require('../values');
 const Colors = require('../colors');
 
 describe('Game', function () {
+
+  it('should have a public API', function (done) {
+    let game = Game(["Guilherme", "Maria"]);
+    game.on('start', e => {
+      game.should.respondTo('on');
+      game.should.respondTo('newGame');
+      game.should.respondTo('getCurrentPlayer');
+      game.should.respondTo('getDiscardedCard');
+      game.should.respondTo('getPlayingDirection');
+      game.should.respondTo('play');
+      game.should.respondTo('draw');
+      game.should.respondTo('pass');
+      game.should.respondTo('uno');
+      done();
+    });
+  });
+
   it('should error if started with less than 2 players', function (done) {
     let game = Game(["Guilherme"]);
     game.on('error', e => done());
@@ -21,7 +38,11 @@ describe('Game', function () {
     game.on('start', e => done(e == null ? new Error("Error expected") : null));
   });
 
-  it('should error if player names repeat');
+  it('should error if player names repeat', function(done) {
+    let game = Game(["Player 0", "Player 0"]);
+    game.on('error', e => done());
+    game.on('start', e => done(e == null ? new Error("Error expected") : null));
+  });
 
   it('should not start with a wild card', function (done) {
     let game = Game(["Player 1", "Player 2", "Player 3", "Player 4"]);
