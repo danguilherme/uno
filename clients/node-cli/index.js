@@ -1,9 +1,9 @@
 "use strict";
 
-const Game = require('./game');
-const Card = require('./card');
-const Values = require('./values');
-const Colors = require('./colors');
+const Game = require('../../engine/game');
+const Card = require('../../engine/card');
+const Values = require('../../engine/values');
+const Colors = require('../../engine/colors');
 
 const SYSTEM_IDENTIFIER = "UNO";
 

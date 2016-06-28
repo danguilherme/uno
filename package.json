@@ -4,8 +4,8 @@
   "description": "Uno game implementation in JavaScript",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/",
-    "test-watch": "mocha test/ -w"
+    "test": "mocha engine/test/",
+    "test-watch": "mocha engine/test/ -w"
   },
   "keywords": [
     "uno",
