@@ -163,5 +163,26 @@ describe('Deck', function() {
         wildDrawFour.color.should.be.equal(Colors.YELLOW);
       });
     });
+
+    describe('#score', function() {
+      it('should return correct values', function() {
+        Card(Values.ZERO, Colors.YELLOW).score.should.be.equal(0);
+        Card(Values.ONE, Colors.YELLOW).score.should.be.equal(1);
+        Card(Values.TWO, Colors.YELLOW).score.should.be.equal(2);
+        Card(Values.THREE, Colors.YELLOW).score.should.be.equal(3);
+        Card(Values.FOUR, Colors.YELLOW).score.should.be.equal(4);
+        Card(Values.FIVE, Colors.YELLOW).score.should.be.equal(5);
+        Card(Values.SIX, Colors.YELLOW).score.should.be.equal(6);
+        Card(Values.SEVEN, Colors.YELLOW).score.should.be.equal(7);
+        Card(Values.EIGHT, Colors.YELLOW).score.should.be.equal(8);
+        Card(Values.NINE, Colors.YELLOW).score.should.be.equal(9);
+        Card(Values.DRAW_TWO, Colors.YELLOW).score.should.be.equal(20);
+        Card(Values.SKIP, Colors.YELLOW).score.should.be.equal(20);
+        Card(Values.REVERSE, Colors.YELLOW).score.should.be.equal(20);
+        Card(Values.WILD, Colors.YELLOW).score.should.be.equal(50);
+        Card(Values.WILD_DRAW_FOUR, Colors.YELLOW).score.should.be.equal(50);
+      });
+
+    });
   });
 });

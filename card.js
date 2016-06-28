@@ -48,10 +48,18 @@ function card(value, color) {
       }
     },
     score: {
-      value: function score() {
-        if (!instance.isWildCard())
-          throw new Error("Only wild cards can have theirs colors changed.");
-        instance.color = newColor;
+      get: function score() {
+        switch (instance.value) {
+          case Values.DRAW_TWO:
+          case Values.SKIP:
+          case Values.REVERSE:
+            return 20;
+          case Values.WILD:
+          case Values.WILD_DRAW_FOUR:
+            return 50;
+          default:
+            return value.value;
+        }
       }
     }
   });

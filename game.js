@@ -81,7 +81,7 @@ const game = function (playerNames) {
       value: () => direction
     },
     draw: {
-      value: function() {
+      value: function () {
         let currentPlayer = instance.getCurrentPlayer();
 
         draw(currentPlayer, cardsToDraw || 1);
@@ -108,7 +108,7 @@ const game = function (playerNames) {
     },
     play: {
       value: function play(card) {
-        let currentPlayer = this.getCurrentPlayer();
+        let currentPlayer = instance.getCurrentPlayer();
         if (!card)
           return;
         // check if player has the card at hand...
@@ -126,12 +126,12 @@ const game = function (playerNames) {
         currentPlayer.removeCard(card);
         discardedCard = card;
 
-        this.emit('cardplay', null, card, currentPlayer);
+        instance.emit('cardplay', null, card, currentPlayer);
 
         if (currentPlayer.hand.length == 0) {
-          let score = 0; // TODO: implement score calculation
+          let score = calculateScore();
           // game is over, we have a winner!
-          this.emit('end', null, currentPlayer, score);
+          instance.emit('end', null, currentPlayer, score);
           // TODO: how to stop game after it's finished? Finished variable? >.<
           return;
         }
@@ -252,6 +252,15 @@ const game = function (playerNames) {
       throw new Error('Player is mandatory');
 
     player.hand = player.hand.concat(drawPile.draw(amount));
+  }
+
+  function calculateScore() {
+    return players
+      .map(player => player.hand)
+      .reduce((amount, cards) => {
+        amount += cards.reduce((s, c) => s += c.score, 0);
+        return amount;
+      }, 0);
   }
 
   init();
