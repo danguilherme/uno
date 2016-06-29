@@ -1,19 +1,21 @@
 {
-  "name": "uno",
+  "name": "uno-engine",
   "version": "0.0.1",
   "description": "Uno game implementation in JavaScript",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "test": "mocha engine/test/",
     "test-watch": "mocha engine/test/ -w"
   },
   "keywords": [
     "uno",
+    "can-can",
     "card-game",
     "cards",
     "game"
   ],
   "author": "danguilherme",
+  "repository": "danguilherme/uno",
   "license": "MIT",
   "dependencies": {
     "enum": "^2.3.0",
