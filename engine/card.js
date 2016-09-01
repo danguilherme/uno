@@ -15,7 +15,7 @@ function card(value, color) {
       value: value
     },
     color: {
-      get: () => {
+      get: _ => {
         return color;
       },
       set: function (newColor) {

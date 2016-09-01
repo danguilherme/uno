@@ -5,6 +5,7 @@ const Game = require('../game');
 const Card = require('../card');
 const Values = require('../values');
 const Colors = require('../colors');
+const GameDirections = require('../game_directions');
 
 describe('Game', function () {
 
@@ -14,10 +15,10 @@ describe('Game', function () {
     game.should.respondTo('on');
     game.should.respondTo('newGame');
     game.should.respondTo('getPlayer');
-    game.should.respondTo('getCurrentPlayer');
-    game.should.respondTo('getNextPlayer');
-    game.should.respondTo('getDiscardedCard');
-    game.should.respondTo('getPlayingDirection');
+    game.should.have.property('currentPlayer');
+    game.should.have.property('nextPlayer');
+    game.should.have.property('discardedCard');
+    game.should.have.property('playingDirection');
     game.should.respondTo('play');
     game.should.respondTo('draw');
     game.should.respondTo('pass');
@@ -42,7 +43,7 @@ describe('Game', function () {
     let game = null;
     should.not.throw(() => game = Game(["Player 1", "Player 2", "Player 3", "Player 4"]));
 
-    game.getDiscardedCard().isWildCard().should.be.false;
+    game.discardedCard.isWildCard().should.be.false;
   });
 
   it('should start', function () {
@@ -58,7 +59,7 @@ describe('Game', function () {
 
     describe("#play()", function () {
       it('should throw if user does not have the played card in hand', function () {
-        let curr = game.getCurrentPlayer();
+        let curr = game.currentPlayer;
 
         curr.hand = [
           Card(Values.ZERO, Colors.RED)
@@ -68,8 +69,8 @@ describe('Game', function () {
       });
 
       it('should throw if the card on discard pile does not match with played card', function () {
-        let curr = game.getCurrentPlayer();
-        let discardedCard = game.getDiscardedCard();
+        let curr = game.currentPlayer;
+        let discardedCard = game.discardedCard;
         let playerCard = Card(
           discardedCard.value == Values.ZERO ? Values.ONE : Values.ZERO,
           discardedCard.color == Colors.RED ? Colors.BLUE : Colors.RED
@@ -82,8 +83,8 @@ describe('Game', function () {
       });
 
       it('should throw if the played wild card does not have a color set', function () {
-        let curr = game.getCurrentPlayer();
-        let discardedCard = game.getDiscardedCard();
+        let curr = game.currentPlayer;
+        let discardedCard = game.discardedCard;
         let playerCard = Card(Values.WILD);
 
         curr.hand = [playerCard];
@@ -92,8 +93,8 @@ describe('Game', function () {
       });
 
       it('should remove played card from player hand', function () {
-        let curr = game.getCurrentPlayer();
-        let discardedCard = game.getDiscardedCard();
+        let curr = game.currentPlayer;
+        let discardedCard = game.discardedCard;
         let playerCard = Card(discardedCard.value,
           discardedCard.color == Colors.BLUE ? Colors.RED : Colors.BLUE);
 
@@ -107,13 +108,13 @@ describe('Game', function () {
         curr.hand.indexOf(playerCard).should.equal(-1);
 
         // discarded card must be equal to player card now
-        game.getDiscardedCard().color.is(playerCard.color).should.be.true;
-        game.getDiscardedCard().value.is(playerCard.value).should.be.true;
+        game.discardedCard.color.is(playerCard.color).should.be.true;
+        game.discardedCard.value.is(playerCard.value).should.be.true;
       });
 
       it('should pass turn to next player', function () {
-        let curr = game.getCurrentPlayer();
-        let discardedCard = game.getDiscardedCard();
+        let curr = game.currentPlayer;
+        let discardedCard = game.discardedCard;
         let playerCard = Card(discardedCard.value,
           discardedCard.color == Colors.BLUE ? Colors.RED : Colors.BLUE);
 
@@ -121,14 +122,14 @@ describe('Game', function () {
 
         playerCard.matches(discardedCard).should.be.true;
 
-        game.getCurrentPlayer().name.should.equal(curr.name);
+        game.currentPlayer.name.should.equal(curr.name);
         should.not.throw(_ => game.play(playerCard));
-        game.getCurrentPlayer().name.should.not.equal(curr.name);
+        game.currentPlayer.name.should.not.equal(curr.name);
       });
 
       it('should accept WILD cards no matter their colors', function () {
-        let curr = game.getCurrentPlayer();
-        let discardedCard = game.getDiscardedCard();
+        let curr = game.currentPlayer;
+        let discardedCard = game.discardedCard;
         let wildCard = Card(Values.WILD,
           discardedCard.color == Colors.RED ? Colors.BLUE : Colors.RED
         );
@@ -138,8 +139,8 @@ describe('Game', function () {
         wildCard.matches(discardedCard).should.be.true;
         should.not.throw(_ => game.play(wildCard));
 
-        curr = game.getCurrentPlayer();
-        discardedCard = game.getDiscardedCard();
+        curr = game.currentPlayer;
+        discardedCard = game.discardedCard;
         wildCard = Card(Values.WILD_DRAW_FOUR,
           discardedCard.color == Colors.RED ? Colors.BLUE : Colors.RED
         );
@@ -151,13 +152,13 @@ describe('Game', function () {
       });
 
       it('should skip next player if thrown SKIP', function () {
-        let curr = game.getCurrentPlayer();
-        let discardedCard = game.getDiscardedCard();
+        let curr = game.currentPlayer;
+        let discardedCard = game.discardedCard;
         let skip = Card(Values.SKIP, discardedCard.color);
 
         // get the player after the next, by getting theirs numbers
         // through theirs names 
-        let pnum = +game.getCurrentPlayer().name.split(' ')[1];
+        let pnum = +game.currentPlayer.name.split(' ')[1];
         if (pnum >= 3)
           pnum -= 2;
         else
@@ -165,19 +166,19 @@ describe('Game', function () {
 
         curr.hand = [skip, skip];
 
-        game.getCurrentPlayer().name.should.equal(curr.name);
+        game.currentPlayer.name.should.equal(curr.name);
         should.not.throw(_ => game.play(skip));
-        game.getCurrentPlayer().name.should.equal(`Player ${pnum}`);
+        game.currentPlayer.name.should.equal(`Player ${pnum}`);
       });
 
       it('should change the playing direction if thrown REVERSE', function () {
-        let curr = game.getCurrentPlayer();
-        let discardedCard = game.getDiscardedCard();
+        let curr = game.currentPlayer;
+        let discardedCard = game.discardedCard;
         let reverse = Card(Values.REVERSE, discardedCard.color);
 
         // get the player after the next, by getting theirs numbers
         // through theirs names 
-        let pnum = +game.getCurrentPlayer().name.split(' ')[1];
+        let pnum = +game.currentPlayer.name.split(' ')[1];
         if (pnum == 1)
           pnum = 4;
         else
@@ -185,28 +186,28 @@ describe('Game', function () {
 
         curr.hand = [reverse, reverse];
 
-        game.getCurrentPlayer().name.should.equal(curr.name);
+        game.currentPlayer.name.should.equal(curr.name);
         should.not.throw(_ => game.play(reverse));
-        game.getCurrentPlayer().name.should.equal(`Player ${pnum}`);
+        game.currentPlayer.name.should.equal(`Player ${pnum}`);
       });
 
       it('should skip next player if thrown REVERSE with 2 players', function () {
         game = Game(["Player 1", "Player 2"]);
 
-        let curr = game.getCurrentPlayer();
-        let discardedCard = game.getDiscardedCard();
+        let curr = game.currentPlayer;
+        let discardedCard = game.discardedCard;
         let reverse = Card(Values.REVERSE, discardedCard.color);
 
         curr.hand = [reverse];
 
-        game.getCurrentPlayer().name.should.equal(curr.name);
+        game.currentPlayer.name.should.equal(curr.name);
         should.not.throw(_ => game.play(reverse));
-        game.getCurrentPlayer().name.should.equal(curr.name);
+        game.currentPlayer.name.should.equal(curr.name);
       });
 
       it('should force player to draw after a DRAW TWO', function () {
-        let curr = game.getCurrentPlayer();
-        let discardedCard = game.getDiscardedCard();
+        let curr = game.currentPlayer;
+        let discardedCard = game.discardedCard;
         let drawTwo = Card(Values.DRAW_TWO, discardedCard.color);
         let reverse = Card(Values.REVERSE, discardedCard.color);
 
@@ -215,7 +216,7 @@ describe('Game', function () {
         should.not.throw(_ => game.play(drawTwo));
 
         // add reverse to new player hand
-        curr = game.getCurrentPlayer();
+        curr = game.currentPlayer;
         curr.hand = [reverse, reverse];
 
         // cannot pass
@@ -225,12 +226,12 @@ describe('Game', function () {
         should.not.throw(game.draw);
         curr.hand.should.have.length(4);
         // lost his turn
-        game.getCurrentPlayer().name.should.not.equal(curr.name);
+        game.currentPlayer.name.should.not.equal(curr.name);
       });
 
       it('should stack DRAW TWO values', function () {
-        let curr = game.getCurrentPlayer();
-        let discardedCard = game.getDiscardedCard();
+        let curr = game.currentPlayer;
+        let discardedCard = game.discardedCard;
         let drawTwo = Card(Values.DRAW_TWO, discardedCard.color);
         let reverse = Card(Values.REVERSE, discardedCard.color);
 
@@ -238,19 +239,19 @@ describe('Game', function () {
         should.not.throw(_ => game.play(drawTwo));
 
         // add reverse to new player hand
-        curr = game.getCurrentPlayer();
+        curr = game.currentPlayer;
         curr.hand = [drawTwo, drawTwo];
         should.not.throw(_ => game.play(drawTwo));
 
         // add reverse to new player hand
-        curr = game.getCurrentPlayer();
+        curr = game.currentPlayer;
         curr.hand = [reverse, reverse];
 
         should.throw(game.pass);
         should.throw(_ => game.play(reverse));
         should.not.throw(game.draw);
         curr.hand.should.have.length(6);
-        game.getCurrentPlayer().name.should.not.equal(curr.name);
+        game.currentPlayer.name.should.not.equal(curr.name);
       });
     });
 
@@ -263,11 +264,11 @@ describe('Game', function () {
       });
 
       it('should pass the play to the next player', function () {
-        let curr = game.getCurrentPlayer();
+        let curr = game.currentPlayer;
         game.draw();
-        game.getCurrentPlayer().name.should.equal(curr.name);
+        game.currentPlayer.name.should.equal(curr.name);
         should.not.throw(game.pass);
-        game.getCurrentPlayer().name.should.not.equal(curr.name);
+        game.currentPlayer.name.should.not.equal(curr.name);
       });
     });
 
@@ -278,7 +279,7 @@ describe('Game', function () {
 
     describe('#uno()', function () {
       it('should make "UNO" yeller to draw 2 cards if there isn\'t any player with 1 card', function () {
-        let currentPlayer = game.getCurrentPlayer();
+        let currentPlayer = game.currentPlayer;
 
         currentPlayer.hand.should.have.length(7);
         game.uno();
@@ -286,8 +287,8 @@ describe('Game', function () {
       });
 
       it('should make user with 1 card that not yelled UNO! to draw 2 cards', function () {
-        let curr = game.getCurrentPlayer();
-        let discardedCard = game.getDiscardedCard();
+        let curr = game.currentPlayer;
+        let discardedCard = game.discardedCard;
         let drawTwo = Card(Values.DRAW_TWO, discardedCard.color);
         let reverse = Card(Values.REVERSE, discardedCard.color);
 
@@ -296,15 +297,15 @@ describe('Game', function () {
         should.not.throw(_ => game.play(reverse));
         curr.hand.should.have.length(1);
 
-        discardedCard = game.getDiscardedCard();
+        discardedCard = game.discardedCard;
 
         game.uno();
         curr.hand.should.have.length(3);
       });
 
       it('should not make user draw if he has already drawn', function () {
-        let curr = game.getCurrentPlayer();
-        let discardedCard = game.getDiscardedCard();
+        let curr = game.currentPlayer;
+        let discardedCard = game.discardedCard;
         let drawTwo = Card(Values.DRAW_TWO, discardedCard.color);
         let reverse = Card(Values.REVERSE, discardedCard.color);
 
@@ -318,12 +319,12 @@ describe('Game', function () {
 
         game.uno();
         // the other player has already drawn, this player will draw now
-        game.getCurrentPlayer().hand.should.have.length(9);
+        game.currentPlayer.hand.should.have.length(9);
       });
 
       it('should not make user draw if he has already yelled UNO!', function () {
-        let curr = game.getCurrentPlayer();
-        let discardedCard = game.getDiscardedCard();
+        let curr = game.currentPlayer;
+        let discardedCard = game.discardedCard;
         let drawTwo = Card(Values.DRAW_TWO, discardedCard.color);
         let reverse = Card(Values.REVERSE, discardedCard.color);
 
@@ -335,7 +336,7 @@ describe('Game', function () {
 
         game.uno();
         // the other player has already yelled UNO!, this player will draw now
-        game.getCurrentPlayer().hand.should.have.length(9);
+        game.currentPlayer.hand.should.have.length(9);
       });
     });
   });
@@ -349,6 +350,64 @@ describe('Game', function () {
       it('should come back to the same player when played REVERSE');
       // TODO: check rules for this
       it('should allow user to pass after throwing a REVERSE card');
+    });
+  });
+
+  describe("setting game state", function () {
+    let game = null;
+
+    beforeEach(function () {
+      game = Game(["Player 1", "Player 2"]);
+    });
+
+    describe('#currentPlayer', function () {
+      it('should change current player', function () {
+        let player = game.nextPlayer;
+        should.not.throw(_ => game.currentPlayer = player);
+        game.currentPlayer.name.should.equal(player.name);
+
+        player = game.nextPlayer;
+        should.not.throw(_ => game.currentPlayer = player.name);
+        game.currentPlayer.name.should.equal(player.name);
+      });
+
+      it('should not change current player if not existent', function () {
+        let originalPlayer = game.currentPlayer.name;
+        should.throw(_ => game.currentPlayer = "Player 1024");
+        game.currentPlayer.name.should.equal(originalPlayer);
+      });
+    });
+
+    describe('#discardedCard', function () {
+      it('should change discarded card', function () {
+        should.not.throw(_ => game.discardedCard = Card(Values.ZERO, Colors.RED));
+        game.discardedCard.value.should.equal(Values.ZERO);
+        game.discardedCard.color.should.equal(Colors.RED);
+      });
+
+      it('should not change discarded card to card with no color', function () {
+        let originalCard = game.discardedCard;
+        should.throw(_ => game.discardedCard = Card(Values.WILD, null));
+        game.discardedCard.value.should.equal(originalCard.value);
+        game.discardedCard.color.should.equal(originalCard.color);
+      });
+
+      it('should not change discarded card to invalid Card object', function () {
+        let originalCard = game.discardedCard;
+        should.throw(_ => game.discardedCard = "RED ZERO");
+        game.discardedCard.value.should.equal(originalCard.value);
+        game.discardedCard.color.should.equal(originalCard.color);
+      });
+    });
+
+    describe('#playingDirection', function () {
+      it('should change gameplay direction', function () {
+        should.throw(_ => game.playingDirection = "right");
+        game.playingDirection.should.equal(GameDirections.CLOCKWISE);
+
+        should.not.throw(_ => game.playingDirection = GameDirections.COUNTER_CLOCKWISE);
+        game.playingDirection.should.equal(GameDirections.COUNTER_CLOCKWISE);
+      });
     });
   });
 });

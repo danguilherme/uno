@@ -68,21 +68,49 @@ const game = function (playerNames) {
         return player;
       }
     },
-    getCurrentPlayer: {
-      value: () => currentPlayer
+    currentPlayer: {
+      get: _ => currentPlayer,
+      set: name => {
+        // if we received a player, extract the name from it
+        if (typeof name == 'object')
+          name = name.name;
+
+        if (!name)
+          throw new Error("Player name is invalid");
+
+        let player = instance.getPlayer(name);
+        if (!player)
+          throw new Error("The given player does not exist");
+        currentPlayer = instance.getPlayer(name);
+      }
     },
-    getNextPlayer: {
-      value: () => getNextPlayer()
+    nextPlayer: {
+      get: _ => getNextPlayer()
     },
-    getDiscardedCard: {
-      value: () => discardedCard
+    discardedCard: {
+      get: _ => discardedCard,
+      set: card => {
+        if (!card)
+          return;
+        if (card.color == null)
+          throw new Error("Discarded cards cannot have theirs colors as null");
+
+        discardedCard = card
+      }
     },
-    getPlayingDirection: {
-      value: () => direction
+    playingDirection: {
+      get: _ => direction,
+      set: dir => {
+        if (dir != GameDirections.CLOCKWISE && dir != GameDirections.COUNTER_CLOCKWISE)
+          throw new Error("Invalid direction");
+
+        if (dir != direction)
+          reverseGame();
+      }
     },
     draw: {
       value: function () {
-        let currentPlayer = instance.getCurrentPlayer();
+        let currentPlayer = instance.currentPlayer;
 
         draw(currentPlayer, cardsToDraw || 1);
 
@@ -108,7 +136,7 @@ const game = function (playerNames) {
     },
     play: {
       value: function play(card) {
-        let currentPlayer = instance.getCurrentPlayer();
+        let currentPlayer = instance.currentPlayer;
         if (!card)
           return;
         // check if player has the card at hand...
@@ -159,7 +187,7 @@ const game = function (playerNames) {
     },
     uno: {
       value: function uno(yellingPlayer) {
-        yellingPlayer = yellingPlayer || instance.getCurrentPlayer();
+        yellingPlayer = yellingPlayer || instance.currentPlayer;
 
         // the users that will draw;
         let drawingPlayers;
