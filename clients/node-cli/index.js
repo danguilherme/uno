@@ -47,7 +47,7 @@ function getPlayers(readline) {
     let readline = rl.createInterface(process.stdin, process.stdout);
     let players = [];
 
-    console.log("Write player names (2-10 players)");
+    console.log("Write player names (2-10 players)\n(Press enter when done)");
 
     readline.setPrompt(prompt`${SYSTEM_IDENTIFIER}`);
     readline.prompt();
@@ -56,7 +56,7 @@ function getPlayers(readline) {
       .on('line', line => {
         line = line.trim();
 
-        if (line == 'done') {
+        if (line == '') {
           if (players.length >= 2)
             return readline.close();
         } else if (!!line)
@@ -86,21 +86,21 @@ function playerTurn(game) {
 
       info: () => {
         console.log();
-        console.log("- Your hand:\n    ", player.hand.map(card => card.toString()).join(', '));
-        console.log("- Discarded:\n    ", discarded.toString());
+        commands.hand();
+        commands.table();
         console.log();
       },
 
       table: () => {
-        console.log(discarded.toString());
+        console.log("- Discarded card:\n\t" + discarded);
       },
 
       player: () => {
-        console.log(player.name);
+        console.log("- Current player:\n\t" + player.name);
       },
 
       hand: () => {
-        console.log(player.hand.map(card => card.toString()).join(', '));
+        console.log("- Your hand:\n\t" + player.hand.map(String).join(',\n\t'));
       }
     };
 
