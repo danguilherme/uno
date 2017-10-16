@@ -69,17 +69,22 @@ describe('Game', function () {
       });
 
       it('should throw if the card on discard pile does not match with played card', function () {
-        let curr = game.currentPlayer;
-        let discardedCard = game.discardedCard;
-        let playerCard = Card(
-          discardedCard.value == Values.ZERO ? Values.ONE : Values.ZERO,
-          discardedCard.color == Colors.RED ? Colors.BLUE : Colors.RED
-        );
+        const curr = game.currentPlayer;
+        const discardedCard = game.discardedCard;
+
+        const blueZero = Card(Values.ZERO, Colors.BLUE);
+        const redOne = Card(Values.ONE, Colors.RED);
+
+        const playerCard = discardedCard.value == Colors.ONE || discardedCard.color == Colors.RED ?
+          blueZero : redOne;
 
         curr.hand = [playerCard];
 
         playerCard.matches(discardedCard).should.be.false;
         should.throw(_ => game.play(playerCard));
+
+        // don't touch player's hand
+        curr.hand.should.have.length(1);
       });
 
       it('should throw if the played wild card does not have a color set', function () {
