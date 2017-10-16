@@ -137,6 +137,7 @@ function playerTurn(game) {
                 card = str2card(cardStr);
               } catch (e) {
                 console.log("ERROR: error creating card");
+                break;
               }
 
               game.play(card);

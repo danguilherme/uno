@@ -69,7 +69,7 @@ const game = function (playerNames) {
       }
     },
     currentPlayer: {
-      get: _ => currentPlayer,
+      get: () => currentPlayer,
       set: name => {
         // if we received a player, extract the name from it
         if (typeof name == 'object')
@@ -85,10 +85,10 @@ const game = function (playerNames) {
       }
     },
     nextPlayer: {
-      get: _ => getNextPlayer()
+      get: () => getNextPlayer()
     },
     discardedCard: {
-      get: _ => discardedCard,
+      get: () => discardedCard,
       set: card => {
         if (!card)
           return;
@@ -99,7 +99,7 @@ const game = function (playerNames) {
       }
     },
     playingDirection: {
-      get: _ => direction,
+      get: () => direction,
       set: dir => {
         if (dir != GameDirections.CLOCKWISE && dir != GameDirections.COUNTER_CLOCKWISE)
           throw new Error("Invalid direction");
