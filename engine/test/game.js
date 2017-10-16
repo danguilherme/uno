@@ -75,8 +75,7 @@ describe('Game', function () {
         const blueZero = Card(Values.ZERO, Colors.BLUE);
         const redOne = Card(Values.ONE, Colors.RED);
 
-        const playerCard = discardedCard.value == Colors.ONE || discardedCard.color == Colors.RED ?
-          blueZero : redOne;
+        const playerCard = discardedCard.matches(blueZero) ? redOne : blueZero;
 
         curr.hand = [playerCard];
 
