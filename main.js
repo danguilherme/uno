@@ -1,6 +1,6 @@
 module.exports = {
-  Game: require('./engine/game'),
-  Card: require('./engine/card'),
-  Values: require('./engine/values'),
-  Colors: require('./engine/colors')
+  Game: require('./game'),
+  Card: require('./card'),
+  Values: require('./values'),
+  Colors: require('./colors')
 };

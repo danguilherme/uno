@@ -1,5 +1,5 @@
 # UNO
-> A multiplayer game for any client
+> Uno game implemented in JavaScript
 
 [![Build Status](https://travis-ci.org/danguilherme/uno.svg?branch=master)](https://travis-ci.org/danguilherme/uno)
 
