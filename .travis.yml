@@ -1,5 +1,15 @@
 language: node_js
 node_js:
-  - "node"
-  - "6"
-  - "5"
+  - node
+  - '8'
+  - '6'
+  - '5'
+deploy:
+  provider: npm
+  email: guilhermeventura2@gmail.com
+  on:
+    branch: master
+    tags: true
+  api_key:
+    - secure: >-
+        FSYwidJxdKAcTm8fT/bmVLSFoe1JVmt33sNDYNvu2IcJ43PjppR3LhBJv+ja9HlAiVqL6ZYvL/b1tFwcyqfpLjMwUVCmG3mdELmRytmerDVfv15pqLaZonCPXrr8X8HqvMaMAjOfNJLoO86yhSqEPeb5u9OJjjbF6rEICI/Lg28vx3W/0P2XaeqV09XPkT1Y/OhEekvuyToGuudXZqYZ7Pej1dZXu9aziVJz6cHZ124p3OYixdpn4j7X4hYwp6FCJ6PegMS+aVWf07H7u/UAWOl5jNt1YtpqHbx9Uh5uB7QL8dGVxHcwEGrHeRmNFS8o4GGShzcB5Qw7RhpOGCoJfzXELudstPIOcO5p/9wpFObiV4OVGdafALfU3GILjGeaERDWU/nc1QApsETN5pdBjN6lSGEevVWF7VZUBj5/KemEHY3z2YoodRuyqWnbH82lL/4G9YeX8vyAb7tY5KrPiDsNKQW6bfiTIW47NlnPg7rD88X7Hc9d4h5Nuuv7/owZGkN9S5f61ji8YDVsIVVfW7EIjAY0/5qHutv40Ya+3qKUydSDeWYu2dfS5oBcRAxV++b6sd7hZ7Sn3ChJXCUkaBysOyADmn70WMjGOW0qkN62X1eRoW/5CcRzSn/Kamp6rRaJZBZdSX/MU9La14zWS8QhuuNIlkO7ZGxSGziczD0=
