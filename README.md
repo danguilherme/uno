@@ -64,6 +64,7 @@ try {
 	game.play(card); //play a card from the hand of the current player
 } catch (e) {
 	//throws error if player tries to play a card they don't have
+	//throws error if player tries to play a card that can't be played (doesn't match discardedCard)
 	//throws error if card doesn't have a color property (wild, wd4)
 	//see `Card Properties` for setting wild and wd4 color
 }
