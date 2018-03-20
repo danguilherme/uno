@@ -10,90 +10,95 @@ $ npm install uno-engine
 
 ## Usage
 ```js
-const { Game, Card, Values, Colors} = require('uno-engine');
-const players = ['Player 1', 'Player 2', 'etc.']; //maximum 10 players with unique names
-const game = Game(players); //initialize the game
+const { Game, Card, Values, Colors } = require('uno-engine');
+const players = ['Player 1', 'Player 2', 'etc.']; // maximum 10 players with unique names
+const game = Game(players); // initialize the game
 game.newGame();
 ```
 After starting a new game, the first card will be randomly chosen, hands of 7 dealt, and a player will be randomly chosen to go first.
 
 ### Player Properties
 ```js
-let player = game.currentPlayer; //player whose turn it is
-let hand = player.hand; //array of `card` objects
-let p = game.getPlayer("Player 1"); //get non-current player
-let card = player.getCardByValue(value); //get the exact card in the player's hand
+let player = game.currentPlayer; // player whose turn it is
+let hand = player.hand; // array of `Card` objects
+let p = game.getPlayer("Player 1"); // get non-current player
+let card = player.getCardByValue(value); // get the exact card in the player's hand
 ```
 
 ### Card Properties
 ```js
-let card = game.discardedCard; //current card in-play
+let card = game.discardedCard; // current card in-play
 
-//Card color (wild and wd4 will not have this property)
-let cardColor = card.color; //EnumItem with key equal to color in uppercase
-cardColor.toString(); //RED, BLUE, GREEN, or YELLOW
+// Card color (wild and wd4 will not have this property set)
+let cardColor = card.color; // EnumItem with key equal to color in uppercase
+cardColor.toString(); // RED, BLUE, GREEN, or YELLOW
 
-//Card value
-let cardValue = card.value; //EnumItem with key equal to value in uppercase
-cardValue.toString(); //0-9, SKIP, REVERSE, DRAW_TWO, WILD, or WILD_DRAW_TWO
+// Card value
+let cardValue = card.value; // EnumItem with key equal to value in uppercase
+cardValue.toString(); // 0-9, SKIP, REVERSE, DRAW_TWO, WILD, or WILD_DRAW_TWO
 
-//Get card from value/color strings
+// Get card from value/color strings
 let value = Values.get("SIX");
 let color = Colors.get("BLUE");
 let card = Card(value, color);
 
-//Set wild or wd4 color
-const args = ['GREEN', 'WILD']; //get args from player input
-let card = player.getCardByValue(Values.get(args[1])); //get exact wild/wd4 in player's hand
-card.color = Colors.get(c); //set color of wild/wd4 in hand
+// Set wild or wd4 color
+const args = ['GREEN', 'WILD']; // get args from player input
+let card = player.getCardByValue(Values.get(args[1])); // get exact wild/wd4 in player's hand
+card.color = Colors.get(c); // set color of wild/wd4 in hand
 
-//Get Card from args function
+// Get Card from args function
 const getCard = ([color, value], player) => {
-	let card = Card(Values.get(value), Colors.get(color));
-	if (value === 'WILD' || value === 'WILD_DRAW_FOUR') {
-		card = player.getCardByValue(Values.get(value));
-		card.color = Colors.get(color);
-	}
-	return card;
+  let card = Card(Values.get(value), Colors.get(color));
+  if (value === 'WILD' || value === 'WILD_DRAW_FOUR') {
+    card = player.getCardByValue(Values.get(value));
+    card.color = Colors.get(color);
+  }
+  return card;
 };
 ```
 
 ### Game Loop
 ```js
 try {
-	game.play(card); //play a card from the hand of the current player
+  game.play(card); //play a card from the hand of the current player
 } catch (e) {
-	//throws error if player tries to play a card they don't have
-	//throws error if player tries to play a card that can't be played (doesn't match discardedCard)
-	//throws error if card doesn't have a color property (wild, wd4)
-	//see `Card Properties` for setting wild and wd4 color
+  // throws error if player tries to play a card they don't have
+  // throws error if player tries to play a card that can't be played (doesn't match discardedCard)
+  // throws error if card doesn't have a color property (wild, wd4)
+  // see `Card Properties` for setting wild and wd4 color
 }
 
-game.draw(); //draw a card for the current player
+game.draw(); // draw a card for the current player
 
 try {
-	game.pass(); //current player pass after drawing
+  game.pass(); // current player pass after drawing
 } catch (e) {
-	//throws error if player hasn't drawn yet
+  // throws error if player hasn't drawn yet
 }
 
-//Events
+// Yelling UNO!
+game.uno(); // game.currentPlayer is yelling UNO!
+game.uno("Player 1"); // Other than current player yells UNO
+// - If the yelling player is the current player, and they have 2 or less cards, he is just marked as "yelled"
+// - If the yelling player has more than 2 cards, the game searches for someone with 1 card that did not yell "UNO!", and make him draw 2 cards. If there's no one, the yelling player draws instead.
+
+// Events
 game.on('cardplay', (error, playedCard, playedBy) => {
-	//emitted every time a card is played
+  // emitted every time a card is played
 });
 game.on('nextplayer', (error, nextPlayer) => {
-	//emitted whenever the `game.currentPlayer` changes
+  // emitted whenever the `game.currentPlayer` changes
 });
 game.on('end', (error, winner, score) => {
-	//emitted when any player has 0 cards left
-	//----------
-	//the winner gets score based on the cards the other players have reminaing at the end:
-	//- number cards are worth their own value
-	//- wild and wd4 are worth 50
-	//- dt, skip, and reverse are worth 20
+  // emitted when any player has 0 cards left
+  // ----------
+  // the winner gets score based on the cards the other players have reminaing at the end:
+  // - number cards are worth their own value
+  // - wild and wd4 are worth 50
+  // - dt, skip, and reverse are worth 20
 });
 ```
-<!--TODO: uno call-->
 
 ## [Game Rules](http://www.unorules.com/)
 - **Cards** _(108 cards)_
