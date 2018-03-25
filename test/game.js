@@ -54,7 +54,7 @@ describe('Game', function () {
     let game = null;
 
     beforeEach(function () {
-      game = Game(["Player 1", "Player 2", "Player 3", "Player 4"]);
+      game = Game(["Player 1", "Player 2", "Player 3"]);
     });
 
     describe("#play()", function () {
@@ -156,106 +156,50 @@ describe('Game', function () {
       });
 
       it('should skip next player if thrown SKIP', function () {
-        let curr = game.currentPlayer;
-        let discardedCard = game.discardedCard;
-        let skip = Card(Values.SKIP, discardedCard.color);
-
-        // get the player after the next, by getting theirs numbers
-        // through theirs names 
-        let pnum = +game.currentPlayer.name.split(' ')[1];
-        if (pnum >= 3)
-          pnum -= 2;
-        else
-          pnum += 2;
+        const curr = game.currentPlayer;
+        const next = game.nextPlayer;
+        const discardedCard = game.discardedCard;
+        const skip = Card(Values.SKIP, discardedCard.color);
 
         curr.hand = [skip, skip];
 
         game.currentPlayer.name.should.equal(curr.name);
         should.not.throw(_ => game.play(skip));
-        game.currentPlayer.name.should.equal(`Player ${pnum}`);
+        game.currentPlayer.should.not.equal(next);
+        game.currentPlayer.should.not.equal(curr);
       });
 
       it('should change the playing direction if thrown REVERSE', function () {
-        let curr = game.currentPlayer;
-        let discardedCard = game.discardedCard;
-        let reverse = Card(Values.REVERSE, discardedCard.color);
-
-        // get the player after the next, by getting theirs numbers
-        // through theirs names 
-        let pnum = +game.currentPlayer.name.split(' ')[1];
-        if (pnum == 1)
-          pnum = 4;
-        else
-          pnum--;
+        const curr = game.currentPlayer;
+        const next = game.nextPlayer;
+        const discardedCard = game.discardedCard;
+        const reverse = Card(Values.REVERSE, discardedCard.color);
 
         curr.hand = [reverse, reverse];
 
         game.currentPlayer.name.should.equal(curr.name);
         should.not.throw(_ => game.play(reverse));
-        game.currentPlayer.name.should.equal(`Player ${pnum}`);
+        game.currentPlayer.should.not.equal(next);
+        game.currentPlayer.should.not.equal(curr);
       });
 
-      it('should skip next player if thrown REVERSE with 2 players', function () {
-        game = Game(["Player 1", "Player 2"]);
+      it('should add 2 cards to next player after a DRAW TWO', function () {
+        const curr = game.currentPlayer;
+        const next = game.nextPlayer;
+        const oldLength = next.hand.length;
+        const discardedCard = game.discardedCard;
 
-        let curr = game.currentPlayer;
-        let discardedCard = game.discardedCard;
-        let reverse = Card(Values.REVERSE, discardedCard.color);
-
-        curr.hand = [reverse];
-
-        game.currentPlayer.name.should.equal(curr.name);
-        should.not.throw(_ => game.play(reverse));
-        game.currentPlayer.name.should.equal(curr.name);
-      });
-
-      it('should force player to draw after a DRAW TWO', function () {
-        let curr = game.currentPlayer;
-        let discardedCard = game.discardedCard;
-        let drawTwo = Card(Values.DRAW_TWO, discardedCard.color);
-        let reverse = Card(Values.REVERSE, discardedCard.color);
+        const drawTwo = Card(Values.DRAW_TWO, discardedCard.color);
+        const reverse = Card(Values.REVERSE, discardedCard.color);
 
         curr.hand = [drawTwo, drawTwo];
 
         should.not.throw(_ => game.play(drawTwo));
 
-        // add reverse to new player hand
-        curr = game.currentPlayer;
-        curr.hand = [reverse, reverse];
-
-        // cannot pass
-        should.throw(game.pass);
-        // cannot play no-DRAW card
-        should.throw(_ => game.play(reverse));
-        should.not.throw(game.draw);
-        curr.hand.should.have.length(4);
-        // lost his turn
-        game.currentPlayer.name.should.not.equal(curr.name);
-      });
-
-      it('should stack DRAW TWO values', function () {
-        let curr = game.currentPlayer;
-        let discardedCard = game.discardedCard;
-        let drawTwo = Card(Values.DRAW_TWO, discardedCard.color);
-        let reverse = Card(Values.REVERSE, discardedCard.color);
-
-        curr.hand = [drawTwo, drawTwo];
-        should.not.throw(_ => game.play(drawTwo));
-
-        // add reverse to new player hand
-        curr = game.currentPlayer;
-        curr.hand = [drawTwo, drawTwo];
-        should.not.throw(_ => game.play(drawTwo));
-
-        // add reverse to new player hand
-        curr = game.currentPlayer;
-        curr.hand = [reverse, reverse];
-
-        should.throw(game.pass);
-        should.throw(_ => game.play(reverse));
-        should.not.throw(game.draw);
-        curr.hand.should.have.length(6);
-        game.currentPlayer.name.should.not.equal(curr.name);
+        game.currentPlayer.should.not.equal(curr);
+        game.currentPlayer.should.not.equal(next);
+        game.nextPlayer.should.equal(curr);
+        next.hand.length.should.equal(oldLength + 2);
       });
     });
 
@@ -350,8 +294,23 @@ describe('Game', function () {
 
     beforeEach(function () {
       game = Game(["Player 1", "Player 2"]);
+    });
 
-      it('should come back to the same player when played REVERSE');
+    describe('#play()', function () {
+      it('should maintain current player turn when played REVERSE', function () {
+        let curr = game.currentPlayer;
+        let discardedCard = game.discardedCard;
+        let reverse = Card(Values.REVERSE, discardedCard.color);
+
+        curr.hand = [reverse];
+
+        game.currentPlayer.should.equal(curr);
+        should.not.throw(_ => game.play(reverse));
+        game.currentPlayer.should.equal(curr);
+      });
+    });
+
+    describe('#pass()', function () {
       // TODO: check rules for this
       it('should allow user to pass after throwing a REVERSE card');
     });

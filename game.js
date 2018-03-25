@@ -15,7 +15,7 @@ const game = function (playerNames) {
   // extends EventEmitter
   // events:
   // - start (players)
-  // - cardplay (player, card)
+  // - cardplay (card, player)
   // - uno (player)
   // - end (winner)
 
@@ -30,11 +30,6 @@ const game = function (playerNames) {
    * The player have draw in his turn?
    */
   let drawn = false;
-  /**
-   * How many cards must be drawn in the next draw() call.
-   * It's used when there's a row of DRAW_TWO running.
-   */
-  let cardsToDraw = 0;
   /**
    * Who yelled uno?
    *
@@ -95,7 +90,7 @@ const game = function (playerNames) {
         if (card.color == null)
           throw new Error("Discarded cards cannot have theirs colors as null");
 
-        discardedCard = card
+        discardedCard = card;
       }
     },
     playingDirection: {
@@ -112,22 +107,15 @@ const game = function (playerNames) {
       value: function () {
         let currentPlayer = instance.currentPlayer;
 
-        draw(currentPlayer, cardsToDraw || 1);
+        draw(currentPlayer, 1);
 
         drawn = true;
         // reset UNO! yell state
         yellers[currentPlayer.name] = false;
-
-        if (cardsToDraw > 0) {
-          cardsToDraw = 0;
-          goToNextPlayer();
-        }
       }
     },
     pass: {
       value: function pass() {
-        if (cardsToDraw > 0)
-          throw new Error(`There are ${cardsToDraw} cards to draw before passing`);
         if (!drawn)
           throw new Error(`${currentPlayer} must draw at least one card before passing`);
 
@@ -144,9 +132,6 @@ const game = function (playerNames) {
           throw new Error(`${currentPlayer} does not have card ${card} at hand`);
         if (card.color == null)
           throw new Error("Card must have its color set before playing");
-        // check if there isn't any pendent draw amount...
-        if (cardsToDraw > 0 && card.value != Values.DRAW_TWO) // TODO: can throw DRAW_TWO on WILD_DRAW_FOUR?
-          throw new Error(`${currentPlayer} must draw cards`);
         // check if the played card matches the card from the discard pile...
         if (!card.matches(discardedCard))
           throw new Error(`${discardedCard}, from discard pile, does not match ${card}`);
@@ -166,10 +151,12 @@ const game = function (playerNames) {
 
         switch (discardedCard.value) {
           case Values.WILD_DRAW_FOUR:
-            cardsToDraw += 4;
+            draw(getNextPlayer(), 4);
+            goToNextPlayer(true);
             break;
           case Values.DRAW_TWO:
-            cardsToDraw += 2;
+            draw(getNextPlayer(), 2);
+            goToNextPlayer(true);
             break;
           case Values.SKIP:
             goToNextPlayer(true);
@@ -178,7 +165,7 @@ const game = function (playerNames) {
             reverseGame();
             if (players.length == 2)
               // Reverse works like Skip
-              goToNextPlayer();
+              goToNextPlayer(true);
             break;
         }
 
@@ -258,7 +245,7 @@ const game = function (playerNames) {
   /**
    * Set current player to the next in the line,
    * with no validations, reseting all per-turn controllers
-   * (`draw`, `cardsToDraw`, ...)
+   * (`draw`, ...)
    */
   function goToNextPlayer(silent) {
     drawn = false;
@@ -304,7 +291,7 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// http://stackoverflow.com/a/840812/1574059
+// https://stackoverflow.com/a/24968449/1574059
 function findDuplicates(array) {
   // expects an string array
   var uniq = array
