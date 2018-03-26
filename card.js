@@ -26,6 +26,14 @@ function card(value, color) {
         color = newColor;
       }
     },
+    is: {
+      value: function is(value, color) {
+        let matches = instance.value.is(value);
+        if (!!color)
+          matches = matches && instance.color.is(color);
+        return matches;
+      }
+    },
     isWildCard: {
       value: function isWildCard() {
         return instance.value.is(Values.WILD) || instance.value.is(Values.WILD_DRAW_FOUR);

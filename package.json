@@ -6,7 +6,9 @@
   "scripts": {
     "build": "webpack --config webpack.config.js",
     "test": "mocha test/",
-    "test-watch": "mocha test/ -w"
+    "test:watch": "mocha -w test/",
+    "mocha": "mocha",
+    "mocha:watch": "mocha -w"
   },
   "keywords": [
     "uno",

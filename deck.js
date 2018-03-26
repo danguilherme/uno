@@ -3,7 +3,7 @@
 var Shuffle = require('shuffle');
 var Values = require('./values');
 var Colors = require('./colors');
-var card = require('./card');
+var Card = require('./card');
 
 function createUnoDeck() {
   /*
@@ -23,7 +23,7 @@ function createUnoDeck() {
     let cards = [];
 
     for(let i = 0; i < qty; i++)
-      cards.push(card(value, color));
+      cards.push(Card(value, color));
 
     return cards;
   };
