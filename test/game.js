@@ -14,7 +14,9 @@ describe('Game', function () {
 
     game.should.respondTo('on');
     game.should.respondTo('newGame');
+    game.should.respondTo('getPlayers');
     game.should.respondTo('getPlayer');
+    game.should.respondTo('getDeck');
     game.should.have.property('currentPlayer');
     game.should.have.property('nextPlayer');
     game.should.have.property('discardedCard');
@@ -161,7 +163,7 @@ describe('Game', function () {
         let skip = Card(Values.SKIP, discardedCard.color);
 
         // get the player after the next, by getting theirs numbers
-        // through theirs names 
+        // through theirs names
         let pnum = +game.currentPlayer.name.split(' ')[1];
         if (pnum >= 3)
           pnum -= 2;
@@ -181,7 +183,7 @@ describe('Game', function () {
         let reverse = Card(Values.REVERSE, discardedCard.color);
 
         // get the player after the next, by getting theirs numbers
-        // through theirs names 
+        // through theirs names
         let pnum = +game.currentPlayer.name.split(' ')[1];
         if (pnum == 1)
           pnum = 4;
