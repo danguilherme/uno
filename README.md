@@ -5,7 +5,7 @@
 
 ## Installation
 ```bash
-$ npm install uno-engine
+$ npm install uno-engine-plus
 ```
 
 ## Usage
