@@ -60,6 +60,16 @@ const game = function (playerNames) {
         currentPlayer = players[getRandomInt(0, players.length - 1)];
       }
     },
+    getDeck: {
+      value: function () {
+        return drawPile;
+      }
+    },
+    getPlayers: {
+      value: function () {
+        return players;
+      }
+    },
     getPlayer: {
       value: function (name) {
         let player = players[getPlayerIndex(name)];
@@ -95,7 +105,7 @@ const game = function (playerNames) {
         if (card.color == null)
           throw new Error("Discarded cards cannot have theirs colors as null");
 
-        discardedCard = card
+        discardedCard = card;
       }
     },
     playingDirection: {
