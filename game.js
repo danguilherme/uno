@@ -104,18 +104,31 @@ const game = function (playerNames) {
       }
     },
     draw: {
-      value: function () {
-        let currentPlayer = instance.currentPlayer;
+      value: function publicDraw(player, qty, { silent } = { silent: false }) {
+        if (arguments.length == 0)
+          player = instance.currentPlayer;
 
-        draw(currentPlayer, 1);
+        qty = qty || 1;
+
+        if (!silent && !emit('beforedraw', null, player, qty))
+          return;
+
+        draw(player, qty);
+
+        if (!silent && !emit('draw', null, player, qty))
+          return;
 
         drawn = true;
         // reset UNO! yell state
-        yellers[currentPlayer.name] = false;
+        yellers[player.name] = false;
       }
     },
     pass: {
       value: function pass() {
+        console.log('tentando passar');
+        if (!emit('beforepass', null, instance.currentPlayer))
+          return;
+        console.log('pode passar', drawn);
         if (!drawn)
           throw new Error(`${currentPlayer} must draw at least one card before passing`);
 
@@ -123,13 +136,17 @@ const game = function (playerNames) {
       }
     },
     play: {
-      value: function play(card) {
+      value: function play(card, { silent } = { silent: false }) {
         let currentPlayer = instance.currentPlayer;
         if (!card)
           return;
         // check if player has the card at hand...
         if (!currentPlayer.hasCard(card))
           throw new Error(`${currentPlayer} does not have card ${card} at hand`);
+
+        if (!silent && !emit('beforeplay', null, card, instance.currentPlayer))
+          return;
+
         if (card.color == null)
           throw new Error("Card must have its color set before playing");
         // check if the played card matches the card from the discard pile...
@@ -139,7 +156,10 @@ const game = function (playerNames) {
         currentPlayer.removeCard(card);
         discardedCard = card;
 
-        instance.emit('cardplay', null, card, currentPlayer);
+        console.log('cardplay antes');
+        if (!silent && !emit('cardplay', null, card, currentPlayer))
+          return;
+        console.log('cardplay depois');
 
         if (currentPlayer.hand.length == 0) {
           let score = calculateScore();
@@ -266,6 +286,8 @@ const game = function (playerNames) {
     if (!player)
       throw new Error('Player is mandatory');
 
+    console.log(`draw ${amount} to ${player}`, new Error().stack);
+
     player.hand = player.hand.concat(drawPile.draw(amount));
   }
 
@@ -276,6 +298,19 @@ const game = function (playerNames) {
         amount += cards.reduce((s, c) => s += c.score, 0);
         return amount;
       }, 0);
+  }
+
+  function emit(eventName, ...args) {
+    console.log('\t[emit]', eventName, [...args].map(x => !x ? x : x.toString()));
+    let result = false;
+    try {
+      result = instance.emit.apply(instance, [eventName, ...args]);
+      console.log('\t[resu]', eventName, result);
+    } catch (error) {
+      console.log('\t[resu]', eventName, 'ERROR');
+      throw error;
+    }
+    return result;
   }
 
   init();
@@ -306,6 +341,10 @@ function findDuplicates(array) {
   var duplicates = Object.keys(uniq).filter((a) => uniq[a] > 1);
 
   return duplicates;
+}
+
+function isObject(val) {
+  return val !== null && typeof val === 'object';
 }
 
 module.exports = game;
