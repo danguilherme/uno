@@ -93,6 +93,12 @@ const game = function (playerNames) {
         discardedCard = card;
       }
     },
+    players: {
+      get: () => players
+    },
+    deck: {
+      get: () => drawPile
+    },
     playingDirection: {
       get: () => direction,
       set: dir => {
