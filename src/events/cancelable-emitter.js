@@ -1,6 +1,4 @@
-'use strict';
-
-const EventEmitter = require("events").EventEmitter;
+const { EventEmitter } = require("events");
 
 function createProxyListener(originalListener, context) {
   return function() {
@@ -17,13 +15,9 @@ class CancelableEmitter extends EventEmitter {
     return super.on(eventName, createProxyListener(listener, this));
   }
 
-  emit(eventName) {
-    return this.listeners(eventName).every(l => l.apply(this, args2array(arguments).slice(1)));
+  emit(eventName, ...data) {
+    return this.listeners(eventName).every(l => l(...data));
   }
-}
-
-function args2array(args) {
-  return Array.prototype.slice.call(args);
 }
 
 module.exports = CancelableEmitter;

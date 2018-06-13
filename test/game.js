@@ -16,7 +16,9 @@ describe('Game', function () {
     game.should.respondTo('on');
     game.should.respondTo('newGame');
     game.should.respondTo('getPlayer');
+    game.should.have.property('deck');
     game.should.have.property('currentPlayer');
+    game.should.have.property('players');
     game.should.have.property('nextPlayer');
     game.should.have.property('discardedCard');
     game.should.have.property('playingDirection');

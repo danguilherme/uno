@@ -12,7 +12,8 @@ $ npm install uno-engine
 ```js
 const { Game, Card, Values, Colors } = require('uno-engine');
 const players = ['Player 1', 'Player 2', 'etc.']; // maximum 10 players with unique names
-const game = Game(players); // initialize the game
+const customRules = [CumulativeDrawTwo];          // you can add your own rules (see https://github.com/danguilherme/uno/blob/cb815efaed9ef8973c4a2917a161bc0a6c952dd6/src/house-rules/cumulative-draw-two.js#L14-L19)
+const game = Game(players, customRules);          // initialize the game
 game.newGame();
 ```
 After starting a new game, the first card will be randomly chosen, hands of 7 dealt, and a player will be randomly chosen to go first.
