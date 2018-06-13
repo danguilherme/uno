@@ -1,7 +1,16 @@
 "use strict";
 
 const util = require('util');
-const EventEmitter = require('events').EventEmitter;
+const CancelableEventEmitter = require('./events/cancelable-emitter');
+const {
+  BeforeDrawEvent,
+  DrawEvent,
+  BeforePassEvent,
+  BeforeCardPlayEvent,
+  CardPlayEvent,
+  GameEndEvent,
+  NextPlayerEvent,
+} = require('./events/game-events');
 
 const Deck = require('./deck');
 const Card = require('./card');
@@ -11,8 +20,8 @@ const GameDirections = require('./game_directions');
 
 const CARDS_PER_PLAYER = 7;
 
-const game = function (playerNames) {
-  // extends EventEmitter
+const game = function (playerNames, houseRules = []) {
+  // extends CancelableEventEmitter
   // events:
   // - start (players)
   // - cardplay (card, player)
@@ -38,7 +47,7 @@ const game = function (playerNames) {
    */
   let yellers = {};
 
-  let instance = Object.create(EventEmitter.prototype, {
+  let instance = Object.create(CancelableEventEmitter.prototype, {
     newGame: {
       value: function newGame() {
         drawPile = Deck();
@@ -110,18 +119,30 @@ const game = function (playerNames) {
       }
     },
     draw: {
-      value: function () {
-        let currentPlayer = instance.currentPlayer;
+      value: function publicDraw(player, qty, { silent } = { silent: false }) {
+        if (arguments.length == 0)
+          player = instance.currentPlayer;
 
-        draw(currentPlayer, 1);
+        qty = qty || 1;
+
+        if (!silent && !emit(new BeforeDrawEvent(player, qty)))
+          return;
+
+        draw(player, qty);
+
+        if (!silent && !emit(new DrawEvent(player, qty)))
+          return;
 
         drawn = true;
         // reset UNO! yell state
-        yellers[currentPlayer.name] = false;
+        yellers[player.name] = false;
       }
     },
     pass: {
       value: function pass() {
+        if (!emit(new BeforePassEvent(instance.currentPlayer)))
+          return;
+
         if (!drawn)
           throw new Error(`${currentPlayer} must draw at least one card before passing`);
 
@@ -129,13 +150,17 @@ const game = function (playerNames) {
       }
     },
     play: {
-      value: function play(card) {
+      value: function play(card, { silent } = { silent: false }) {
         let currentPlayer = instance.currentPlayer;
         if (!card)
           return;
         // check if player has the card at hand...
         if (!currentPlayer.hasCard(card))
           throw new Error(`${currentPlayer} does not have card ${card} at hand`);
+
+        if (!silent && !emit(new BeforeCardPlayEvent(card, instance.currentPlayer)))
+          return;
+
         if (card.color == null)
           throw new Error("Card must have its color set before playing");
         // check if the played card matches the card from the discard pile...
@@ -145,12 +170,13 @@ const game = function (playerNames) {
         currentPlayer.removeCard(card);
         discardedCard = card;
 
-        instance.emit('cardplay', null, card, currentPlayer);
+        if (!silent && !emit(new CardPlayEvent(card, currentPlayer)))
+          return;
 
         if (currentPlayer.hand.length == 0) {
           let score = calculateScore();
           // game is over, we have a winner!
-          instance.emit('end', null, currentPlayer, score);
+          emit(new GameEndEvent(currentPlayer, score));
           // TODO: how to stop game after it's finished? Finished variable? >.<
           return;
         }
@@ -214,6 +240,7 @@ const game = function (playerNames) {
 
   function init() {
     players = fixPlayers(playerNames);
+    houseRules.forEach(rule => rule.setup(instance));
     instance.newGame();
   };
 
@@ -258,7 +285,7 @@ const game = function (playerNames) {
 
     currentPlayer = getNextPlayer();
     if (!silent)
-      instance.emit('nextplayer', null, currentPlayer);
+      emit(new NextPlayerEvent(currentPlayer));
   }
 
   function reverseGame() {
@@ -272,6 +299,8 @@ const game = function (playerNames) {
     if (!player)
       throw new Error('Player is mandatory');
 
+    // console.log(`draw ${amount} to ${player}`);
+
     player.hand = player.hand.concat(drawPile.draw(amount));
   }
 
@@ -282,6 +311,20 @@ const game = function (playerNames) {
         amount += cards.reduce((s, c) => s += c.score, 0);
         return amount;
       }, 0);
+  }
+
+  /**
+   * @param {Event} event 
+   */
+  function emit(event) {
+    let result = false;
+    try {
+      result = instance.emit.call(instance, event);
+    } catch (error) {
+      // console.error('\t[event error]', eventName, '::', error.message);
+      throw error;
+    }
+    return result;
   }
 
   init();
@@ -312,6 +355,10 @@ function findDuplicates(array) {
   var duplicates = Object.keys(uniq).filter((a) => uniq[a] > 1);
 
   return duplicates;
+}
+
+function isObject(val) {
+  return val !== null && typeof val === 'object';
 }
 
 module.exports = game;
