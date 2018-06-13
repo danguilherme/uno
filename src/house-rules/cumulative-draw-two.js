@@ -1,5 +1,11 @@
 const Card = require('../card');
 const Values = require('../values');
+const {
+  BeforeDrawEvent,
+  BeforePassEvent,
+  BeforeCardPlayEvent,
+  CardPlayEvent,
+} = require('../events/game-events');
 
 function CumulativeDrawTwo(game) {
   let state = 'normal';
@@ -14,12 +20,16 @@ function CumulativeDrawTwo(game) {
   function setup(game) {
     game.on('cardplay', onCardPlay.bind(this, game));
     game.on('beforepass', beforePass.bind(this, game));
-    game.on('beforeplay', beforePlay.bind(this, game));
+    game.on('beforecardplay', beforePlay.bind(this, game));
     game.on('beforedraw', beforeDraw.bind(this, game));
   }
 
-  function onCardPlay(game, error, card, player) {
-    if (error) return;
+  /**
+   * @param {Game} game
+   * @param {CardPlayEvent} event
+   */
+  function onCardPlay(game, event) {
+    const { card, player } = event.data;
 
     if (card.is(Values.DRAW_TWO)) {
       cardsToDraw += 2;
@@ -33,18 +43,34 @@ function CumulativeDrawTwo(game) {
     return true;
   }
 
-  function beforePass(game, error, player) {
+  /**
+   * @param {Game} game
+   * @param {BeforePassEvent} event
+   */
+  function beforePass(game, event) {
     if (isStacking())
       throw new Error(`There are ${cardsToDraw} cards to draw before passing`);
   }
 
-  function beforePlay(game, error, card, player) {
+  /**
+   * @param {Game} game
+   * @param {BeforeCardPlayEvent} event
+   */
+  function beforePlay(game, event) {
+    const { card, player } = event.data;
+
     if (isStacking() && !card.is(Values.DRAW_TWO))
       throw new Error(`${player} must draw cards`);
   }
 
-  function beforeDraw(game, error, player, qty) {
+  /**
+   * @param {Game} game
+   * @param {BeforeDrawEvent} event
+   */
+  function beforeDraw(game, event) {
     if (!isStacking()) return true;
+
+    const { quantity, player } = event.data;
 
     game.draw(player, cardsToDraw, { silent: true });
     cardsToDraw = 0;
@@ -62,6 +88,4 @@ function CumulativeDrawTwo(game) {
   }
 }
 
-module.exports = {
-  setup(game) { return CumulativeDrawTwo(game); }
-};
+module.exports = { setup(game) { return CumulativeDrawTwo(game); } };

@@ -15,12 +15,9 @@ class Event {
   }
 
   preventDefault() {
-    this.canceled = true;
+    if (this.isCancelable)
+      this.canceled = true;
   }
 }
-
-const myEvent = new Event("hello", {
-  data: "teste",
-});
 
 module.exports = Event;

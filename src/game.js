@@ -2,6 +2,15 @@
 
 const util = require('util');
 const CancelableEventEmitter = require('./events/cancelable-emitter');
+const {
+  BeforeDrawEvent,
+  DrawEvent,
+  BeforePassEvent,
+  BeforeCardPlayEvent,
+  CardPlayEvent,
+  GameEndEvent,
+  NextPlayerEvent,
+} = require('./events/game-events');
 
 const Deck = require('./deck');
 const Card = require('./card');
@@ -116,12 +125,12 @@ const game = function (playerNames, houseRules = []) {
 
         qty = qty || 1;
 
-        if (!silent && !emit('beforedraw', null, player, qty))
+        if (!silent && !emit(new BeforeDrawEvent(player, qty)))
           return;
 
         draw(player, qty);
 
-        if (!silent && !emit('draw', null, player, qty))
+        if (!silent && !emit(new DrawEvent(player, qty)))
           return;
 
         drawn = true;
@@ -131,7 +140,7 @@ const game = function (playerNames, houseRules = []) {
     },
     pass: {
       value: function pass() {
-        if (!emit('beforepass', null, instance.currentPlayer))
+        if (!emit(new BeforePassEvent(instance.currentPlayer)))
           return;
 
         if (!drawn)
@@ -149,7 +158,7 @@ const game = function (playerNames, houseRules = []) {
         if (!currentPlayer.hasCard(card))
           throw new Error(`${currentPlayer} does not have card ${card} at hand`);
 
-        if (!silent && !emit('beforeplay', null, card, instance.currentPlayer))
+        if (!silent && !emit(new BeforeCardPlayEvent(card, instance.currentPlayer)))
           return;
 
         if (card.color == null)
@@ -161,13 +170,13 @@ const game = function (playerNames, houseRules = []) {
         currentPlayer.removeCard(card);
         discardedCard = card;
 
-        if (!silent && !emit('cardplay', null, card, currentPlayer))
+        if (!silent && !emit(new CardPlayEvent(card, currentPlayer)))
           return;
 
         if (currentPlayer.hand.length == 0) {
           let score = calculateScore();
           // game is over, we have a winner!
-          instance.emit('end', null, currentPlayer, score);
+          emit(new GameEndEvent(currentPlayer, score));
           // TODO: how to stop game after it's finished? Finished variable? >.<
           return;
         }
@@ -276,7 +285,7 @@ const game = function (playerNames, houseRules = []) {
 
     currentPlayer = getNextPlayer();
     if (!silent)
-      instance.emit('nextplayer', null, currentPlayer);
+      emit(new NextPlayerEvent(currentPlayer));
   }
 
   function reverseGame() {
@@ -304,10 +313,13 @@ const game = function (playerNames, houseRules = []) {
       }, 0);
   }
 
-  function emit(eventName, ...args) {
+  /**
+   * @param {Event} event 
+   */
+  function emit(event) {
     let result = false;
     try {
-      result = instance.emit.apply(instance, [eventName, ...args]);
+      result = instance.emit.call(instance, event);
     } catch (error) {
       // console.error('\t[event error]', eventName, '::', error.message);
       throw error;

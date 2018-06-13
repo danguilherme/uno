@@ -1,45 +1,14 @@
 {
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"name": "Launch",
-			"type": "node",
-			"request": "launch",
-			"program": "${workspaceRoot}/index.js",
-			"stopOnEntry": false,
-			"args": [],
-			"cwd": "${workspaceRoot}",
-			"preLaunchTask": null,
-			"runtimeExecutable": null,
-			"runtimeArgs": [
-				"--nolazy"
-			],
-			"env": {
-				"NODE_ENV": "development"
-			},
-      "console": "integratedTerminal",
-			"sourceMaps": false
-		},
-		{
-			"name": "Attach",
-			"type": "node",
-			"request": "attach",
-			"port": 5858,
-			"address": "localhost",
-			"restart": false,
-			"sourceMaps": false,
-			"localRoot": "${workspaceRoot}",
-			"remoteRoot": null
-		},
-    {
-      "name": "Mocha",
+  "version": "0.2.0",
+  "configurations": [{
+      "name": "Launch",
       "type": "node",
       "request": "launch",
-			"program": "${workspaceRoot}/test/house-rules/cumulative-draw-two.js",
+      "program": "${workspaceRoot}/index.js",
       "stopOnEntry": false,
-      "args": ["./test/house-rules/cumulative-draw-two.js"],
+      "args": [],
       "cwd": "${workspaceRoot}",
-      "preLaunchTask": "npm: mocha",
+      "preLaunchTask": null,
       "runtimeExecutable": null,
       "runtimeArgs": [
         "--nolazy"
@@ -49,6 +18,46 @@
       },
       "console": "integratedTerminal",
       "sourceMaps": false
+    },
+    {
+      "name": "Attach",
+      "type": "node",
+      "request": "attach",
+      "port": 5858,
+      "address": "localhost",
+      "restart": false,
+      "sourceMaps": false,
+      "localRoot": "${workspaceRoot}",
+      "remoteRoot": null
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Mocha All",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "args": [
+        "--timeout",
+        "999999",
+        "--colors",
+        "--recursive",
+        "${workspaceFolder}/test"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Mocha Current File",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "args": [
+        "--timeout",
+        "999999",
+        "--colors",
+        "${file}"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
     }
-	]
+  ]
 }
