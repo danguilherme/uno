@@ -5,10 +5,10 @@
   "main": "main.js",
   "scripts": {
     "build": "webpack --config webpack.config.js",
-    "test": "mocha test/",
-    "test:watch": "mocha -w test/",
-    "mocha": "mocha",
-    "mocha:watch": "mocha -w"
+    "test": "mocha test/ --recursive",
+    "test:watch": "mocha -w test/ --recursive",
+    "mocha": "mocha --recursive",
+    "mocha:watch": "mocha -w --recursive"
   },
   "keywords": [
     "uno",
