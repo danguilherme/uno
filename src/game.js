@@ -302,7 +302,6 @@ const game = function (playerNames) {
   }
 
   function emit(eventName) {
-    const args = args2array(arguments);
     let result = false;
     try {
       result = instance.emit.apply(instance, arguments);
