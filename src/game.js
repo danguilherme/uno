@@ -1,7 +1,7 @@
 "use strict";
 
 const util = require('util');
-const EventEmitter = require('events').EventEmitter;
+const CancelableEventEmitter = require('./events/cancelable-emitter');
 
 const Deck = require('./deck');
 const Card = require('./card');
@@ -12,7 +12,7 @@ const GameDirections = require('./game_directions');
 const CARDS_PER_PLAYER = 7;
 
 const game = function (playerNames) {
-  // extends EventEmitter
+  // extends CancelableEventEmitter
   // events:
   // - start (players)
   // - cardplay (card, player)
@@ -38,7 +38,7 @@ const game = function (playerNames) {
    */
   let yellers = {};
 
-  let instance = Object.create(EventEmitter.prototype, {
+  let instance = Object.create(CancelableEventEmitter.prototype, {
     newGame: {
       value: function newGame() {
         drawPile = Deck();
@@ -125,10 +125,9 @@ const game = function (playerNames) {
     },
     pass: {
       value: function pass() {
-        console.log('tentando passar');
         if (!emit('beforepass', null, instance.currentPlayer))
           return;
-        console.log('pode passar', drawn);
+
         if (!drawn)
           throw new Error(`${currentPlayer} must draw at least one card before passing`);
 
@@ -156,10 +155,8 @@ const game = function (playerNames) {
         currentPlayer.removeCard(card);
         discardedCard = card;
 
-        console.log('cardplay antes');
         if (!silent && !emit('cardplay', null, card, currentPlayer))
           return;
-        console.log('cardplay depois');
 
         if (currentPlayer.hand.length == 0) {
           let score = calculateScore();
@@ -286,7 +283,7 @@ const game = function (playerNames) {
     if (!player)
       throw new Error('Player is mandatory');
 
-    console.log(`draw ${amount} to ${player}`, new Error().stack);
+    // console.log(`draw ${amount} to ${player}`);
 
     player.hand = player.hand.concat(drawPile.draw(amount));
   }
@@ -301,13 +298,11 @@ const game = function (playerNames) {
   }
 
   function emit(eventName, ...args) {
-    console.log('\t[emit]', eventName, [...args].map(x => !x ? x : x.toString()));
     let result = false;
     try {
       result = instance.emit.apply(instance, [eventName, ...args]);
-      console.log('\t[resu]', eventName, result);
     } catch (error) {
-      console.log('\t[resu]', eventName, 'ERROR');
+      // console.error('\t[event error]', eventName, '::', error.message);
       throw error;
     }
     return result;
