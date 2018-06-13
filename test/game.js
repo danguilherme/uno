@@ -1,11 +1,12 @@
 "use strict";
 
 const should = require('chai').should();
-const Game = require('../game');
-const Card = require('../card');
-const Values = require('../values');
-const Colors = require('../colors');
-const GameDirections = require('../game_directions');
+
+const Game = require('../src/game');
+const Card = require('../src/card');
+const Values = require('../src/values');
+const Colors = require('../src/colors');
+const GameDirections = require('../src/game_directions');
 
 describe('Game', function () {
 
@@ -57,6 +58,7 @@ describe('Game', function () {
 
     beforeEach(function () {
       game = Game(["Player 1", "Player 2", "Player 3"]);
+      game.newGame();
     });
 
     describe("#play()", function () {

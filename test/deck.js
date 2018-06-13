@@ -2,10 +2,10 @@
 
 const should = require('chai').should();
 
-const Colors = require('../colors');
-const Values = require('../values');
-const Card = require('../card');
-const Deck = require('../deck');
+const Colors = require('../src/colors');
+const Values = require('../src/values');
+const Card = require('../src/card');
+const Deck = require('../src/deck');
 
 const filterByValue = (value) => {
   return (card) => card.value.is(value);
