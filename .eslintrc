@@ -6,10 +6,11 @@
     "no-use-before-define": [2, "nofunc"],
     "camelcase": 0,
     "no-inner-declarations": [2, "functions"],
-    "wrap-iife": [2, "outside"]
+    "wrap-iife": [2, "outside"],
+    "comma-dangle": [1, "always-multiline"]
   },
   "parserOptions": {
-    "ecmaVersion": 6,
+    "ecmaVersion": 2015,
     "sourceType": "module"
   }
 }
