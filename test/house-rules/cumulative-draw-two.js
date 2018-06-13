@@ -2,11 +2,11 @@
 
 var should = require('chai').should();
 
-const Game = require('../../game');
-const Card = require('../../card');
-const Values = require('../../values');
-const Colors = require('../../colors');
-const CumulativeDrawTwo = require('../../house-rules/cumulative-draw-two');
+const Game = require('../../src/game');
+const Card = require('../../src/card');
+const Values = require('../../src/values');
+const Colors = require('../../src/colors');
+const CumulativeDrawTwo = require('../../src/house-rules/cumulative-draw-two');
 
 describe('Cumulative draw two', function () {
   let game = null;
