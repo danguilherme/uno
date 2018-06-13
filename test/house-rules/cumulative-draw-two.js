@@ -12,16 +12,15 @@ describe('House Rule: Cumulative draw two', function () {
   let game = null;
 
   beforeEach(function () {
-    game = Game(["Player 1", "Player 2", "Player 3"]);
-    CumulativeDrawTwo.setup(game);
+    game = Game(["Player 1", "Player 2", "Player 3"], [CumulativeDrawTwo]);
     game.newGame();
   });
 
   it('should force player to draw after a DRAW TWO', function () {
     let curr = game.currentPlayer;
-    let discardedCard = game.discardedCard;
-    let drawTwo = Card(Values.DRAW_TWO, discardedCard.color);
-    let reverse = Card(Values.REVERSE, discardedCard.color);
+    const discardedCard = game.discardedCard;
+    const drawTwo = Card(Values.DRAW_TWO, discardedCard.color);
+    const reverse = Card(Values.REVERSE, discardedCard.color);
 
     curr.hand = [drawTwo, drawTwo];
 
@@ -43,9 +42,9 @@ describe('House Rule: Cumulative draw two', function () {
 
   it('should stack DRAW TWO values', function () {
     let curr = game.currentPlayer;
-    let discardedCard = game.discardedCard;
-    let drawTwo = Card(Values.DRAW_TWO, discardedCard.color);
-    let reverse = Card(Values.REVERSE, discardedCard.color);
+    const discardedCard = game.discardedCard;
+    const drawTwo = Card(Values.DRAW_TWO, discardedCard.color);
+    const reverse = Card(Values.REVERSE, discardedCard.color);
 
     curr.hand = [drawTwo, drawTwo];
     should.not.throw(_ => game.play(drawTwo));

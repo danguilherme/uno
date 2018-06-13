@@ -11,7 +11,7 @@ const GameDirections = require('./game_directions');
 
 const CARDS_PER_PLAYER = 7;
 
-const game = function (playerNames) {
+const game = function (playerNames, houseRules = []) {
   // extends CancelableEventEmitter
   // events:
   // - start (players)
@@ -231,6 +231,7 @@ const game = function (playerNames) {
 
   function init() {
     players = fixPlayers(playerNames);
+    houseRules.forEach(rule => rule.setup(instance));
     instance.newGame();
   };
 
