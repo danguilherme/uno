@@ -41,7 +41,7 @@ describe('House Rule: Cumulative draw two', function () {
     game.currentPlayer.name.should.not.equal(curr.name);
   });
 
-  it.skip('should stack DRAW TWO values', function () {
+  it('should stack DRAW TWO values', function () {
     let curr = game.currentPlayer;
     let discardedCard = game.discardedCard;
     let drawTwo = Card(Values.DRAW_TWO, discardedCard.color);
