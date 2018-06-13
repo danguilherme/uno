@@ -110,20 +110,18 @@ const game = function (playerNames) {
       }
     },
     draw: {
-      value: function publicDraw(player, qty, options) {
-        if (!options) options = { silent: false };
-
+      value: function publicDraw(player, qty, { silent } = { silent: false }) {
         if (arguments.length == 0)
           player = instance.currentPlayer;
 
         qty = qty || 1;
 
-        if (!options.silent && !emit('beforedraw', null, player, qty))
+        if (!silent && !emit('beforedraw', null, player, qty))
           return;
 
         draw(player, qty);
 
-        if (!options.silent && !emit('draw', null, player, qty))
+        if (!silent && !emit('draw', null, player, qty))
           return;
 
         drawn = true;
@@ -143,9 +141,7 @@ const game = function (playerNames) {
       }
     },
     play: {
-      value: function play(card, options) {
-        if (!options) options = { silent: false };
-
+      value: function play(card, { silent } = { silent: false }) {
         let currentPlayer = instance.currentPlayer;
         if (!card)
           return;
@@ -153,7 +149,7 @@ const game = function (playerNames) {
         if (!currentPlayer.hasCard(card))
           throw new Error(`${currentPlayer} does not have card ${card} at hand`);
 
-        if (!options.silent && !emit('beforeplay', null, card, instance.currentPlayer))
+        if (!silent && !emit('beforeplay', null, card, instance.currentPlayer))
           return;
 
         if (card.color == null)
@@ -165,7 +161,7 @@ const game = function (playerNames) {
         currentPlayer.removeCard(card);
         discardedCard = card;
 
-        if (!options.silent && !emit('cardplay', null, card, currentPlayer))
+        if (!silent && !emit('cardplay', null, card, currentPlayer))
           return;
 
         if (currentPlayer.hand.length == 0) {
@@ -307,10 +303,10 @@ const game = function (playerNames) {
       }, 0);
   }
 
-  function emit(eventName) {
+  function emit(eventName, ...args) {
     let result = false;
     try {
-      result = instance.emit.apply(instance, arguments);
+      result = instance.emit.apply(instance, [eventName, ...args]);
     } catch (error) {
       // console.error('\t[event error]', eventName, '::', error.message);
       throw error;
