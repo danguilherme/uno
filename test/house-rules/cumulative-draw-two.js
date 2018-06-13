@@ -8,7 +8,7 @@ const Values = require('../../src/values');
 const Colors = require('../../src/colors');
 const CumulativeDrawTwo = require('../../src/house-rules/cumulative-draw-two');
 
-describe('Cumulative draw two', function () {
+describe('House Rule: Cumulative draw two', function () {
   let game = null;
 
   beforeEach(function () {
