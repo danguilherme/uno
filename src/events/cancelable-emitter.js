@@ -2,12 +2,11 @@ const { EventEmitter } = require("events");
 
 function createProxyListener(originalListener, context) {
   return function() {
-    const args = Array.from(arguments);
-    console.log("proxy!"/*, args*/);
-    const returnValue = originalListener.apply(context, args);
-    const preventDefault = returnValue !== false;
-    console.log("preventDefault", preventDefault);
-    return preventDefault;
+    const returnValue = originalListener.apply(context, Array.from(arguments));
+    const shouldContinue = returnValue !== false;
+
+    // console.log("cancel?", !shouldContinue);
+    return shouldContinue;
   };
 }
 
