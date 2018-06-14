@@ -1,20 +1,17 @@
-import Enum from "enum";
-import Values from "./value";
+import Enum from 'enum';
+import Values from './value';
 
 export class Card {
   private _color: EnumItem | null;
 
-  constructor(
-    public value: EnumItem,
-    color: EnumItem
-  ) {
+  constructor(public value: EnumItem, color: EnumItem) {
     if (!value.is || (color && !color.is))
-      throw new Error("The parameter must be an enum.");
+      throw new Error('The parameter must be an enum.');
 
-    this.color = color || null;
+    this.color = color || undefined;
 
     if (!this.isWildCard() && !this.color) {
-      throw Error("Only wild cards can be initialized with no color");
+      throw Error('Only wild cards can be initialized with no color');
     }
   }
 
@@ -24,26 +21,34 @@ export class Card {
 
   set color(value: EnumItem) {
     if (!this.isWildCard())
-      throw new Error("Only wild cards can have theirs colors changed.");
+      throw new Error('Only wild cards can have theirs colors changed.');
     else if (!value.is)
-      throw new Error("The color must be a value from Colors enum.");
+      throw new Error('The color must be a value from Colors enum.');
     this._color = value;
   }
 
   isWildCard() {
-    return this.value.is(Values.WILD as EnumItem) || this.value.is(Values.WILD_DRAW_FOUR as EnumItem);
+    return (
+      this.value.is(Values.WILD as EnumItem) ||
+      this.value.is(Values.WILD_DRAW_FOUR as EnumItem)
+    );
   }
 
   isSpecialCard() {
-    return this.isWildCard() || this.value.is(Values.DRAW_TWO as EnumItem) ||
-      this.value.is(Values.REVERSE as EnumItem) || this.value.is(Values.SKIP as EnumItem);
+    return (
+      this.isWildCard() ||
+      this.value.is(Values.DRAW_TWO as EnumItem) ||
+      this.value.is(Values.REVERSE as EnumItem) ||
+      this.value.is(Values.SKIP as EnumItem)
+    );
   }
 
   matches(other: Card) {
-    if (this.isWildCard())
-      return true;
-    else if (this.color == null || other.color == null)
-      throw new Error("Both cards must have theirs colors set before comparing");
+    if (this.isWildCard()) return true;
+    else if (this.color == undefined || other.color == undefined)
+      throw new Error(
+        'Both cards must have theirs colors set before comparing',
+      );
 
     return other.value == this.value || other.color == this.color;
   }

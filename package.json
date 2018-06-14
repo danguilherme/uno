@@ -4,11 +4,13 @@
   "description": "Uno game implementation in JavaScript",
   "main": "main.js",
   "scripts": {
-    "build": "webpack --config webpack.config.js",
-    "test": "mocha test/ --recursive",
-    "test:watch": "mocha -w test/ --recursive",
-    "mocha": "mocha --recursive",
-    "mocha:watch": "mocha -w --recursive"
+    "build:web": "webpack --config webpack.config.js",
+    "build": "yarn run build:ts && yarn run tslint",
+    "build:ts": "tsc",
+    "build:ts:watch": "tsc -w",
+    "tslint": "tslint -c tslint.json -p tsconfig.json",
+    "test": "jest --forceExit --coverage --verbose",
+    "watch-test": "npm run test -- --watchAll"
   },
   "keywords": [
     "uno",
@@ -27,9 +29,11 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "eslint": "^3.0.0",
+    "jest": "^23.1.0",
     "mocha": "^5.2.0",
-    "tslint": "^5.9.1",
-    "typescript": "^2.8.3",
+    "ts-jest": "^22.4.6",
+    "tslint": "^5.10.0",
+    "typescript": "^2.9.2",
     "webpack": "^2.2.1"
   }
 }
