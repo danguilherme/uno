@@ -1,7 +1,3 @@
-"use strict";
-
-var should = require('chai').should();
-
 describe('Player', function() {
   it('should have a name');
 
