@@ -1,7 +1,5 @@
-'use strict';
-
+import { Card, Colors, Values } from '../src/card';
 import { Deck } from '../src/deck';
-import { Card, Values, Colors } from '../src/card';
 
 const filterByValue = value => {
   return card => card.value === value;
@@ -63,7 +61,9 @@ describe('Deck', function() {
   });
 
   it('should have 4 wild draw four', function() {
-    const wildDrawFours = deck.cards.filter(filterByValue(Values.WILD_DRAW_FOUR));
+    const wildDrawFours = deck.cards.filter(
+      filterByValue(Values.WILD_DRAW_FOUR),
+    );
     expect(wildDrawFours).toHaveLength(4);
   });
 

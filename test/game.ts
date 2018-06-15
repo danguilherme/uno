@@ -1,7 +1,5 @@
-'use strict';
-
+import { Card, Colors, Values } from '../src/card';
 import { Game } from '../src/game';
-import { Card, Values, Colors } from '../src/card';
 import { GameDirections } from '../src/game_directions';
 
 describe('Game', function() {

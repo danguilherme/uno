@@ -1,8 +1,8 @@
-import { Card, Values } from '../card';
+import { Values } from '../card';
 import {
+  BeforeCardPlayEvent,
   BeforeDrawEvent,
   BeforePassEvent,
-  BeforeCardPlayEvent,
   CardPlayEvent,
 } from '../events/game-events';
 

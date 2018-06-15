@@ -1,5 +1,3 @@
-const Deck = require('../src/deck');
-
 import { Card, Colors, Values } from '../src/card';
 
 describe('Card', function() {

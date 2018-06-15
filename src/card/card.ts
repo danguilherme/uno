@@ -1,5 +1,5 @@
-import { Values } from './values';
 import { Colors } from './colors';
+import { Values } from './values';
 
 export class Card {
   private _value: Values;

@@ -1,6 +1,6 @@
-import { Event } from './event';
 import { Card } from '../card';
 import { Player } from '../player';
+import { Event } from './event';
 
 export interface BeforeDrawEventData {
   player: Player;

@@ -1,9 +1,6 @@
-'use strict';
-
+import { Card, Values } from '../../src/card';
 import { Game } from '../../src/game';
-
 import CumulativeDrawTwo from '../../src/house-rules/cumulative-draw-two';
-import { Card, Values, Colors } from '../../src/card';
 
 describe('House Rule: Cumulative draw two', function() {
   let game;

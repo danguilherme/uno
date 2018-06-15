@@ -1,17 +1,15 @@
+import { Card, Values } from './card';
+import { Deck } from './deck';
 import {
-  Event,
-  CancelableEventEmitter,
-  BeforeDrawEvent,
-  DrawEvent,
-  BeforePassEvent,
   BeforeCardPlayEvent,
+  BeforeDrawEvent,
+  BeforePassEvent,
+  CancelableEventEmitter,
   CardPlayEvent,
+  DrawEvent,
   GameEndEvent,
   NextPlayerEvent,
 } from './events';
-
-import { Card, Values } from './card';
-import { Deck } from './deck';
 import { GameDirections } from './game_directions';
 import { Player } from './player';
 

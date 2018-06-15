@@ -1,7 +1,5 @@
 import { Card, Values } from './card';
 
-const Deck = require('./deck');
-
 export class Player {
   name: string;
   hand: Card[] = [];
