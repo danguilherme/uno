@@ -42,14 +42,14 @@ export class DrawEvent extends Event<DrawEventData> {
 }
 
 export interface BeforePassEventData {
-  player: string;
+  player: Player;
 }
 
 export class BeforePassEvent extends Event<BeforePassEventData> {
   /**
-   * @param {string} player The player that will pass
+   * @param {Player} player The player that will pass
    */
-  constructor(player: string) {
+  constructor(player: Player) {
     super('beforepass', {
       isCancelable: true,
       data: {
@@ -61,15 +61,15 @@ export class BeforePassEvent extends Event<BeforePassEventData> {
 
 export interface BeforeCardPlayEventData {
   card: Card;
-  player: string;
+  player: Player;
 }
 
 export class BeforeCardPlayEvent extends Event<BeforeCardPlayEventData> {
   /**
    * @param {Card} card The card that will be played
-   * @param {string} player The player that will play
+   * @param {Player} player The player that will play
    */
-  constructor(card: Card, player: string) {
+  constructor(card: Card, player: Player) {
     super('beforecardplay', {
       isCancelable: true,
       data: {
@@ -85,9 +85,9 @@ export type CardPlayEventData = BeforeCardPlayEventData;
 export class CardPlayEvent extends Event<CardPlayEventData> {
   /**
    * @param {Card} card The card that was played
-   * @param {string} player The player that played
+   * @param {Player} player The player that played
    */
-  constructor(card: Card, player: string) {
+  constructor(card: Card, player: Player) {
     super('cardplay', {
       isCancelable: true,
       data: {
@@ -99,16 +99,16 @@ export class CardPlayEvent extends Event<CardPlayEventData> {
 }
 
 export interface GameEndEventData<GameEndEventData> {
-  winner: string;
+  winner: Player;
   score: number;
 }
 
 export class GameEndEvent extends Event {
   /**
-   * @param {string} winner The big winner
+   * @param {Player} winner The big winner
    * @param {number} score Player's final score
    */
-  constructor(winner: string, score: number) {
+  constructor(winner: Player, score: number) {
     super('end', {
       isCancelable: false,
       data: {

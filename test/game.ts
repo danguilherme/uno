@@ -1,16 +1,13 @@
 'use strict';
 
-const { Game } = require('../src/game');
-const { Card } = require('../src/card/card');
-const { Values } = require('../src/card/values');
-const { Colors } = require('../src/card/colors');
-const { GameDirections } = require('../src/game_directions');
+import { Game } from '../src/game';
+import { Card, Values, Colors } from '../src/card';
+import { GameDirections } from '../src/game_directions';
 
 describe('Game', function() {
   it('should have a public API', function() {
-    let game = Game(['Guilherme', 'Maria']);
+    const game = new Game(['Guilherme', 'Maria']);
 
-    expect(game).toHaveProperty('on');
     expect(typeof game.on).toBe('function');
     expect(game).toHaveProperty('newGame');
     expect(typeof game.newGame).toBe('function');
@@ -25,7 +22,7 @@ describe('Game', function() {
     expect(game).toHaveProperty('play');
     expect(typeof game.play).toBe('function');
     expect(game).toHaveProperty('draw');
-    expect(typeof game.draw).toBe('function');
+    expect(typeof game.privateDraw).toBe('function');
     expect(game).toHaveProperty('pass');
     expect(typeof game.pass).toBe('function');
     expect(game).toHaveProperty('uno');
@@ -33,57 +30,58 @@ describe('Game', function() {
   });
 
   it('should error if started with less than 2 players', function() {
-    expect(() => Game(['Guilherme'])).toThrow();
+    expect(() => new Game(['Guilherme'])).toThrow();
   });
 
   it('should error if started with more than 10 players', function() {
-    expect(() =>
-      Game([
-        'Player 0',
-        'Player 1',
-        'Player 2',
-        'Player 3',
-        'Player 4',
-        'Player 5',
-        'Player 6',
-        'Player 7',
-        'Player 8',
-        'Player 9',
-        'Excess',
-      ]),
+    expect(
+      () =>
+        new Game([
+          'Player 0',
+          'Player 1',
+          'Player 2',
+          'Player 3',
+          'Player 4',
+          'Player 5',
+          'Player 6',
+          'Player 7',
+          'Player 8',
+          'Player 9',
+          'Excess',
+        ]),
     ).toThrow();
   });
 
   it('should error if player names repeat', function() {
-    expect(() => Game(['Player 0', 'Player 0'])).toThrow();
+    expect(() => new Game(['Player 0', 'Player 0'])).toThrow();
   });
 
   it('should not start with a wild card', function() {
-    let game = null;
+    let game: Game;
     expect(
-      () => (game = Game(['Player 1', 'Player 2', 'Player 3', 'Player 4'])),
+      () => (game = new Game(['Player 1', 'Player 2', 'Player 3', 'Player 4'])),
     ).not.toThrow();
 
     expect(game.discardedCard.isWildCard()).toBe(false);
   });
 
   it('should start', function() {
-    expect(() =>
-      Game(['Guilherme', 'Thamy Top', 'André Marques']),
+    expect(
+      () => new Game(['Guilherme', 'Thamy Top', 'André Marques']),
     ).not.toThrow();
   });
 
   describe('with more than two players', function() {
-    let game = null;
+    let game: Game;
 
     beforeEach(function() {
-      game = Game(['Player 1', 'Player 2', 'Player 3']);
+      game = new Game(['Player 1', 'Player 2', 'Player 3']);
       game.newGame();
     });
 
     describe('#play()', function() {
       it('should throw if user does not have the played card in hand', function() {
-        let curr = game.currentPlayer;
+        const curr = game.currentPlayer;
 
         curr.hand = [new Card(Values.ZERO, Colors.RED)];
 
@@ -114,9 +112,9 @@ describe('Game', function() {
       });
 
       it('should throw if the played wild card does not have a color set', function() {
-        let curr = game.currentPlayer;
-        let discardedCard = game.discardedCard;
-        let playerCard = new Card(Values.WILD);
+        const curr = game.currentPlayer;
+        const discardedCard = game.discardedCard;
+        const playerCard = new Card(Values.WILD);
 
         curr.hand = [playerCard];
 
@@ -124,9 +122,9 @@ describe('Game', function() {
       });
 
       it('should remove played card from player hand', function() {
-        let curr = game.currentPlayer;
-        let discardedCard = game.discardedCard;
-        let playerCard = new Card(
+        const curr = game.currentPlayer;
+        const discardedCard = game.discardedCard;
+        const playerCard = new Card(
           discardedCard.value,
           discardedCard.color == Colors.BLUE ? Colors.RED : Colors.BLUE,
         );
@@ -146,9 +144,9 @@ describe('Game', function() {
       });
 
       it('should pass turn to next player', function() {
-        let curr = game.currentPlayer;
-        let discardedCard = game.discardedCard;
-        let playerCard = new Card(
+        const curr = game.currentPlayer;
+        const discardedCard = game.discardedCard;
+        const playerCard = new Card(
           discardedCard.value,
           discardedCard.color == Colors.BLUE ? Colors.RED : Colors.BLUE,
         );
@@ -227,28 +225,28 @@ describe('Game', function() {
 
         curr.hand = [drawTwo, drawTwo];
 
-        expect(_ => game.play(drawTwo)).not.toThrow();
+        expect(() => game.play(drawTwo)).not.toThrow();
 
         expect(game.currentPlayer).not.toBe(curr);
         expect(game.currentPlayer).not.toBe(next);
         expect(game.nextPlayer).toBe(curr);
-        expect(next.hand.length).toBe(oldLength + 2);
+        expect(next.hand).toHaveLength(oldLength + 2);
       });
     });
 
     describe('#pass()', function() {
       it('should throw if player did not draw before passing', function() {
-        expect(game.pass).toThrow();
-        expect(game.draw).not.toThrow();
-        expect(game.pass).not.toThrow();
-        expect(game.pass).toThrow();
+        expect(() => game.pass()).toThrow();
+        expect(() => game.draw()).not.toThrow();
+        expect(() => game.pass()).not.toThrow();
+        expect(() => game.pass()).toThrow();
       });
 
       it('should pass the play to the next player', function() {
-        let curr = game.currentPlayer;
+        const curr = game.currentPlayer;
         game.draw();
         expect(game.currentPlayer.name).toBe(curr.name);
-        expect(game.pass).not.toThrow();
+        expect(() => game.pass()).not.toThrow();
         expect(game.currentPlayer.name).not.toBe(curr.name);
       });
     });
@@ -261,7 +259,7 @@ describe('Game', function() {
 
     describe('#uno()', function() {
       it('should make "UNO" yeller to draw 2 cards if there isn\'t any player with 1 card', function() {
-        let currentPlayer = game.currentPlayer;
+        const currentPlayer = game.currentPlayer;
 
         expect(currentPlayer.hand).toHaveLength(7);
         game.uno();
@@ -269,10 +267,10 @@ describe('Game', function() {
       });
 
       it('should make user with 1 card that not yelled UNO! to draw 2 cards', function() {
-        let curr = game.currentPlayer;
+        const curr = game.currentPlayer;
         let discardedCard = game.discardedCard;
-        let drawTwo = new Card(Values.DRAW_TWO, discardedCard.color);
-        let reverse = new Card(Values.REVERSE, discardedCard.color);
+        const drawTwo = new Card(Values.DRAW_TWO, discardedCard.color);
+        const reverse = new Card(Values.REVERSE, discardedCard.color);
 
         curr.hand = [reverse, drawTwo];
 
@@ -286,10 +284,10 @@ describe('Game', function() {
       });
 
       it('should not make user draw if he has already drawn', function() {
-        let curr = game.currentPlayer;
-        let discardedCard = game.discardedCard;
-        let drawTwo = new Card(Values.DRAW_TWO, discardedCard.color);
-        let reverse = new Card(Values.REVERSE, discardedCard.color);
+        const curr = game.currentPlayer;
+        const discardedCard = game.discardedCard;
+        const drawTwo = new Card(Values.DRAW_TWO, discardedCard.color);
+        const reverse = new Card(Values.REVERSE, discardedCard.color);
 
         curr.hand = [reverse, drawTwo];
 
@@ -305,10 +303,10 @@ describe('Game', function() {
       });
 
       it('should not make user draw if he has already yelled UNO!', function() {
-        let curr = game.currentPlayer;
-        let discardedCard = game.discardedCard;
-        let drawTwo = new Card(Values.DRAW_TWO, discardedCard.color);
-        let reverse = new Card(Values.REVERSE, discardedCard.color);
+        const curr = game.currentPlayer;
+        const discardedCard = game.discardedCard;
+        const drawTwo = new Card(Values.DRAW_TWO, discardedCard.color);
+        const reverse = new Card(Values.REVERSE, discardedCard.color);
 
         curr.hand = [reverse, drawTwo];
         game.uno();
@@ -324,17 +322,17 @@ describe('Game', function() {
   });
 
   describe('with two players', function() {
-    let game = null;
+    let game;
 
     beforeEach(function() {
-      game = Game(['Player 1', 'Player 2']);
+      game = new Game(['Player 1', 'Player 2']);
     });
 
     describe('#play()', function() {
       it('should maintain current player turn when played REVERSE', function() {
-        let curr = game.currentPlayer;
-        let discardedCard = game.discardedCard;
-        let reverse = new Card(Values.REVERSE, discardedCard.color);
+        const curr = game.currentPlayer;
+        const discardedCard = game.discardedCard;
+        const reverse = new Card(Values.REVERSE, discardedCard.color);
 
         curr.hand = [reverse];
 
@@ -352,26 +350,26 @@ describe('Game', function() {
   });
 
   describe('setting game state', function() {
-    let game = null;
+    let game: Game;
 
     beforeEach(function() {
-      game = Game(['Player 1', 'Player 2']);
+      game = new Game(['Player 1', 'Player 2']);
     });
 
     describe('#currentPlayer', function() {
       it('should change current player', function() {
-        let player = game.nextPlayer;
-        expect(_ => (game.currentPlayer = player)).not.toThrow();
-        expect(game.currentPlayer.name).toBe(player.name);
+        let nextPlayer = game.nextPlayer;
+        expect(() => (game.currentPlayer = nextPlayer)).not.toThrow();
+        expect(game.currentPlayer.name).toBe(nextPlayer.name);
 
-        player = game.nextPlayer;
-        expect(_ => (game.currentPlayer = player.name)).not.toThrow();
-        expect(game.currentPlayer.name).toBe(player.name);
+        nextPlayer = game.nextPlayer;
+        expect(() => (game.currentPlayer = nextPlayer)).not.toThrow();
+        expect(game.currentPlayer.name).toBe(nextPlayer.name);
       });
 
       it('should not change current player if not existent', function() {
-        let originalPlayer = game.currentPlayer.name;
-        expect(_ => (game.currentPlayer = 'Player 1024')).toThrow();
+        const originalPlayer = game.currentPlayer.name;
+        expect(() => (game.currentPlayer = 'Player 1024')).toThrow();
         expect(game.currentPlayer.name).toBe(originalPlayer);
       });
     });
@@ -386,16 +384,16 @@ describe('Game', function() {
       });
 
       it('should not change discarded card to card with no color', function() {
-        let originalCard = game.discardedCard;
+        const originalCard = game.discardedCard;
         expect(
-          _ => (game.discardedCard = new Card(Values.WILD, null)),
+          _ => (game.discardedCard = new Card(Values.WILD, undefined)),
         ).toThrow();
         expect(game.discardedCard.value).toBe(originalCard.value);
         expect(game.discardedCard.color).toBe(originalCard.color);
       });
 
       it('should not change discarded card to invalid Card object', function() {
-        let originalCard = game.discardedCard;
+        const originalCard = game.discardedCard;
         expect(_ => (game.discardedCard = 'RED ZERO')).toThrow();
         expect(game.discardedCard.value).toBe(originalCard.value);
         expect(game.discardedCard.color).toBe(originalCard.color);
