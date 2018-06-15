@@ -96,11 +96,11 @@ describe('Game', function() {
 
         const blueZero = new Card(Values.ZERO, Colors.BLUE);
         const redOne = new Card(Values.ONE, Colors.RED);
-        const yellowThree = new Card(Values.ONE, Colors.RED);
+        const yellowTwo = new Card(Values.TWO, Colors.YELLOW);
 
         const playerCard = discardedCard.matches(blueZero)
           ? discardedCard.matches(redOne)
-            ? yellowThree
+            ? yellowTwo
             : redOne
           : blueZero;
 
