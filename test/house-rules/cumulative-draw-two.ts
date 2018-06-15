@@ -1,13 +1,12 @@
 'use strict';
 
-const Game = require('../../src/game');
-const { Card } = require('../../src/card/card');
-const { Values } = require('../../src/card/values');
-const { Colors } = require('../../src/card/colors');
-const CumulativeDrawTwo = require('../../src/house-rules/cumulative-draw-two');
+import { Game } from "../../src/game";
+
+import CumulativeDrawTwo from '../../src/house-rules/cumulative-draw-two';
+import { Card, Values, Colors } from '../../src/card';
 
 describe('House Rule: Cumulative draw two', function() {
-  let game = null;
+  let game;
 
   beforeEach(function() {
     game = Game(['Player 1', 'Player 2', 'Player 3'], [CumulativeDrawTwo]);
@@ -33,7 +32,8 @@ describe('House Rule: Cumulative draw two', function() {
     // cannot play no-DRAW card
     expect(_ => game.play(reverse)).toThrow();
     expect(game.draw).not.toThrow();
-    expect(curr.hand).toHaveLength(4);
+    // expect(curr.hand).toHaveLength(4);
+    expect(curr.hand.length).toBe(4);
     // lost his turn
     expect(game.currentPlayer.name).not.toBe(curr.name);
   });
@@ -59,7 +59,8 @@ describe('House Rule: Cumulative draw two', function() {
     expect(game.pass).toThrow();
     expect(_ => game.play(reverse)).toThrow();
     expect(game.draw).not.toThrow();
-    expect(curr.hand).toHaveLength(6);
+    // expect(curr.hand).toHaveLength(6);
+    expect(curr.hand.length).toBe(6);
     expect(game.currentPlayer.name).not.toBe(curr.name);
   });
 });

@@ -26,6 +26,7 @@
     "shuffle": "^0.2.2"
   },
   "devDependencies": {
+    "@types/events": "^1.2.0",
     "@types/jasmine": "^2.8.8",
     "@types/jest": "^23.1.0",
     "chai": "^3.5.0",

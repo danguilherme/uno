@@ -1,6 +1,6 @@
 'use strict';
 
-const Game = require('../src/game');
+const { Game } = require('../src/game');
 const { Card } = require('../src/card/card');
 const { Values } = require('../src/card/values');
 const { Colors } = require('../src/card/colors');

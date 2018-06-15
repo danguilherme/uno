@@ -1,13 +1,14 @@
-const { Card } = require('../card/card');
-const { Values } = require('../card/values');
-const {
+import { Card, Values } from '../card';
+import {
   BeforeDrawEvent,
   BeforePassEvent,
   BeforeCardPlayEvent,
   CardPlayEvent,
-} = require('../events/game-events');
+} from '../events/game-events';
 
-function CumulativeDrawTwo(game) {
+export type Game = any;
+
+function CumulativeDrawTwo(game: Game) {
   let state = 'normal';
   setup(game);
 
@@ -17,7 +18,7 @@ function CumulativeDrawTwo(game) {
    */
   let cardsToDraw = 0;
 
-  function setup(game) {
+  function setup(game: Game) {
     game.on('cardplay', onCardPlay.bind(this, game));
     game.on('beforepass', beforePass.bind(this, game));
     game.on('beforecardplay', beforePlay.bind(this, game));
@@ -28,7 +29,7 @@ function CumulativeDrawTwo(game) {
    * @param {Game} game
    * @param {CardPlayEvent} event
    */
-  function onCardPlay(game, event) {
+  function onCardPlay(game: Game, event: CardPlayEvent) {
     const { card, player } = event.data;
 
     if (card.is(Values.DRAW_TWO)) {
@@ -47,7 +48,7 @@ function CumulativeDrawTwo(game) {
    * @param {Game} game
    * @param {BeforePassEvent} event
    */
-  function beforePass(game, event) {
+  function beforePass(game: Game, event: BeforePassEvent) {
     if (isStacking())
       throw new Error(`There are ${cardsToDraw} cards to draw before passing`);
   }
@@ -56,7 +57,7 @@ function CumulativeDrawTwo(game) {
    * @param {Game} game
    * @param {BeforeCardPlayEvent} event
    */
-  function beforePlay(game, event) {
+  function beforePlay(game: Game, event: BeforeCardPlayEvent) {
     const { card, player } = event.data;
 
     if (isStacking() && !card.is(Values.DRAW_TWO))
@@ -67,7 +68,7 @@ function CumulativeDrawTwo(game) {
    * @param {Game} game
    * @param {BeforeDrawEvent} event
    */
-  function beforeDraw(game, event) {
+  function beforeDraw(game: Game, event: BeforeDrawEvent) {
     if (!isStacking()) return true;
 
     const { quantity, player } = event.data;
@@ -88,8 +89,8 @@ function CumulativeDrawTwo(game) {
   }
 }
 
-module.exports = {
-  setup(game) {
+export default {
+  setup(game: Game) {
     return CumulativeDrawTwo(game);
   },
 };

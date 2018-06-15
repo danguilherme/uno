@@ -1,8 +1,10 @@
 "use strict";
 
+
 const util = require('util');
-const CancelableEventEmitter = require('./events/cancelable-emitter');
-const {
+import { CancelableEventEmitter } from './events/cancelable-emitter';
+import {
+  Event,
   BeforeDrawEvent,
   DrawEvent,
   BeforePassEvent,
@@ -10,17 +12,19 @@ const {
   CardPlayEvent,
   GameEndEvent,
   NextPlayerEvent,
-} = require('./events/game-events');
+} from './events';
 
-const { Deck } = require('./deck');
-const { Card } = require('./card/card');
-const { Values } = require('./card/values');
+import { Card, Values } from './card';
+import { Deck } from './deck';
+import { GameDirections } from './game_directions';
 const Player = require('./player');
-const { GameDirections } = require('./game_directions');
 
 const CARDS_PER_PLAYER = 7;
 
-const game = function (playerNames, houseRules = []) {
+export type Deck = any;
+export type Player = any;
+
+export function Game (playerNames: string[], houseRules: { setup: Function }[] = []) {
   // extends CancelableEventEmitter
   // events:
   // - start (players)
@@ -28,11 +32,11 @@ const game = function (playerNames, houseRules = []) {
   // - uno (player)
   // - end (winner)
 
-  let drawPile = null;
-  let direction = null;
-  let currentPlayer = null;
-  let players = [];
-  let discardedCard = null;
+  let drawPile: Deck;
+  let direction: GameDirections;
+  let currentPlayer: Player;
+  let players: Player[] = [];
+  let discardedCard: Card;
 
   // control vars
   /**
@@ -45,9 +49,9 @@ const game = function (playerNames, houseRules = []) {
    * key: player name
    * value: true/false
    */
-  let yellers = {};
+  const yellers: { [key: string]: boolean } = {};
 
-  let instance = Object.create(CancelableEventEmitter.prototype, {
+  const instance = Object.create(CancelableEventEmitter.prototype, {
     newGame: {
       value: function newGame() {
         drawPile = Deck();
@@ -65,24 +69,24 @@ const game = function (playerNames, houseRules = []) {
       }
     },
     getPlayer: {
-      value: function (name) {
-        let player = players[getPlayerIndex(name)];
+      value: function (name: string) {
+        const player: Player = players[getPlayerIndex(name)];
         if (!player)
-          return null;
+          return undefined;
         return player;
       }
     },
     currentPlayer: {
       get: () => currentPlayer,
-      set: name => {
+      set: (name: string | Player) => {
         // if we received a player, extract the name from it
-        if (typeof name == 'object')
+        if (typeof name === 'object')
           name = name.name;
 
         if (!name)
           throw new Error("Player name is invalid");
 
-        let player = instance.getPlayer(name);
+        const player = instance.getPlayer(name);
         if (!player)
           throw new Error("The given player does not exist");
         currentPlayer = instance.getPlayer(name);
@@ -93,10 +97,10 @@ const game = function (playerNames, houseRules = []) {
     },
     discardedCard: {
       get: () => discardedCard,
-      set: card => {
+      set: (card: Card) => {
         if (!card)
           return;
-        if (card.color == null)
+        if (card.color === undefined)
           throw new Error("Discarded cards cannot have theirs colors as null");
 
         discardedCard = card;
@@ -111,15 +115,15 @@ const game = function (playerNames, houseRules = []) {
     playingDirection: {
       get: () => direction,
       set: dir => {
-        if (dir != GameDirections.CLOCKWISE && dir != GameDirections.COUNTER_CLOCKWISE)
+        if (dir !== GameDirections.CLOCKWISE && dir != GameDirections.COUNTER_CLOCKWISE)
           throw new Error("Invalid direction");
 
-        if (dir != direction)
+        if (dir !== direction)
           reverseGame();
       }
     },
     draw: {
-      value: function publicDraw(player, qty, { silent } = { silent: false }) {
+      value: function publicDraw(player: Player, qty: number, { silent } = { silent: false }) {
         if (arguments.length == 0)
           player = instance.currentPlayer;
 
@@ -150,8 +154,8 @@ const game = function (playerNames, houseRules = []) {
       }
     },
     play: {
-      value: function play(card, { silent } = { silent: false }) {
-        let currentPlayer = instance.currentPlayer;
+      value: function play(card: Card, { silent } = { silent: false }) {
+        const currentPlayer = instance.currentPlayer;
         if (!card)
           return;
         // check if player has the card at hand...
@@ -161,7 +165,7 @@ const game = function (playerNames, houseRules = []) {
         if (!silent && !emit(new BeforeCardPlayEvent(card, instance.currentPlayer)))
           return;
 
-        if (card.color == null)
+        if (card.color == undefined)
           throw new Error("Card must have its color set before playing");
         // check if the played card matches the card from the discard pile...
         if (!card.matches(discardedCard))
@@ -174,7 +178,7 @@ const game = function (playerNames, houseRules = []) {
           return;
 
         if (currentPlayer.hand.length == 0) {
-          let score = calculateScore();
+          const score = calculateScore();
           // game is over, we have a winner!
           emit(new GameEndEvent(currentPlayer, score));
           // TODO: how to stop game after it's finished? Finished variable? >.<
@@ -205,7 +209,7 @@ const game = function (playerNames, houseRules = []) {
       }
     },
     uno: {
-      value: function uno(yellingPlayer) {
+      value: function uno(yellingPlayer: Player) {
         yellingPlayer = yellingPlayer || instance.currentPlayer;
 
         // the users that will draw;
@@ -242,9 +246,9 @@ const game = function (playerNames, houseRules = []) {
     players = fixPlayers(playerNames);
     houseRules.forEach(rule => rule.setup(instance));
     instance.newGame();
-  };
+  }
 
-  function fixPlayers(playerNames) {
+  function fixPlayers(playerNames: string[]) {
     if (!playerNames || !playerNames.length ||
       playerNames.length < 2 || playerNames.length > 10)
       throw new Error("There must be 2 to 10 players in the game");
@@ -257,7 +261,7 @@ const game = function (playerNames, houseRules = []) {
 
       return player;
     });
-  };
+  }
 
   function getNextPlayer() {
     let idx = getPlayerIndex(currentPlayer);
@@ -268,8 +272,8 @@ const game = function (playerNames, houseRules = []) {
     return players[idx];
   }
 
-  function getPlayerIndex(playerName) {
-    if (typeof playerName != 'string')
+  function getPlayerIndex(playerName: string | Player) {
+    if (typeof playerName !== 'string')
       playerName = playerName.name;
 
     return players.map(p => p.name).indexOf(playerName);
@@ -280,7 +284,7 @@ const game = function (playerNames, houseRules = []) {
    * with no validations, reseting all per-turn controllers
    * (`draw`, ...)
    */
-  function goToNextPlayer(silent) {
+  function goToNextPlayer(silent?: boolean) {
     drawn = false;
 
     currentPlayer = getNextPlayer();
@@ -295,7 +299,7 @@ const game = function (playerNames, houseRules = []) {
       GameDirections.CLOCKWISE;
   }
 
-  function draw(player, amount) {
+  function draw(player: Player, amount: number) {
     if (!player)
       throw new Error('Player is mandatory');
 
@@ -308,18 +312,18 @@ const game = function (playerNames, houseRules = []) {
     return players
       .map(player => player.hand)
       .reduce((amount, cards) => {
-        amount += cards.reduce((s, c) => s += c.score, 0);
+        amount += cards.reduce((s: number, c: Card) => s += c.score, 0);
         return amount;
       }, 0);
   }
 
   /**
-   * @param {Event} event 
+   * @param {Event} event
    */
-  function emit(event) {
+  function emit(event: Event) {
     let result = false;
     try {
-      result = instance.emit.call(instance, event);
+      result = instance.dispatchEvent.call(instance, event);
     } catch (error) {
       // console.error('\t[event error]', eventName, '::', error.message);
       throw error;
@@ -330,35 +334,36 @@ const game = function (playerNames, houseRules = []) {
   init();
 
   return instance;
-};
+}
 
 /**
  * Returns a random integer between min (inclusive) and max (inclusive)
  * Using Math.round() will give you a non-uniform distribution!
  */
-function getRandomInt(min, max) {
+function getRandomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 // https://stackoverflow.com/a/24968449/1574059
-function findDuplicates(array) {
+function findDuplicates(array: string[]) {
+  type SingleWord = { count: number; name: string; };
+  type WordCount = { [key: string]: number };
+
   // expects an string array
-  var uniq = array
+  const uniq: WordCount = array
     .map((name, idx) => {
       return { count: 1, name: name };
     })
-    .reduce((a, b) => {
+    .reduce((a: WordCount, b: SingleWord) => {
       a[b.name] = (a[b.name] || 0) + b.count;
       return a;
     }, {});
 
-  var duplicates = Object.keys(uniq).filter((a) => uniq[a] > 1);
+  const duplicates = Object.keys(uniq).filter((a) => uniq[a] > 1);
 
   return duplicates;
 }
 
-function isObject(val) {
+function isObject(val: any) {
   return val !== null && typeof val === 'object';
 }
-
-module.exports = game;
