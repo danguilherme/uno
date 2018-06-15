@@ -1,5 +1,5 @@
-const Card = require('../card');
-const Values = require('../values');
+const { Card } = require('../card/card');
+const { Values } = require('../card/values');
 const {
   BeforeDrawEvent,
   BeforePassEvent,
@@ -88,4 +88,8 @@ function CumulativeDrawTwo(game) {
   }
 }
 
-module.exports = { setup(game) { return CumulativeDrawTwo(game); } };
+module.exports = {
+  setup(game) {
+    return CumulativeDrawTwo(game);
+  },
+};

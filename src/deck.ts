@@ -1,9 +1,8 @@
-"use strict";
+'use strict';
 
-var Shuffle = require('shuffle');
-var Values = require('./values');
-var Colors = require('./colors');
-var Card = require('./card');
+const Shuffle = require('shuffle');
+
+import { Card, Colors, Values } from './card';
 
 function createUnoDeck() {
   /*
@@ -17,25 +16,22 @@ function createUnoDeck() {
     4x wild draw four
   */
 
-  let deck = [];
+  const deck: Card[] = [];
 
-  const createCards = (qty, value, color) => {
-    let cards = [];
+  const createCards = (qty: number, value: Values, color?: Colors) => {
+    const cards = [];
 
-    for(let i = 0; i < qty; i++)
-      cards.push(Card(value, color));
+    for (let i = 0; i < qty; i++) cards.push(new Card(value, color));
 
     return cards;
   };
 
   // for each color...
-  for(let i = 1; i <= Colors.size; i++) {
-    let color = Colors.get(i);
-
+  for (let color = 1; color <= 4; color++) {
     // CREATE NUMBERS
     deck.push.apply(deck, createCards(1, Values.ZERO, color));
-    for (var n = Values.ONE.value; n <= Values.NINE.value; n++) {
-      deck.push.apply(deck, createCards(2, Values.get(n), color));
+    for (let n = Values.ONE; n <= Values.NINE; n++) {
+      deck.push.apply(deck, createCards(2, n, color));
     }
 
     deck.push.apply(deck, createCards(2, Values.DRAW_TWO, color));
@@ -49,17 +45,17 @@ function createUnoDeck() {
   return deck;
 }
 
-const deck = function() {
-  let instance = Shuffle.shuffle({ deck: createUnoDeck() });
+export function Deck() {
+  const instance = Shuffle.shuffle({ deck: createUnoDeck() });
 
-  let originalDraw = instance.draw;
+  const originalDraw = instance.draw;
 
-  instance.draw = function(num) {
-    let cards = [];
+  instance.draw = function(num: number) {
+    let cards: Card[] = [];
 
     // if the amount to draw is more than the cards we have...
-    if(num >= instance.length) {
-      let length = instance.length;
+    if (num >= instance.length) {
+      const length = instance.length;
 
       // draw all we have...
       cards = cards.concat(originalDraw.call(instance, length));
@@ -70,14 +66,11 @@ const deck = function() {
 
       // then draw the rest we need
       num = num - length;
-      if(num == 0)
-        return cards;
+      if (num == 0) return cards;
     }
 
     return cards.concat(originalDraw.call(instance, num));
   };
 
   return instance;
-};
-
-module.exports = deck;
+}

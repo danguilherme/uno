@@ -12,11 +12,11 @@ const {
   NextPlayerEvent,
 } = require('./events/game-events');
 
-const Deck = require('./deck');
-const Card = require('./card');
-const Values = require('./values');
+const { Deck } = require('./deck');
+const { Card } = require('./card/card');
+const { Values } = require('./card/values');
 const Player = require('./player');
-const GameDirections = require('./game_directions');
+const { GameDirections } = require('./game_directions');
 
 const CARDS_PER_PLAYER = 7;
 

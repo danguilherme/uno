@@ -1,14 +1,13 @@
-import Enum from 'enum';
-import Values from './value';
+import { Values } from './values';
+import { Colors } from './colors';
 
 export class Card {
-  private _color: EnumItem | null;
+  private _value: Values;
+  private _color: Colors | null;
 
-  constructor(public value: EnumItem, color: EnumItem) {
-    if (!value.is || (color && !color.is))
-      throw new Error('The parameter must be an enum.');
-
-    this.color = color || undefined;
+  constructor(value: Values, color?: Colors) {
+    this._value = value;
+    this._color = color || undefined;
 
     if (!this.isWildCard() && !this.color) {
       throw Error('Only wild cards can be initialized with no color');
@@ -19,27 +18,29 @@ export class Card {
     return this._color;
   }
 
-  set color(value: EnumItem) {
+  set color(color: Colors) {
     if (!this.isWildCard())
       throw new Error('Only wild cards can have theirs colors changed.');
-    else if (!value.is)
+    else if (color < Colors.FIRST || color > Colors.LAST)
       throw new Error('The color must be a value from Colors enum.');
-    this._color = value;
+
+    this._color = color;
+  }
+
+  get value() {
+    return this._value;
   }
 
   isWildCard() {
-    return (
-      this.value.is(Values.WILD as EnumItem) ||
-      this.value.is(Values.WILD_DRAW_FOUR as EnumItem)
-    );
+    return this.value === Values.WILD || this.value === Values.WILD_DRAW_FOUR;
   }
 
   isSpecialCard() {
     return (
       this.isWildCard() ||
-      this.value.is(Values.DRAW_TWO as EnumItem) ||
-      this.value.is(Values.REVERSE as EnumItem) ||
-      this.value.is(Values.SKIP as EnumItem)
+      this.value === Values.DRAW_TWO ||
+      this.value === Values.REVERSE ||
+      this.value === Values.SKIP
     );
   }
 
@@ -53,7 +54,7 @@ export class Card {
     return other.value == this.value || other.color == this.color;
   }
 
-  score() {
+  get score() {
     switch (this.value) {
       case Values.DRAW_TWO:
       case Values.SKIP:
@@ -63,8 +64,14 @@ export class Card {
       case Values.WILD_DRAW_FOUR:
         return 50;
       default:
-        return this.value.value;
+        return this.value;
     }
+  }
+
+  is(value: Values, color?: Colors) {
+    let matches = this.value === value;
+    if (!!color) matches = matches && this.color === color;
+    return matches;
   }
 
   toString() {

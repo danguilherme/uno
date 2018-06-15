@@ -1,2 +1,1 @@
-export * from './card/card';
-export * from './card/value';
+export * from './card';

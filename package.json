@@ -10,7 +10,7 @@
     "build:ts:watch": "tsc -w",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "test": "jest --forceExit --coverage --verbose",
-    "watch-test": "npm run test -- --watchAll"
+    "test:watch": "yarn test --watchAll"
   },
   "keywords": [
     "uno",
@@ -23,10 +23,11 @@
   "repository": "danguilherme/uno",
   "license": "MIT",
   "dependencies": {
-    "enum": "^2.3.0",
     "shuffle": "^0.2.2"
   },
   "devDependencies": {
+    "@types/jasmine": "^2.8.8",
+    "@types/jest": "^23.1.0",
     "chai": "^3.5.0",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
