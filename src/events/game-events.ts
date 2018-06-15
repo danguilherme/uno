@@ -1,17 +1,18 @@
 import { Event } from './event';
 import { Card } from '../card';
+import { Player } from '../player';
 
 export interface BeforeDrawEventData {
-  player: string;
+  player: Player;
   quantity: number;
 }
 
 export class BeforeDrawEvent extends Event<BeforeDrawEventData> {
   /**
-   * @param {string} player  thatThe player will draw
+   * @param {Player} player  thatThe player will draw
    * @param {number} quantity The quantity of cards will be drawn
    */
-  constructor(player: string, quantity: number) {
+  constructor(player: Player, quantity: number) {
     super('beforedraw', {
       isCancelable: true,
       data: {
@@ -26,10 +27,10 @@ export type DrawEventData = BeforeDrawEventData;
 
 export class DrawEvent extends Event<DrawEventData> {
   /**
-   * @param {string} player The player that has drawn
+   * @param {Player} player The player that has drawn
    * @param {number} quantity The quantity of cards was drawn
    */
-  constructor(player: string, quantity: number) {
+  constructor(player: Player, quantity: number) {
     super('draw', {
       isCancelable: true,
       data: {
@@ -119,14 +120,14 @@ export class GameEndEvent extends Event {
 }
 
 export interface NextPlayerEventData {
-  player: string;
+  player: Player;
 }
 
 export class NextPlayerEvent extends Event {
   /**
-   * @param {string} player The new player
+   * @param {Player} player The new player
    */
-  constructor(player: string) {
+  constructor(player: Player) {
     super('nextplayer', {
       isCancelable: false,
       data: {

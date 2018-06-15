@@ -17,12 +17,11 @@ import {
 import { Card, Values } from './card';
 import { Deck } from './deck';
 import { GameDirections } from './game_directions';
-const Player = require('./player');
+import { Player } from './player';
 
 const CARDS_PER_PLAYER = 7;
 
 export type Deck = any;
-export type Player = any;
 
 export function Game (playerNames: string[], houseRules: { setup: Function }[] = []) {
   // extends CancelableEventEmitter
@@ -256,10 +255,7 @@ export function Game (playerNames: string[], houseRules: { setup: Function }[] =
       throw new Error("Player names must be different");
 
     return playerNames.map(player => {
-      if (typeof player == 'string')
-        player = Player(player);
-
-      return player;
+      return new Player(player);
     });
   }
 
