@@ -90,20 +90,19 @@ describe('Game', function() {
         expect(_ => game.play(new Card(Values.EIGHT, Colors.BLUE))).toThrow();
       });
 
-      it.only('should throw if the card on discard pile does not match with played card', function() {
+      it('should throw if the card on discard pile does not match with played card', function() {
         const curr = game.currentPlayer;
         const discardedCard = game.discardedCard;
 
         const blueZero = new Card(Values.ZERO, Colors.BLUE);
         const redOne = new Card(Values.ONE, Colors.RED);
+        const yellowThree = new Card(Values.ONE, Colors.RED);
 
-        const playerCard = discardedCard.matches(blueZero) ? redOne : blueZero;
-        console.log({
-          discardedCard,
-          blueZero,
-          matches: discardedCard.matches(blueZero),
-          playerCard
-        });
+        const playerCard = discardedCard.matches(blueZero)
+          ? discardedCard.matches(redOne)
+            ? yellowThree
+            : redOne
+          : blueZero;
 
         curr.hand = [playerCard];
 
