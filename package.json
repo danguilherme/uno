@@ -2,14 +2,15 @@
   "name": "uno-engine",
   "version": "0.0.3",
   "description": "Uno game implementation in JavaScript",
-  "main": "main.js",
+  "homepage": "https://github.com/danguilherme/uno#readme",
+  "main": "dist/main.js",
   "scripts": {
     "build:web": "webpack --config webpack.config.js",
     "build": "yarn run build:ts && yarn run tslint",
     "build:ts": "tsc",
     "build:ts:watch": "tsc -w",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
-    "test": "jest --forceExit --coverage --verbose",
+    "test": "jest --detectOpenHandles --coverage --verbose",
     "test:watch": "yarn test --watchAll"
   },
   "keywords": [
@@ -19,8 +20,14 @@
     "cards",
     "game"
   ],
-  "author": "danguilherme",
-  "repository": "danguilherme/uno",
+  "author": "Guilherme Ventura (https://danguilherme.github.io/)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danguilherme/uno.git"
+  },
+  "bugs": {
+    "url": "https://github.com/danguilherme/uno/issues"
+  },
   "license": "MIT",
   "dependencies": {
     "shuffle": "^0.2.2"
