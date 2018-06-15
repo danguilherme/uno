@@ -45,32 +45,44 @@ function createUnoDeck() {
   return deck;
 }
 
-export function Deck() {
-  const instance = Shuffle.shuffle({ deck: createUnoDeck() });
+export interface Shuffle {
+  length: number;
+}
 
-  const originalDraw = instance.draw;
+export class Deck {
+  private originalDraw: Function;
+  private shuffle = Shuffle.shuffle({ deck: createUnoDeck() });
 
-  instance.draw = function(num: number) {
+  get cards() {
+    return this.shuffle.cards;
+  }
+
+  get length() {
+    return this.shuffle.length;
+  }
+
+  constructor() {}
+
+  draw(num?: number) {
+    num = num || 1;
     let cards: Card[] = [];
 
     // if the amount to draw is more than the cards we have...
-    if (num >= instance.length) {
-      const length = instance.length;
+    if (num >= this.length) {
+      const length = this.length;
 
       // draw all we have...
-      cards = cards.concat(originalDraw.call(instance, length));
+      cards = cards.concat(this.shuffle.draw.call(this, length));
 
       // regenerate the draw pile
-      instance.reset();
-      instance.shuffle();
+      this.shuffle.reset();
+      this.shuffle.shuffle();
 
       // then draw the rest we need
       num = num - length;
-      if (num == 0) return cards;
+      if (num === 0) return cards;
     }
 
-    return cards.concat(originalDraw.call(instance, num));
-  };
-
-  return instance;
+    return cards.concat(this.shuffle.draw(num));
+  }
 }

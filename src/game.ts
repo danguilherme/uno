@@ -17,8 +17,6 @@ import { Player } from './player';
 
 const CARDS_PER_PLAYER = 7;
 
-export type Deck = any;
-
 export class Game extends CancelableEventEmitter {
   // events:
   // - start (players)
@@ -54,7 +52,7 @@ export class Game extends CancelableEventEmitter {
   }
 
   newGame() {
-    this.drawPile = Deck();
+    this.drawPile = new Deck();
     this.direction = GameDirections.CLOCKWISE;
 
     this._players.forEach(p => (p.hand = this.drawPile.draw(CARDS_PER_PLAYER)));
