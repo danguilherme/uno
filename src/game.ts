@@ -1,7 +1,3 @@
-"use strict";
-
-
-const util = require('util');
 import {
   Event,
   CancelableEventEmitter,
@@ -61,7 +57,7 @@ export class Game extends CancelableEventEmitter {
     this.drawPile = Deck();
     this.direction = GameDirections.CLOCKWISE;
 
-    this._players.forEach(p => p.hand = this.drawPile.draw(CARDS_PER_PLAYER));
+    this._players.forEach(p => (p.hand = this.drawPile.draw(CARDS_PER_PLAYER)));
 
     // do not start with special cards (REVERSE, DRAW, etc)
     do {
@@ -69,13 +65,14 @@ export class Game extends CancelableEventEmitter {
     } while (this._discardedCard.isSpecialCard());
 
     // select starting player
-    this._currentPlayer = this._players[getRandomInt(0, this._players.length - 1)];
+    this._currentPlayer = this._players[
+      getRandomInt(0, this._players.length - 1)
+    ];
   }
 
-  getPlayer (name: string) {
-    const player: Player = this. _players[this.getPlayerIndex(name)];
-    if (!player)
-      return undefined;
+  getPlayer(name: string) {
+    const player: Player = this._players[this.getPlayerIndex(name)];
+    if (!player) return undefined;
     return player;
   }
 
@@ -85,8 +82,7 @@ export class Game extends CancelableEventEmitter {
 
   set currentPlayer(player: Player) {
     player = this.getPlayer(player.name);
-    if (!player)
-      throw new Error("The given player does not exist");
+    if (!player) throw new Error('The given player does not exist');
 
     this._currentPlayer = player;
   }
@@ -99,11 +95,10 @@ export class Game extends CancelableEventEmitter {
     return this._discardedCard;
   }
 
-  set discardedCard(card: Card)  {
-    if (!card)
-      return;
+  set discardedCard(card: Card) {
+    if (!card) return;
     if (card.color === undefined || card.color === null)
-      throw new Error("Discarded cards cannot have theirs colors as null");
+      throw new Error('Discarded cards cannot have theirs colors as null');
 
     this._discardedCard = card;
   }
@@ -120,17 +115,18 @@ export class Game extends CancelableEventEmitter {
     return this.direction;
   }
 
-  set playingDirection(dir: GameDirections)  {
-    if (dir !== GameDirections.CLOCKWISE && dir != GameDirections.COUNTER_CLOCKWISE)
-      throw new Error("Invalid direction");
+  set playingDirection(dir: GameDirections) {
+    if (
+      dir !== GameDirections.CLOCKWISE &&
+      dir != GameDirections.COUNTER_CLOCKWISE
+    )
+      throw new Error('Invalid direction');
 
-    if (dir !== this.direction)
-    this.reverseGame();
+    if (dir !== this.direction) this.reverseGame();
   }
 
   public draw(player?: Player, qty?: number, { silent } = { silent: false }) {
-    if (arguments.length == 0)
-      player = this._currentPlayer;
+    if (arguments.length == 0) player = this._currentPlayer;
 
     qty = qty || 1;
 
@@ -139,8 +135,7 @@ export class Game extends CancelableEventEmitter {
 
     this.privateDraw(player, qty);
 
-    if (!silent && !this.dispatchEvent(new DrawEvent(player, qty)))
-      return;
+    if (!silent && !this.dispatchEvent(new DrawEvent(player, qty))) return;
 
     this.drawn = true;
     // reset UNO! yell state
@@ -148,36 +143,44 @@ export class Game extends CancelableEventEmitter {
   }
 
   pass() {
-    if (!this.dispatchEvent(new BeforePassEvent(this._currentPlayer)))
-      return;
+    if (!this.dispatchEvent(new BeforePassEvent(this._currentPlayer))) return;
 
     if (!this.drawn)
-      throw new Error(`${this._currentPlayer} must draw at least one card before passing`);
+      throw new Error(
+        `${this._currentPlayer} must draw at least one card before passing`,
+      );
 
     this.goToNextPlayer();
   }
 
   play(card: Card, { silent } = { silent: false }) {
     const currentPlayer = this._currentPlayer;
-    if (!card)
-      return;
+    if (!card) return;
     // check if player has the card at hand...
     if (!currentPlayer.hasCard(card))
       throw new Error(`${currentPlayer} does not have card ${card} at hand`);
 
-    if (!silent && !this.dispatchEvent(new BeforeCardPlayEvent(card, this._currentPlayer)))
+    if (
+      !silent &&
+      !this.dispatchEvent(new BeforeCardPlayEvent(card, this._currentPlayer))
+    )
       return;
 
     if (card.color == undefined)
-      throw new Error("Card must have its color set before playing");
+      throw new Error('Card must have its color set before playing');
     // check if the played card matches the card from the discard pile...
     if (!card.matches(this._discardedCard))
-      throw new Error(`${this._discardedCard}, from discard pile, does not match ${card}`);
+      throw new Error(
+        `${this._discardedCard}, from discard pile, does not match ${card}`,
+      );
 
     currentPlayer.removeCard(card);
-   this. _discardedCard = card;
+    this._discardedCard = card;
 
-    if (!silent && !this.dispatchEvent(new CardPlayEvent(card, this._currentPlayer)))
+    if (
+      !silent &&
+      !this.dispatchEvent(new CardPlayEvent(card, this._currentPlayer))
+    )
       return;
 
     if (currentPlayer.hand.length == 0) {
@@ -227,7 +230,9 @@ export class Game extends CancelableEventEmitter {
       // else if the user has already yelled or if he has more than 2 cards...
 
       // is there anyone with 1 card at hand that did not yell uno?
-      drawingPlayers = this._players.filter(p => p.hand.length == 1 && !this.yellers[p.name]);
+      drawingPlayers = this._players.filter(
+        p => p.hand.length == 1 && !this.yellers[p.name],
+      );
 
       // if there isn't anyone...
       if (drawingPlayers.length == 0) {
@@ -243,11 +248,15 @@ export class Game extends CancelableEventEmitter {
   }
 
   fixPlayers(playerNames: string[]) {
-    if (!playerNames || !playerNames.length ||
-      playerNames.length < 2 || playerNames.length > 10)
-      throw new Error("There must be 2 to 10 players in the game");
+    if (
+      !playerNames ||
+      !playerNames.length ||
+      playerNames.length < 2 ||
+      playerNames.length > 10
+    )
+      throw new Error('There must be 2 to 10 players in the game');
     else if (findDuplicates(playerNames).length)
-      throw new Error("Player names must be different");
+      throw new Error('Player names must be different');
 
     return playerNames.map(player => {
       return new Player(player);
@@ -257,15 +266,13 @@ export class Game extends CancelableEventEmitter {
   getNextPlayer() {
     let idx = this.getPlayerIndex(this._currentPlayer);
 
-    if (++idx == this._players.length)
-      idx = 0;
+    if (++idx == this._players.length) idx = 0;
 
     return this._players[idx];
   }
 
   getPlayerIndex(playerName: string | Player) {
-    if (typeof playerName !== 'string')
-      playerName = playerName.name;
+    if (typeof playerName !== 'string') playerName = playerName.name;
 
     return this._players.map(p => p.name).indexOf(playerName);
   }
@@ -279,20 +286,19 @@ export class Game extends CancelableEventEmitter {
     this.drawn = false;
 
     this._currentPlayer = this.getNextPlayer();
-    if (!silent)
-      this.dispatchEvent(new NextPlayerEvent(this._currentPlayer));
+    if (!silent) this.dispatchEvent(new NextPlayerEvent(this._currentPlayer));
   }
 
   reverseGame() {
     this._players.reverse();
-    this.direction = this.direction == GameDirections.CLOCKWISE ?
-      GameDirections.COUNTER_CLOCKWISE :
-      GameDirections.CLOCKWISE;
+    this.direction =
+      this.direction == GameDirections.CLOCKWISE
+        ? GameDirections.COUNTER_CLOCKWISE
+        : GameDirections.CLOCKWISE;
   }
 
   private privateDraw(player: Player, amount: number) {
-    if (!player)
-      throw new Error('Player is mandatory');
+    if (!player) throw new Error('Player is mandatory');
 
     // console.log(`draw ${amount} to ${player}`);
 
@@ -300,12 +306,10 @@ export class Game extends CancelableEventEmitter {
   }
 
   calculateScore() {
-    return this._players
-      .map(player => player.hand)
-      .reduce((amount, cards) => {
-        amount += cards.reduce((s: number, c: Card) => s += c.score, 0);
-        return amount;
-      }, 0);
+    return this._players.map(player => player.hand).reduce((amount, cards) => {
+      amount += cards.reduce((s: number, c: Card) => (s += c.score), 0);
+      return amount;
+    }, 0);
   }
 }
 
@@ -319,7 +323,7 @@ function getRandomInt(min: number, max: number) {
 
 // https://stackoverflow.com/a/24968449/1574059
 function findDuplicates(array: string[]) {
-  type SingleWord = { count: number; name: string; };
+  type SingleWord = { count: number; name: string };
   type WordCount = { [key: string]: number };
 
   // expects an string array
@@ -332,7 +336,7 @@ function findDuplicates(array: string[]) {
       return a;
     }, {});
 
-  const duplicates = Object.keys(uniq).filter((a) => uniq[a] > 1);
+  const duplicates = Object.keys(uniq).filter(a => uniq[a] > 1);
 
   return duplicates;
 }
