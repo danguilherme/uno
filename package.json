@@ -10,7 +10,7 @@
     "build:ts": "tsc",
     "build:ts:watch": "tsc -w",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
-    "test": "jest --detectOpenHandles --coverage --verbose",
+    "test": "jest --coverage --verbose",
     "test:watch": "yarn test --watchAll"
   },
   "keywords": [
