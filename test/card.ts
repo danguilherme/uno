@@ -26,13 +26,6 @@ describe('Card', function() {
       const wild = new Card(Values.WILD);
       expect(wild.value).toBe(Values.WILD);
     });
-
-    it('should prevent value to be changed', () => {
-      const zero = new Card(Values.ZERO, Colors.RED);
-      expect(zero.value).toBe(Values.ZERO);
-      expect(() => (zero.value = Values.ONE)).toThrow();
-      expect(zero.value).toBe(Values.ZERO);
-    });
   });
 
   describe('#color', function() {

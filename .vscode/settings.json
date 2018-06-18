@@ -14,5 +14,6 @@
     "csrf",
     "definitelytyped",
     "promisified"
-  ]
+  ],
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }

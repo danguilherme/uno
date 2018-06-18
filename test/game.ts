@@ -1,6 +1,7 @@
 import { Card, Colors, Values } from '../src/card';
 import { Game } from '../src/game';
 import { GameDirections } from '../src/game_directions';
+import { Player } from '../src/player';
 
 describe('Game', function() {
   it('should have a public API', function() {
@@ -20,7 +21,7 @@ describe('Game', function() {
     expect(game).toHaveProperty('play');
     expect(typeof game.play).toBe('function');
     expect(game).toHaveProperty('draw');
-    expect(typeof game.privateDraw).toBe('function');
+    expect(typeof game.draw).toBe('function');
     expect(game).toHaveProperty('pass');
     expect(typeof game.pass).toBe('function');
     expect(game).toHaveProperty('uno');
@@ -367,7 +368,9 @@ describe('Game', function() {
 
       it('should not change current player if not existent', function() {
         const originalPlayer = game.currentPlayer.name;
-        expect(() => (game.currentPlayer = 'Player 1024')).toThrow();
+        expect(
+          () => (game.currentPlayer = new Player('Player 1024')),
+        ).toThrow();
         expect(game.currentPlayer.name).toBe(originalPlayer);
       });
     });
@@ -389,20 +392,10 @@ describe('Game', function() {
         expect(game.discardedCard.value).toBe(originalCard.value);
         expect(game.discardedCard.color).toBe(originalCard.color);
       });
-
-      it('should not change discarded card to invalid Card object', function() {
-        const originalCard = game.discardedCard;
-        expect(_ => (game.discardedCard = 'RED ZERO')).toThrow();
-        expect(game.discardedCard.value).toBe(originalCard.value);
-        expect(game.discardedCard.color).toBe(originalCard.color);
-      });
     });
 
     describe('#playingDirection', function() {
       it('should change gameplay direction', function() {
-        expect(_ => (game.playingDirection = 'right')).toThrow();
-        expect(game.playingDirection).toBe(GameDirections.CLOCKWISE);
-
         expect(
           _ => (game.playingDirection = GameDirections.COUNTER_CLOCKWISE),
         ).not.toThrow();
