@@ -1,7 +1,4 @@
-'use strict';
-
-const Shuffle = require('shuffle');
-
+import { shuffle } from 'shuffle';
 import { Card, Colors, Values } from './card';
 
 function createUnoDeck() {
@@ -45,13 +42,9 @@ function createUnoDeck() {
   return deck;
 }
 
-export interface Shuffle {
-  length: number;
-}
-
 export class Deck {
   private originalDraw: Function;
-  private shuffle = Shuffle.shuffle({ deck: createUnoDeck() });
+  private shuffle = shuffle({ deck: createUnoDeck() });
 
   get cards() {
     return this.shuffle.cards;
