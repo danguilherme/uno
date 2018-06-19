@@ -25,16 +25,16 @@ import { Game } from 'uno-engine';
 ```ts
 const players = ['Player 1', 'Player 2', 'etc.']; // maximum 10 players with unique names
 const customRules = [CumulativeDrawTwo];          // you can add your own rules (see https://github.com/danguilherme/uno/blob/c9fa2de70ca897558aa1d4adab5b08eebaa7e323/src/house-rules/cumulative-draw-two.js#L20-L25)
-const game = new Game(players, customRules);     // initialize the game
+const game = new Game(players, customRules);      // initialize the game
 ```
 After starting a new game, the first card will be randomly chosen, hands of 7 dealt, and a player will be randomly chosen to go first.
 
 ### Player Properties
 ```ts
-let player = game.currentPlayer;          // player whose turn it is
-let hand = player.hand;                   // array of `Card` objects
-let p = game.getPlayer("Player 1");       // get player by name
-let card = player.getCardByValue(value);  // get the exact card in the player's hand
+const player = game.currentPlayer;          // player whose turn it is
+const hand = player.hand;                   // array of `Card` objects
+const p = game.getPlayer("Player 1");       // get player by name
+const card = player.getCardByValue(value);  // get the exact card in the player's hand
 ```
 
 ### Card Properties
