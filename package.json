@@ -2,13 +2,16 @@
   "name": "uno-engine",
   "version": "0.0.3",
   "description": "Uno game implementation in JavaScript",
-  "main": "main.js",
+  "homepage": "https://github.com/danguilherme/uno#readme",
+  "main": "dist/main.js",
   "scripts": {
-    "build": "webpack --config webpack.config.js",
-    "test": "mocha test/ --recursive",
-    "test:watch": "mocha -w test/ --recursive",
-    "mocha": "mocha --recursive",
-    "mocha:watch": "mocha -w --recursive"
+    "build:web": "webpack --config webpack.config.js",
+    "build": "yarn run build:ts && yarn run tslint",
+    "build:ts": "tsc",
+    "build:ts:watch": "tsc -w",
+    "tslint": "tslint -c tslint.json -p tsconfig.json",
+    "test": "jest --coverage --verbose",
+    "test:watch": "yarn test --watchAll"
   },
   "keywords": [
     "uno",
@@ -17,17 +20,26 @@
     "cards",
     "game"
   ],
-  "author": "danguilherme",
-  "repository": "danguilherme/uno",
+  "author": "Guilherme Ventura (https://danguilherme.github.io/)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danguilherme/uno.git"
+  },
+  "bugs": {
+    "url": "https://github.com/danguilherme/uno/issues"
+  },
   "license": "MIT",
   "dependencies": {
-    "enum": "^2.3.0",
     "shuffle": "^0.2.2"
   },
   "devDependencies": {
+    "@types/events": "^1.2.0",
+    "@types/jest": "^23.1.0",
     "chai": "^3.5.0",
-    "eslint": "^3.0.0",
-    "mocha": "^5.2.0",
+    "jest": "^23.1.0",
+    "ts-jest": "^22.4.6",
+    "tslint": "^5.10.0",
+    "typescript": "^2.9.2",
     "webpack": "^2.2.1"
   }
 }

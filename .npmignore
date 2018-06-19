@@ -1,0 +1,11 @@
+test/
+src/
+docs/
+coverage/
+
+.prettierrc
+.travis.yml
+jest.config.js
+tsconfig.json
+tslint.json
+webpack.config.js

@@ -1,13 +1,13 @@
-const Card = require('../card');
-const Values = require('../values');
-const {
+import { Values } from '../card';
+import {
+  BeforeCardPlayEvent,
   BeforeDrawEvent,
   BeforePassEvent,
-  BeforeCardPlayEvent,
   CardPlayEvent,
-} = require('../events/game-events');
+} from '../events/game-events';
+import { Game } from '../game';
 
-function CumulativeDrawTwo(game) {
+function CumulativeDrawTwo(game: Game) {
   let state = 'normal';
   setup(game);
 
@@ -17,19 +17,19 @@ function CumulativeDrawTwo(game) {
    */
   let cardsToDraw = 0;
 
-  function setup(game) {
-    game.on('cardplay', onCardPlay.bind(this, game));
+  function setup(game: Game) {
     game.on('beforepass', beforePass.bind(this, game));
-    game.on('beforecardplay', beforePlay.bind(this, game));
     game.on('beforedraw', beforeDraw.bind(this, game));
+    game.on('beforecardplay', beforePlay.bind(this, game));
+    game.on('cardplay', onCardPlay.bind(this, game));
   }
 
   /**
    * @param {Game} game
    * @param {CardPlayEvent} event
    */
-  function onCardPlay(game, event) {
-    const { card, player } = event.data;
+  function onCardPlay(game: Game, event: CardPlayEvent) {
+    const { card } = event;
 
     if (card.is(Values.DRAW_TWO)) {
       cardsToDraw += 2;
@@ -47,7 +47,7 @@ function CumulativeDrawTwo(game) {
    * @param {Game} game
    * @param {BeforePassEvent} event
    */
-  function beforePass(game, event) {
+  function beforePass(game: Game, event: BeforePassEvent) {
     if (isStacking())
       throw new Error(`There are ${cardsToDraw} cards to draw before passing`);
   }
@@ -56,8 +56,8 @@ function CumulativeDrawTwo(game) {
    * @param {Game} game
    * @param {BeforeCardPlayEvent} event
    */
-  function beforePlay(game, event) {
-    const { card, player } = event.data;
+  function beforePlay(game: Game, event: BeforeCardPlayEvent) {
+    const { card, player } = event;
 
     if (isStacking() && !card.is(Values.DRAW_TWO))
       throw new Error(`${player} must draw cards`);
@@ -67,10 +67,10 @@ function CumulativeDrawTwo(game) {
    * @param {Game} game
    * @param {BeforeDrawEvent} event
    */
-  function beforeDraw(game, event) {
+  function beforeDraw(game: Game, event: BeforeDrawEvent) {
     if (!isStacking()) return true;
 
-    const { quantity, player } = event.data;
+    const { player } = event;
 
     game.draw(player, cardsToDraw, { silent: true });
     cardsToDraw = 0;
@@ -88,4 +88,8 @@ function CumulativeDrawTwo(game) {
   }
 }
 
-module.exports = { setup(game) { return CumulativeDrawTwo(game); } };
+export default {
+  setup(game: Game) {
+    return CumulativeDrawTwo(game);
+  },
+};
