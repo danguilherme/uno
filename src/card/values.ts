@@ -16,6 +16,4 @@ export enum Values {
   SKIP = 12,
   WILD = 13,
   WILD_DRAW_FOUR = 14,
-  FIRST = ZERO,
-  LAST = WILD_DRAW_FOUR,
 }
