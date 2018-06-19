@@ -5,8 +5,7 @@ import {
   BeforePassEvent,
   CardPlayEvent,
 } from '../events/game-events';
-
-export type Game = any;
+import { Game } from '../game';
 
 function CumulativeDrawTwo(game: Game) {
   let state = 'normal';
@@ -19,10 +18,10 @@ function CumulativeDrawTwo(game: Game) {
   let cardsToDraw = 0;
 
   function setup(game: Game) {
-    game.on('cardplay', onCardPlay.bind(this, game));
     game.on('beforepass', beforePass.bind(this, game));
-    game.on('beforecardplay', beforePlay.bind(this, game));
     game.on('beforedraw', beforeDraw.bind(this, game));
+    game.on('beforecardplay', beforePlay.bind(this, game));
+    game.on('cardplay', onCardPlay.bind(this, game));
   }
 
   /**
@@ -30,7 +29,7 @@ function CumulativeDrawTwo(game: Game) {
    * @param {CardPlayEvent} event
    */
   function onCardPlay(game: Game, event: CardPlayEvent) {
-    const { card, player } = event.data;
+    const { card } = event;
 
     if (card.is(Values.DRAW_TWO)) {
       cardsToDraw += 2;
@@ -58,7 +57,7 @@ function CumulativeDrawTwo(game: Game) {
    * @param {BeforeCardPlayEvent} event
    */
   function beforePlay(game: Game, event: BeforeCardPlayEvent) {
-    const { card, player } = event.data;
+    const { card, player } = event;
 
     if (isStacking() && !card.is(Values.DRAW_TWO))
       throw new Error(`${player} must draw cards`);
@@ -71,7 +70,7 @@ function CumulativeDrawTwo(game: Game) {
   function beforeDraw(game: Game, event: BeforeDrawEvent) {
     if (!isStacking()) return true;
 
-    const { quantity, player } = event.data;
+    const { player } = event;
 
     game.draw(player, cardsToDraw, { silent: true });
     cardsToDraw = 0;

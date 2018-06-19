@@ -18,11 +18,8 @@ export class CancelableEventEmitter extends EventEmitter {
     return super.on(eventName, createProxyListener(listener, this));
   }
 
-  emit(type: string, data?: any) {
-    const event = new Event(type, {
-      data,
-    });
-    return this.dispatchEvent(event);
+  emit(type: string, data?: any): boolean {
+    throw new Error('Event dispatching must be done via #dispatchEvent');
   }
 
   /**

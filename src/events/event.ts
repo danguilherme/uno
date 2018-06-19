@@ -1,17 +1,17 @@
-export interface EventOptions<T = any> {
+export interface EventOptions {
+  /**
+   * @default false
+   */
   isCancelable: boolean;
-  data: T;
 }
 
 const defaults: EventOptions = {
   isCancelable: true,
-  data: {},
 };
 
-export class Event<T = any> {
+export class Event {
   private _type: string;
   private _isCancelable: boolean;
-  private _data: T;
   private _canceled: boolean;
 
   get type() {
@@ -22,15 +22,11 @@ export class Event<T = any> {
     return this._isCancelable;
   }
 
-  get data() {
-    return Object.freeze(this._data);
-  }
-
   get canceled() {
     return this._canceled;
   }
 
-  constructor(type: string, options: Partial<EventOptions<T>>) {
+  constructor(type: string, options?: Partial<EventOptions>) {
     if (!type) throw new Error('Event type is mandatory');
 
     options = Object.assign({}, defaults, options) as EventOptions;
@@ -40,7 +36,6 @@ export class Event<T = any> {
 
     this._type = type;
     this._isCancelable = options.isCancelable;
-    this._data = options.data;
     this._canceled = false;
   }
 
