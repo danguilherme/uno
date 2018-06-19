@@ -10,17 +10,41 @@ import {
   GameEndEvent,
   NextPlayerEvent,
 } from './events';
-import { GameDirections } from './game_directions';
+import { GameDirections } from './game-directions';
 import { Player } from './player';
 
 const CARDS_PER_PLAYER = 7;
 
 export class Game extends CancelableEventEmitter {
   // events:
-  // - start (players)
-  // - cardplay (card, player)
-  // - uno (player)
-  // - end (winner)
+  /**
+   * @event Game#beforedraw
+   * @type {BeforeDrawEvent}
+   */
+  /**
+   * @event Game#draw
+   * @type {DrawEvent}
+   */
+  /**
+   * @event Game#beforepass
+   * @type {BeforePassEvent}
+   */
+  /**
+   * @event Game#beforecardplay
+   * @type {BeforeCardPlayEvent}
+   */
+  /**
+   * @event Game#cardplay
+   * @type {CardPlayEvent}
+   */
+  /**
+   * @event Game#nextplayer
+   * @type {NextPlayerEvent}
+   */
+  /**
+   * @event Game#end
+   * @type {GameEndEvent}
+   */
 
   private drawPile: Deck;
   private direction: GameDirections;
@@ -121,6 +145,10 @@ export class Game extends CancelableEventEmitter {
     if (dir !== this.direction) this.reverseGame();
   }
 
+  /**
+   * @fires Game#beforedraw
+   * @fires Game#draw
+   */
   public draw(player?: Player, qty?: number, { silent } = { silent: false }) {
     if (arguments.length == 0) player = this._currentPlayer;
 
@@ -129,26 +157,36 @@ export class Game extends CancelableEventEmitter {
     if (!silent && !this.dispatchEvent(new BeforeDrawEvent(player, qty)))
       return;
 
-    this.privateDraw(player, qty);
+    const drawnCards = this.privateDraw(player, qty);
 
-    if (!silent && !this.dispatchEvent(new DrawEvent(player, qty))) return;
+    if (!silent && !this.dispatchEvent(new DrawEvent(player, drawnCards)))
+      return;
 
     this.drawn = true;
     // reset UNO! yell state
     this.yellers[player.name] = false;
   }
 
+  /**
+   * @fires Game#beforepass
+   * @fires Game#nextplayer
+   */
   pass() {
-    if (!this.dispatchEvent(new BeforePassEvent(this._currentPlayer))) return;
-
     if (!this.drawn)
       throw new Error(
         `${this._currentPlayer} must draw at least one card before passing`,
       );
 
+    if (!this.dispatchEvent(new BeforePassEvent(this._currentPlayer))) return;
     this.goToNextPlayer();
   }
 
+  /**
+   * @fires Game#beforecardplay
+   * @fires Game#cardplay
+   * @fires Game#nextplayer
+   * @fires Game#end
+   */
   play(card: Card, { silent } = { silent: false }) {
     const currentPlayer = this._currentPlayer;
     if (!card) return;
@@ -277,6 +315,8 @@ export class Game extends CancelableEventEmitter {
    * Set current player to the next in the line,
    * with no validations, reseting all per-turn controllers
    * (`draw`, ...)
+   *
+   * @fires Game#nextplayer
    */
   goToNextPlayer(silent?: boolean) {
     this.drawn = false;
@@ -293,12 +333,23 @@ export class Game extends CancelableEventEmitter {
         : GameDirections.CLOCKWISE;
   }
 
-  private privateDraw(player: Player, amount: number) {
+  /**
+   * Add the given amount of cards to the given player's hand
+   * from the draw pile.
+   *
+   * @param player the player to deliver the cards
+   * @param amount the amount that must be drawn
+   * @returns the drawn cards
+   */
+  private privateDraw(player: Player, amount: number): Card[] {
     if (!player) throw new Error('Player is mandatory');
 
     // console.log(`draw ${amount} to ${player}`);
 
-    player.hand = player.hand.concat(this.drawPile.draw(amount));
+    const cards = this.drawPile.draw(amount);
+
+    player.hand = player.hand.concat(cards);
+    return cards;
   }
 
   calculateScore() {

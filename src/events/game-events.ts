@@ -7,6 +7,9 @@ export interface BeforeDrawEventData {
   quantity: number;
 }
 
+/**
+ * Fired when a player requests cards from the draw pile.
+ */
 export class BeforeDrawEvent extends Event<BeforeDrawEventData> {
   /**
    * @param {Player} player  thatThe player will draw
@@ -23,19 +26,25 @@ export class BeforeDrawEvent extends Event<BeforeDrawEventData> {
   }
 }
 
-export type DrawEventData = BeforeDrawEventData;
+export interface DrawEventData {
+  player: Player;
+  cards: Card[];
+}
 
+/**
+ * Fired after player's drawn cards are added to his hands.
+ */
 export class DrawEvent extends Event<DrawEventData> {
   /**
    * @param {Player} player The player that has drawn
-   * @param {number} quantity The quantity of cards was drawn
+   * @param {Card[]} cards The cards that were drawn
    */
-  constructor(player: Player, quantity: number) {
+  constructor(player: Player, cards: Card[]) {
     super('draw', {
       isCancelable: true,
       data: {
         player,
-        quantity,
+        cards,
       },
     });
   }
@@ -45,6 +54,9 @@ export interface BeforePassEventData {
   player: Player;
 }
 
+/**
+ * Fired when a player can pass and requests to pass its turn.
+ */
 export class BeforePassEvent extends Event<BeforePassEventData> {
   /**
    * @param {Player} player The player that will pass
@@ -64,6 +76,9 @@ export interface BeforeCardPlayEventData {
   player: Player;
 }
 
+/**
+ * Fired before player discards a card in the discard pile.
+ */
 export class BeforeCardPlayEvent extends Event<BeforeCardPlayEventData> {
   /**
    * @param {Card} card The card that will be played
@@ -82,6 +97,9 @@ export class BeforeCardPlayEvent extends Event<BeforeCardPlayEventData> {
 
 export type CardPlayEventData = BeforeCardPlayEventData;
 
+/**
+ * Fired after player's card is thrown in the discard pile.
+ */
 export class CardPlayEvent extends Event<CardPlayEventData> {
   /**
    * @param {Card} card The card that was played
@@ -98,11 +116,35 @@ export class CardPlayEvent extends Event<CardPlayEventData> {
   }
 }
 
+export interface NextPlayerEventData {
+  player: Player;
+}
+
+/**
+ * Fired when {@link game#currentPlayer | currentPlayer} changes.
+ */
+export class NextPlayerEvent extends Event {
+  /**
+   * @param {Player} player The new player
+   */
+  constructor(player: Player) {
+    super('nextplayer', {
+      isCancelable: false,
+      data: {
+        player,
+      },
+    });
+  }
+}
+
 export interface GameEndEventData<GameEndEventData> {
   winner: Player;
   score: number;
 }
 
+/**
+ * Fired when `winner` has 0 cards at hand.
+ */
 export class GameEndEvent extends Event {
   /**
    * @param {Player} winner The big winner
@@ -114,24 +156,6 @@ export class GameEndEvent extends Event {
       data: {
         winner,
         score,
-      },
-    });
-  }
-}
-
-export interface NextPlayerEventData {
-  player: Player;
-}
-
-export class NextPlayerEvent extends Event {
-  /**
-   * @param {Player} player The new player
-   */
-  constructor(player: Player) {
-    super('nextplayer', {
-      isCancelable: false,
-      data: {
-        player,
       },
     });
   }

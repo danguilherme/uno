@@ -7,9 +7,9 @@ export class Card {
 
   constructor(value: Values, color?: Colors) {
     this._value = value;
-    this._color = color || undefined;
+    this._color = color === undefined ? undefined : color;
 
-    if (!this.isWildCard() && !this.color) {
+    if (!this.isWildCard() && this.color === undefined) {
       throw Error('Only wild cards can be initialized with no color');
     }
   }
@@ -46,12 +46,12 @@ export class Card {
 
   matches(other: Card) {
     if (this.isWildCard()) return true;
-    else if (this.color == undefined || other.color == undefined)
+    else if (this.color === undefined || other.color === undefined)
       throw new Error(
         'Both cards must have theirs colors set before comparing',
       );
 
-    return other.value == this.value || other.color == this.color;
+    return other.value === this.value || other.color === this.color;
   }
 
   get score() {

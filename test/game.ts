@@ -1,6 +1,6 @@
 import { Card, Colors, Values } from '../src/card';
 import { Game } from '../src/game';
-import { GameDirections } from '../src/game_directions';
+import { GameDirections } from '../src/game-directions';
 import { Player } from '../src/player';
 
 describe('Game', function() {
