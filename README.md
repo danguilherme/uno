@@ -108,19 +108,27 @@ game.uno("Player 1"); // Other than current player yells UNO
 
 ```ts
 game.on('beforedraw', ({ data: { player, quantity } }) => {
-  // emitted when a player requests cards from the draw pile
+  // Fired when a player requests cards from the draw pile.
 });
 
-game.on('draw', ({ data: { player, quantity } }) => {
-  // emitted when the drawn cards are at the player's hand
+game.on('draw', ({ data: { player, cards } }) => {
+  // Fired after player's drawn cards are added to his hands.
+});
+
+game.on('beforepass', ({ data: { player } }) => {
+  // Fired when a player can pass and requests to pass its turn.
+});
+
+game.on('beforecardplay', ({ data: { card, player } }) => {
+  // Fired before player discards a card in the discard pile.
 });
 
 game.on('cardplay', ({ data: { card, player } }) => {
-  // emitted every time a card is played
+  // Fired after player's card is thrown in the discard pile.
 });
 
 game.on('nextplayer', ({ data: { player } ) => {
-  // emitted whenever the `game.currentPlayer` changes
+  // Fired when `game.currentPlayer` changes.
 });
 
 game.on('end', ({ data: { winner, score } }) => {
