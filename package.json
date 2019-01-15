@@ -7,7 +7,7 @@
   "scripts": {
     "build:web": "webpack --config webpack.config.js",
     "build": "yarn run build:ts && yarn run tslint",
-    "build:ts": "tsc",
+    "build:ts": "tsc --declaration",
     "build:ts:watch": "tsc -w",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "test": "jest --coverage --verbose",
