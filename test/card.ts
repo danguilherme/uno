@@ -14,8 +14,21 @@ describe('Card', function () {
       expect(() => new Card(Values.WILD, Colors.RED)).not.toThrow();
     });
 
-    it.todo('throws if value is outside the enum');
-    it.todo('throws if color is outside the enum');
+    it('should not create a non-wild card without color', () => {
+      expect(() => new Card(Values.ZERO)).toThrow();
+      expect(() => new Card(Values.DRAW_TWO)).toThrow();
+    });
+
+    it('throws if value is outside the enum', () => {
+      expect(() => new Card(123)).toThrow();
+      expect(() => new Card(-21, Colors.RED)).toThrow();
+    });
+
+    it('throws if color is outside the enum', () => {
+      expect(() => new Card(Values.WILD, 123 as Colors)).toThrow();
+      expect(() => new Card(Values.ZERO, -21 as Colors)).toThrow();
+      expect(() => new Card(Values.REVERSE, 4 as Colors)).toThrow();
+    });
   });
 
   describe('#value', function () {
@@ -25,6 +38,16 @@ describe('Card', function () {
 
       const wild = new Card(Values.WILD);
       expect(wild.value).toBe(Values.WILD);
+    });
+
+    it('should prevent cards from changing value', () => {
+      const zero = new Card(Values.ZERO, Colors.RED);
+      expect(() => (zero.value = Values.ONE)).toThrow();
+      expect(zero.value).not.toBe(Values.ONE);
+
+      const reverse = new Card(Values.REVERSE, Colors.RED);
+      expect(() => (reverse.value = Values.ONE)).toThrow();
+      expect(reverse.value).not.toBe(Values.ONE);
     });
   });
 
@@ -50,12 +73,10 @@ describe('Card', function () {
 
     it('prevents normal or special cards from changing colors', () => {
       const zero = new Card(Values.ZERO, Colors.RED);
-      expect(zero.color).toBe(Colors.RED);
       expect(() => (zero.color = Colors.BLUE)).toThrow();
       expect(zero.color).not.toBe(Colors.BLUE);
 
       const reverse = new Card(Values.REVERSE, Colors.RED);
-      expect(reverse.color).toBe(Colors.RED);
       expect(() => (reverse.color = Colors.BLUE)).toThrow();
       expect(reverse.color).not.toBe(Colors.BLUE);
     });
@@ -178,6 +199,16 @@ describe('Card', function () {
 
       expect(redOne.matches(yellowFive)).toBe(false);
       expect(yellowFive.matches(redOne)).toBe(false);
+    });
+  });
+
+  describe('#toString()', function() {
+    it('should return the correct name for each card', () => {
+      expect(new Card(Values.ZERO, Colors.BLUE).toString()).toBe('BLUE ZERO');
+      expect(new Card(Values.WILD).toString()).toBe('NO_COLOR WILD');
+      expect(new Card(Values.WILD_DRAW_FOUR, Colors.GREEN).toString()).toBe('GREEN WILD_DRAW_FOUR');
+      expect(new Card(Values.REVERSE, Colors.RED).toString()).toBe('RED REVERSE');
+      expect(new Card(Values.DRAW_TWO, Colors.YELLOW).toString()).toBe('YELLOW DRAW_TWO');
     });
   });
 });

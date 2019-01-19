@@ -3,36 +3,55 @@ import { Values } from './values';
 
 export class Card {
   private _value: Values;
-  private _color: Colors | null;
+  private _color: Colors | undefined;
 
   constructor(value: Values, color?: Colors) {
-    this._value = value;
-    this._color = color === undefined ? undefined : color;
-
-    if (!this.isWildCard() && this.color === undefined) {
+    if (!Values.isWild(value) && color === undefined) {
       throw Error('Only wild cards can be initialized with no color');
     }
-  }
 
-  get color() {
-    return this._color;
-  }
-
-  set color(color: Colors) {
-    if (!this.isWildCard())
-      throw new Error('Only wild cards can have theirs colors changed.');
-    else if (typeof color === 'undefined' || color < 1 || color > 4)
-      throw new Error('The color must be a value from Colors enum.');
-
-    this._color = color;
+    this.value = value;
+    this.color = color;
   }
 
   get value() {
     return this._value;
   }
 
+  set value(value: Values) {
+    if (this._value !== undefined && !this.isWildCard())
+      throw new Error('Card values cannot be changed.');
+    else if (!Values.isValidValue(value))
+      throw new Error('The value must be a value from Values enum.');
+
+    this._value = value;
+  }
+
+  /**
+   * Index of the card color (from 0 to 3).
+   *
+   * WILD and WILD DRAW FOUR will not have this property set at start,
+   * leaving it `undefined` until user sets it.
+   */
+  get color() {
+    return this._color;
+  }
+
+  /**
+   * @throws if trying to change the color of a non-wild card.
+   * @throws if trying to set this to an unexistent color.
+   */
+  set color(color: Colors) {
+    if (this._color !== undefined && !this.isWildCard())
+      throw new Error('Only wild cards can have theirs colors changed.');
+    else if (color === undefined || !Colors.isValidValue(color))
+      throw new Error('The color must be a value from Colors enum.');
+
+    this._color = color;
+  }
+
   isWildCard() {
-    return this.value === Values.WILD || this.value === Values.WILD_DRAW_FOUR;
+    return Values.isWild(this.value);
   }
 
   isSpecialCard() {

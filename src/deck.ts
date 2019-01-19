@@ -24,7 +24,7 @@ function createUnoDeck() {
   };
 
   // for each color...
-  for (let color = 1; color <= 4; color++) {
+  Colors.values.forEach(color => {
     // CREATE NUMBERS
     deck.push.apply(deck, createCards(1, Values.ZERO, color));
     for (let n = Values.ONE; n <= Values.NINE; n++) {
@@ -34,7 +34,7 @@ function createUnoDeck() {
     deck.push.apply(deck, createCards(2, Values.DRAW_TWO, color));
     deck.push.apply(deck, createCards(2, Values.SKIP, color));
     deck.push.apply(deck, createCards(2, Values.REVERSE, color));
-  }
+  });
 
   deck.push.apply(deck, createCards(4, Values.WILD));
   deck.push.apply(deck, createCards(4, Values.WILD_DRAW_FOUR));
