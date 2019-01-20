@@ -12,7 +12,8 @@
     "build:types": "tsc --emitDeclarationOnly",
     "docs": "typedoc --mode file --out docs/api/ src/",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
-    "test": "jest --coverage --verbose",
+    "test": "jest",
+    "test:report": "yarn test --coverage --verbose",
     "test:watch": "yarn test --watchAll",
     "prepare": "yarn build"
   },

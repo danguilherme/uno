@@ -84,9 +84,7 @@ describe('Game', function () {
 
         curr.hand = [new Card(Values.ZERO, Colors.RED)];
 
-        expect((_: any) =>
-          game.play(new Card(Values.EIGHT, Colors.BLUE)),
-        ).toThrow();
+        expect(() => game.play(new Card(Values.EIGHT, Colors.BLUE))).toThrow();
       });
 
       it('throws if the card on discard pile does not match with played card', function () {
@@ -106,7 +104,7 @@ describe('Game', function () {
         curr.hand = [playerCard];
 
         expect(playerCard.matches(discardedCard)).toBe(false);
-        expect((_: any) => game.play(playerCard)).toThrow();
+        expect(() => game.play(playerCard)).toThrow();
 
         // don't touch player's hand
         expect(curr.hand).toHaveLength(1);
@@ -118,7 +116,7 @@ describe('Game', function () {
 
         curr.hand = [playerCard];
 
-        expect((_: any) => game.play(playerCard)).toThrow();
+        expect(() => game.play(playerCard)).toThrow();
       });
 
       it('removes played card from player hand', function () {
@@ -133,7 +131,7 @@ describe('Game', function () {
 
         expect(playerCard.matches(discardedCard)).toBe(true);
 
-        expect((_: any) => game.play(playerCard)).not.toThrow();
+        expect(() => game.play(playerCard)).not.toThrow();
         expect(curr.hand).toHaveLength(0);
         expect(curr.hand).not.toContain(playerCard);
         expect(curr.hand.indexOf(playerCard)).toBe(-1);
@@ -156,7 +154,7 @@ describe('Game', function () {
         expect(playerCard.matches(discardedCard)).toBe(true);
 
         expect(game.currentPlayer.name).toBe(curr.name);
-        expect((_: any) => game.play(playerCard)).not.toThrow();
+        expect(() => game.play(playerCard)).not.toThrow();
         expect(game.currentPlayer.name).not.toBe(curr.name);
       });
 
@@ -171,7 +169,7 @@ describe('Game', function () {
         curr.hand = [wildCard];
 
         expect(wildCard.matches(discardedCard)).toBe(true);
-        expect((_: any) => game.play(wildCard)).not.toThrow();
+        expect(() => game.play(wildCard)).not.toThrow();
 
         curr = game.currentPlayer;
         discardedCard = game.discardedCard;
@@ -183,7 +181,7 @@ describe('Game', function () {
         curr.hand = [wildCard];
 
         expect(wildCard.matches(discardedCard)).toBe(true);
-        expect((_: any) => game.play(wildCard)).not.toThrow();
+        expect(() => game.play(wildCard)).not.toThrow();
       });
 
       it('skips next player if thrown SKIP', function () {
@@ -195,7 +193,7 @@ describe('Game', function () {
         curr.hand = [skip, skip];
 
         expect(game.currentPlayer.name).toBe(curr.name);
-        expect((_: any) => game.play(skip)).not.toThrow();
+        expect(() => game.play(skip)).not.toThrow();
         expect(game.currentPlayer).not.toBe(next);
         expect(game.currentPlayer).not.toBe(curr);
       });
@@ -209,7 +207,7 @@ describe('Game', function () {
         curr.hand = [reverse, reverse];
 
         expect(game.currentPlayer.name).toBe(curr.name);
-        expect((_: any) => game.play(reverse)).not.toThrow();
+        expect(() => game.play(reverse)).not.toThrow();
         expect(game.currentPlayer).not.toBe(next);
         expect(game.currentPlayer).not.toBe(curr);
       });
@@ -275,7 +273,7 @@ describe('Game', function () {
 
         curr.hand = [reverse, drawTwo];
 
-        expect((_: any) => game.play(reverse)).not.toThrow();
+        expect(() => game.play(reverse)).not.toThrow();
         expect(curr.hand).toHaveLength(1);
 
         discardedCard = game.discardedCard;
@@ -292,7 +290,7 @@ describe('Game', function () {
 
         curr.hand = [reverse, drawTwo];
 
-        expect((_: any) => game.play(reverse)).not.toThrow();
+        expect(() => game.play(reverse)).not.toThrow();
         expect(curr.hand).toHaveLength(1);
 
         game.uno();
@@ -312,7 +310,7 @@ describe('Game', function () {
         curr.hand = [reverse, drawTwo];
         game.uno();
 
-        expect((_: any) => game.play(reverse)).not.toThrow();
+        expect(() => game.play(reverse)).not.toThrow();
         expect(curr.hand).toHaveLength(1);
 
         game.uno();
@@ -339,9 +337,9 @@ describe('Game', function () {
         curr.hand = [reverse, one, one];
 
         expect(game.currentPlayer).toBe(curr);
-        expect((_: any) => game.play(reverse)).not.toThrow();
+        expect(() => game.play(reverse)).not.toThrow();
         expect(game.currentPlayer).toBe(curr);
-        expect(_ => game.play(one)).not.toThrow();
+        expect(() => game.play(one)).not.toThrow();
         expect(game.currentPlayer).not.toBe(curr);
       });
 
@@ -354,9 +352,9 @@ describe('Game', function () {
         curr.hand = [skip, one, one];
 
         expect(game.currentPlayer).toBe(curr);
-        expect(_ => game.play(skip)).not.toThrow();
+        expect(() => game.play(skip)).not.toThrow();
         expect(game.currentPlayer).toBe(curr);
-        expect(_ => game.play(one)).not.toThrow();
+        expect(() => game.play(one)).not.toThrow();
         expect(game.currentPlayer).not.toBe(curr);
       });
 
@@ -370,11 +368,11 @@ describe('Game', function () {
         curr.hand = [skip, reverse, one, one];
 
         expect(game.currentPlayer).toBe(curr);
-        expect(_ => game.play(skip)).not.toThrow();
+        expect(() => game.play(skip)).not.toThrow();
         expect(game.currentPlayer).toBe(curr);
-        expect(_ => game.play(reverse)).not.toThrow();
+        expect(() => game.play(reverse)).not.toThrow();
         expect(game.currentPlayer).toBe(curr);
-        expect(_ => game.play(one)).not.toThrow();
+        expect(() => game.play(one)).not.toThrow();
         expect(game.currentPlayer).not.toBe(curr);
       });
     });
@@ -415,7 +413,7 @@ describe('Game', function () {
     describe('#discardedCard', function () {
       it('changes discarded card', function () {
         expect(
-          (_: any) => (game.discardedCard = new Card(Values.ZERO, Colors.RED)),
+          () => (game.discardedCard = new Card(Values.ZERO, Colors.RED)),
         ).not.toThrow();
         expect(game.discardedCard.value).toBe(Values.ZERO);
         expect(game.discardedCard.color).toBe(Colors.RED);
@@ -424,7 +422,7 @@ describe('Game', function () {
       it('does not change discarded card to card with no color', function () {
         const originalCard = game.discardedCard;
         expect(
-          (_: any) => (game.discardedCard = new Card(Values.WILD, undefined)),
+          () => (game.discardedCard = new Card(Values.WILD, undefined)),
         ).toThrow();
         expect(game.discardedCard.value).toBe(originalCard.value);
         expect(game.discardedCard.color).toBe(originalCard.color);
@@ -434,8 +432,7 @@ describe('Game', function () {
     describe('#playingDirection', function () {
       it('changes gameplay direction', function () {
         expect(
-          (_: any) =>
-            (game.playingDirection = GameDirections.COUNTER_CLOCKWISE),
+          () => (game.playingDirection = GameDirections.COUNTER_CLOCKWISE),
         ).not.toThrow();
         expect(game.playingDirection).toBe(GameDirections.COUNTER_CLOCKWISE);
       });

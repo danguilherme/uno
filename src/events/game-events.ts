@@ -4,6 +4,8 @@ import { Event } from './event';
 
 /**
  * Fired when a player requests cards from the draw pile.
+ *
+ * @event
  */
 export class BeforeDrawEvent extends Event {
   /**
@@ -20,6 +22,8 @@ export class BeforeDrawEvent extends Event {
 
 /**
  * Fired after player's drawn cards are added to his hands.
+ *
+ * @event
  */
 export class DrawEvent extends Event {
   /**
@@ -33,6 +37,8 @@ export class DrawEvent extends Event {
 
 /**
  * Fired when a player can pass and requests to pass its turn.
+ *
+ * @event
  */
 export class BeforePassEvent extends Event {
   /**
@@ -45,6 +51,8 @@ export class BeforePassEvent extends Event {
 
 /**
  * Fired before player discards a card in the discard pile.
+ *
+ * @event
  */
 export class BeforeCardPlayEvent extends Event {
   /**
@@ -58,6 +66,8 @@ export class BeforeCardPlayEvent extends Event {
 
 /**
  * Fired after player's card is thrown in the discard pile.
+ *
+ * @event
  */
 export class CardPlayEvent extends Event {
   /**
@@ -71,6 +81,8 @@ export class CardPlayEvent extends Event {
 
 /**
  * Fired when {@link game#currentPlayer | currentPlayer} changes.
+ *
+ * @event
  */
 export class NextPlayerEvent extends Event {
   /**
@@ -83,6 +95,8 @@ export class NextPlayerEvent extends Event {
 
 /**
  * Fired when `winner` has 0 cards at hand.
+ *
+ * @event
  */
 export class GameEndEvent extends Event {
   /**
