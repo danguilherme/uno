@@ -334,12 +334,48 @@ describe('Game', function () {
         const curr = game.currentPlayer;
         const discardedCard = game.discardedCard;
         const reverse = new Card(Values.REVERSE, discardedCard.color);
+        const one = new Card(Values.ONE, discardedCard.color);
 
-        curr.hand = [reverse];
+        curr.hand = [reverse, one, one];
 
         expect(game.currentPlayer).toBe(curr);
         expect((_: any) => game.play(reverse)).not.toThrow();
         expect(game.currentPlayer).toBe(curr);
+        expect(_ => game.play(one)).not.toThrow();
+        expect(game.currentPlayer).not.toBe(curr);
+      });
+
+      it('should maintain current player turn when played SKIP', function() {
+        const curr = game.currentPlayer;
+        const discardedCard = game.discardedCard;
+        const skip = new Card(Values.SKIP, discardedCard.color);
+        const one = new Card(Values.ONE, discardedCard.color);
+
+        curr.hand = [skip, one, one];
+
+        expect(game.currentPlayer).toBe(curr);
+        expect(_ => game.play(skip)).not.toThrow();
+        expect(game.currentPlayer).toBe(curr);
+        expect(_ => game.play(one)).not.toThrow();
+        expect(game.currentPlayer).not.toBe(curr);
+      });
+
+      it('should maintain current player turn when played SKIP, then REVERSE', function() {
+        const curr = game.currentPlayer;
+        const discardedCard = game.discardedCard;
+        const skip = new Card(Values.SKIP, discardedCard.color);
+        const reverse = new Card(Values.REVERSE, discardedCard.color);
+        const one = new Card(Values.ONE, discardedCard.color);
+
+        curr.hand = [skip, reverse, one, one];
+
+        expect(game.currentPlayer).toBe(curr);
+        expect(_ => game.play(skip)).not.toThrow();
+        expect(game.currentPlayer).toBe(curr);
+        expect(_ => game.play(reverse)).not.toThrow();
+        expect(game.currentPlayer).toBe(curr);
+        expect(_ => game.play(one)).not.toThrow();
+        expect(game.currentPlayer).not.toBe(curr);
       });
     });
 
