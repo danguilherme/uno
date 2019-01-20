@@ -7,7 +7,7 @@ import { Event } from './event';
  */
 export class BeforeDrawEvent extends Event {
   /**
-   * @param {Player} player  thatThe player will draw
+   * @param {Player} player   The player will draw
    * @param {number} quantity The quantity of cards will be drawn
    */
   constructor(

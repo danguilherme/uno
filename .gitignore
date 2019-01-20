@@ -39,3 +39,6 @@ dist/**/*
 
 # Ignore output from coverage report
 coverage
+
+# Ignore generated api documentation
+docs/api
