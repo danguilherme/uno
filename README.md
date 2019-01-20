@@ -1,7 +1,12 @@
 # UNO
 > Uno game implemented in JavaScript
 
-[![Build Status](https://travis-ci.org/danguilherme/uno.svg?branch=master)](https://travis-ci.org/danguilherme/uno)
+[![npm package](https://img.shields.io/npm/v/uno-engine.svg?label=uno-engine)](https://www.npmjs.com/package/uno-engine)
+[![Build Status](https://img.shields.io/travis/danguilherme/uno/master.svg)](https://travis-ci.org/danguilherme/uno)
+[![Downloads](https://img.shields.io/npm/dt/uno-engine.svg)](https://www.npmjs.com/package/uno-engine)
+[![Dependencies](https://img.shields.io/david/danguilherme/uno.svg)](https://david-dm.org/danguilherme/uno)
+[![License](https://img.shields.io/github/license/danguilherme/uno.svg)](LICENSE)
+
 
 ## Installation
 ```bash
