@@ -15,37 +15,18 @@ import { Player } from './player';
 
 const CARDS_PER_PLAYER = 7;
 
+/**
+ * Uno game.
+ *
+ * @fires `beforedraw`
+ * @fires `draw`
+ * @fires `beforepass`
+ * @fires `beforecardplay`
+ * @fires `cardplay`
+ * @fires `nextplayer`
+ * @fires `end`
+ */
 export class Game extends CancelableEventEmitter {
-  // events:
-  /**
-   * @event Game#beforedraw
-   * @type {BeforeDrawEvent}
-   */
-  /**
-   * @event Game#draw
-   * @type {DrawEvent}
-   */
-  /**
-   * @event Game#beforepass
-   * @type {BeforePassEvent}
-   */
-  /**
-   * @event Game#beforecardplay
-   * @type {BeforeCardPlayEvent}
-   */
-  /**
-   * @event Game#cardplay
-   * @type {CardPlayEvent}
-   */
-  /**
-   * @event Game#nextplayer
-   * @type {NextPlayerEvent}
-   */
-  /**
-   * @event Game#end
-   * @type {GameEndEvent}
-   */
-
   private drawPile: Deck;
   private direction: GameDirections;
   private _currentPlayer: Player;
@@ -146,8 +127,8 @@ export class Game extends CancelableEventEmitter {
   }
 
   /**
-   * @fires Game#beforedraw
-   * @fires Game#draw
+   * @fires `beforedraw`
+   * @fires `draw`
    */
   public draw(player?: Player, qty?: number, { silent } = { silent: false }) {
     if (arguments.length == 0) player = this._currentPlayer;
@@ -168,8 +149,8 @@ export class Game extends CancelableEventEmitter {
   }
 
   /**
-   * @fires Game#beforepass
-   * @fires Game#nextplayer
+   * @fires `beforepass`
+   * @fires `nextplayer`
    */
   pass() {
     if (!this.drawn)
@@ -182,10 +163,10 @@ export class Game extends CancelableEventEmitter {
   }
 
   /**
-   * @fires Game#beforecardplay
-   * @fires Game#cardplay
-   * @fires Game#nextplayer
-   * @fires Game#end
+   * @fires `beforecardplay`
+   * @fires `cardplay`
+   * @fires `nextplayer`
+   * @fires `end`
    */
   play(card: Card, { silent } = { silent: false }) {
     const currentPlayer = this._currentPlayer;
@@ -248,6 +229,16 @@ export class Game extends CancelableEventEmitter {
     this.goToNextPlayer();
   }
 
+  /**
+   * Yell UNO!
+   *
+   * @param yellingPlayer
+   * Who is yelling UNO!
+   * If no player is given, {@link Game.currentPlayer} is used for this value.
+   *
+   * @returns
+   * The players that need to draw because they did not yell Uno while having 1 card.
+   */
   uno(yellingPlayer?: Player) {
     yellingPlayer = yellingPlayer || this._currentPlayer;
 
@@ -316,7 +307,7 @@ export class Game extends CancelableEventEmitter {
    * with no validations, reseting all per-turn controllers
    * (`draw`, ...)
    *
-   * @fires Game#nextplayer
+   * @fires `nextplayer`
    */
   goToNextPlayer(silent?: boolean) {
     this.drawn = false;
@@ -353,10 +344,12 @@ export class Game extends CancelableEventEmitter {
   }
 
   calculateScore() {
-    return this._players.map(player => player.hand).reduce((amount, cards) => {
-      amount += cards.reduce((s: number, c: Card) => (s += c.score), 0);
-      return amount;
-    }, 0);
+    return this._players
+      .map(player => player.hand)
+      .reduce((amount, cards) => {
+        amount += cards.reduce((s: number, c: Card) => (s += c.score), 0);
+        return amount;
+      }, 0);
   }
 }
 
@@ -386,8 +379,4 @@ function findDuplicates(array: string[]) {
   const duplicates = Object.keys(uniq).filter(a => uniq[a] > 1);
 
   return duplicates;
-}
-
-function isObject(val: any) {
-  return val !== null && typeof val === 'object';
 }
