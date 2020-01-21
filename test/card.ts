@@ -14,8 +14,8 @@ describe('Card', function() {
       expect(() => new Card(Values.WILD, Colors.RED)).not.toThrow();
     });
 
-    it('should error if value is outside the enum', () => pending());
-    it('should error if color is outside the enum', () => pending());
+    it.todo('should error if value is outside the enum');
+    it.todo('should error if color is outside the enum');
   });
 
   describe('#value', function() {

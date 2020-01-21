@@ -1,8 +1,8 @@
 import { Card, Colors, Values } from '../src/card';
 import { Deck } from '../src/deck';
 
-const filterByValue = value => {
-  return card => card.value === value;
+const filterByValue = (value: Values) => {
+  return (card: Card) => card.value === value;
 };
 
 describe('Deck', function() {
@@ -25,7 +25,7 @@ describe('Deck', function() {
   });
 
   it('should have 76 numbers', function() {
-    const numbers = card =>
+    const numbers = (card: Card) =>
       card.value >= Values.ZERO && card.value <= Values.NINE;
     expect(deck.cards.filter(numbers)).toHaveLength(76);
   });

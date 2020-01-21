@@ -1,11 +1,11 @@
 describe('Player', function() {
-  it('should have a name', () => pending());
+  it.todo('should have a name');
 
   describe('#deck', function() {
-    it('should start with 7 cards', () => pending());
+    it.todo('should start with 7 cards');
   });
 
   describe('#play()', function() {
-    it('should remove 1 card from player deck', () => pending());
+    it.todo('should remove 1 card from player deck');
   });
 });
