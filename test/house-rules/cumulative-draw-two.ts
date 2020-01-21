@@ -3,7 +3,7 @@ import { Game } from '../../src/game';
 import CumulativeDrawTwo from '../../src/house-rules/cumulative-draw-two';
 
 describe('House Rule: Cumulative draw two', function() {
-  let game;
+  let game: Game;
 
   beforeEach(function() {
     game = new Game(['Player 1', 'Player 2', 'Player 3'], [CumulativeDrawTwo]);
