@@ -1,6 +1,6 @@
 # UNO
 
-> Uno game implemented in JavaScript
+Uno game implemented in JavaScript.
 
 [![npm package](https://img.shields.io/npm/v/uno-engine.svg?label=uno-engine)](https://www.npmjs.com/package/uno-engine)
 [![Build Status](https://img.shields.io/travis/danguilherme/uno/master.svg)](https://travis-ci.org/danguilherme/uno)
