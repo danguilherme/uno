@@ -2,8 +2,7 @@ language: node_js
 node_js:
   - 'node'
   - 'lts/*'
-  - '8'
-  - '6'
+  - '10'
 before_install:
   - yarn global add typescript webpack-cli typedoc
 deploy:
