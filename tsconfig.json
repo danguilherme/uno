@@ -2,6 +2,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "lib": ["ES6"],
+    "declaration": true,
     "esModuleInterop": true,
     "target": "es5",
     "noImplicitAny": true,
@@ -10,13 +11,8 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "*": [
-        "node_modules/*",
-        "src/types/*"
-      ]
+      "*": ["node_modules/*", "src/types/*"]
     }
   },
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src/**/*", "src/global"]
 }
