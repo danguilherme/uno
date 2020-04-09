@@ -21,7 +21,7 @@ export class Card {
   set color(color: Colors) {
     if (!this.isWildCard())
       throw new Error('Only wild cards can have theirs colors changed.');
-    else if (color < 0 || color > 3)
+    else if (typeof color === 'undefined' || color < 1 || color > 4)
       throw new Error('The color must be a value from Colors enum.');
 
     this._color = color;
@@ -75,6 +75,6 @@ export class Card {
   }
 
   toString() {
-    return `${this.color || 'NO_COLOR'} ${this.value}`;
+    return `${Colors[this.color] || 'NO_COLOR'} ${Values[this.value]}`;
   }
 }
