@@ -12,7 +12,7 @@
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "test": "jest --coverage --verbose",
     "test:watch": "yarn test --watchAll",
-    "prepublish": "yarn build"
+    "prepare": "yarn build"
   },
   "keywords": [
     "uno",
