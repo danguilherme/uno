@@ -1,4 +1,4 @@
-export enum Values {
+export enum Value {
   // numbers
   ZERO = 0,
   ONE = 1,
@@ -18,36 +18,34 @@ export enum Values {
   WILD_DRAW_FOUR = 14,
 }
 
-export namespace Values {
-  /**
-   * Returns true if `value` is {@link Values.WILD} or {@link Values.WILD_DRAW_FOUR}.
-   */
-  export function isWild(value: Values) {
-    return value === Values.WILD || value === Values.WILD_DRAW_FOUR;
-  }
+export const values = [
+  Value.ZERO,
+  Value.ONE,
+  Value.TWO,
+  Value.THREE,
+  Value.FOUR,
+  Value.FIVE,
+  Value.SIX,
+  Value.SEVEN,
+  Value.EIGHT,
+  Value.NINE,
+  Value.DRAW_TWO,
+  Value.REVERSE,
+  Value.SKIP,
+  Value.WILD,
+  Value.WILD_DRAW_FOUR,
+];
 
-  /**
-   * Runtime type checking
-   */
-  export function isValidValue(value: Values) {
-    return values.indexOf(value) !== -1;
-  }
+/**
+ * Returns true if `value` is {@link Value.WILD} or {@link Value.WILD_DRAW_FOUR}.
+ */
+export function isWild(value: Value) {
+  return value === Value.WILD || value === Value.WILD_DRAW_FOUR;
+}
 
-  export const values = [
-    Values.ZERO,
-    Values.ONE,
-    Values.TWO,
-    Values.THREE,
-    Values.FOUR,
-    Values.FIVE,
-    Values.SIX,
-    Values.SEVEN,
-    Values.EIGHT,
-    Values.NINE,
-    Values.DRAW_TWO,
-    Values.REVERSE,
-    Values.SKIP,
-    Values.WILD,
-    Values.WILD_DRAW_FOUR,
-  ];
+/**
+ * Runtime type checking
+ */
+export function isValidValue(value: Value) {
+  return values.indexOf(value) !== -1;
 }

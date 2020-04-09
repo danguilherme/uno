@@ -1,24 +1,22 @@
 /**
  * Enum holding available card colors.
  *
- * Red, Blue, Green and Yellow,
+ * RED, BLUE, GREEN and YELLOW,
  * represented with indexes
- * 0, 1, 2, 3, respectively.
+ * 1, 2, 3, 4 respectively.
  */
-export enum Colors {
+export enum Color {
   RED = 1,
   BLUE = 2,
   GREEN = 3,
   YELLOW = 4,
 }
 
-export namespace Colors {
-  /**
-   * Runtime type checking
-   */
-  export function isValidValue(value: Colors) {
-    return values.indexOf(value) !== -1;
-  }
+export const colors = [Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW];
 
-  export const values = [Colors.RED, Colors.BLUE, Colors.GREEN, Colors.YELLOW];
+/**
+ * Runtime type checking
+ */
+export function isValidColor(color: Color) {
+  return colors.indexOf(color) !== -1;
 }

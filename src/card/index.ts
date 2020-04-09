@@ -1,3 +1,3 @@
 export { Card } from './card';
-export { Colors } from './colors';
-export { Values } from './values';
+export * from './colors';
+export * from './values';
