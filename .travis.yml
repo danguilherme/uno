@@ -4,6 +4,8 @@ node_js:
   - 'lts/*'
   - '8'
   - '6'
+before_install:
+  - yarn global add typescript
 deploy:
   provider: npm
   email: guilhermeventura2@gmail.com
