@@ -1,12 +1,12 @@
-import { Colors } from './colors';
-import { Values } from './values';
+import { Color, isValidColor } from './colors';
+import { isValidValue, isWild, Value } from './values';
 
 export class Card {
-  private _value: Values;
-  private _color: Colors | undefined;
+  private _value: Value;
+  private _color: Color | undefined;
 
-  constructor(value: Values, color?: Colors) {
-    if (!Values.isWild(value) && color === undefined) {
+  constructor(value: Value, color?: Color) {
+    if (!isWild(value) && color === undefined) {
       throw Error('Only wild cards can be initialized with no color');
     }
 
@@ -18,11 +18,11 @@ export class Card {
     return this._value;
   }
 
-  set value(value: Values) {
+  set value(value: Value) {
     if (this._value !== undefined && !this.isWildCard())
       throw new Error('Card values cannot be changed.');
-    else if (!Values.isValidValue(value))
-      throw new Error('The value must be a value from Values enum.');
+    else if (!isValidValue(value))
+      throw new Error('The value must be a value from Value enum.');
 
     this._value = value;
   }
@@ -41,25 +41,25 @@ export class Card {
    * @throws if trying to change the color of a non-wild card.
    * @throws if trying to set this to an unexistent color.
    */
-  set color(color: Colors) {
+  set color(color: Color) {
     if (this._color !== undefined && !this.isWildCard())
       throw new Error('Only wild cards can have theirs colors changed.');
-    else if (color === undefined || !Colors.isValidValue(color))
-      throw new Error('The color must be a value from Colors enum.');
+    else if (color !== undefined && !isValidColor(color))
+      throw new Error('The color must be a value from Color enum.');
 
     this._color = color;
   }
 
   isWildCard() {
-    return Values.isWild(this.value);
+    return isWild(this.value);
   }
 
   isSpecialCard() {
     return (
       this.isWildCard() ||
-      this.value === Values.DRAW_TWO ||
-      this.value === Values.REVERSE ||
-      this.value === Values.SKIP
+      this.value === Value.DRAW_TWO ||
+      this.value === Value.REVERSE ||
+      this.value === Value.SKIP
     );
   }
 
@@ -69,12 +69,12 @@ export class Card {
    *
    * @example
    *
-   * const blueZero = new Card(Values.ZERO, Colors.BLUE);
-   * const wild = new Card(Values.WILD);
-   * const redSkip = new Card(Values.SKIP, Colors.RED);
+   * const blueZero = new Card(CardValue.ZERO, CardColor.BLUE);
+   * const wild = new Card(CardValue.WILD);
+   * const redSkip = new Card(CardValue.SKIP, CardColor.RED);
    * blueZero.matches(redSkip);
    * //> false
-   * blueZero.matches(new Card(Values.ZERO, Colors.YELLOW));
+   * blueZero.matches(new Card(CardValue.ZERO, CardColor.YELLOW));
    * //> true
    * wild.matches(redSkip);
    * //> true
@@ -95,12 +95,12 @@ export class Card {
 
   get score() {
     switch (this.value) {
-      case Values.DRAW_TWO:
-      case Values.SKIP:
-      case Values.REVERSE:
+      case Value.DRAW_TWO:
+      case Value.SKIP:
+      case Value.REVERSE:
         return 20;
-      case Values.WILD:
-      case Values.WILD_DRAW_FOUR:
+      case Value.WILD:
+      case Value.WILD_DRAW_FOUR:
         return 50;
       default:
         return this.value;
@@ -115,13 +115,13 @@ export class Card {
    * @param value Value to check against
    * @param color Color to check against
    */
-  is(value: Values, color?: Colors) {
+  is(value: Value, color?: Color) {
     let matches = this.value === value;
     if (!!color) matches = matches && this.color === color;
     return matches;
   }
 
   toString() {
-    return `${Colors[this.color] || 'NO_COLOR'} ${Values[this.value]}`;
+    return `${Color[this.color] || 'NO_COLOR'} ${Value[this.value]}`;
   }
 }

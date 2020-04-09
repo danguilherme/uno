@@ -1,6 +1,6 @@
-import { Card, Colors, Values } from '../src/card';
+import { Card, Color, Value } from '../src/card';
 import { Game } from '../src/game';
-import { GameDirections } from '../src/game-directions';
+import { GameDirection } from '../src/game-directions';
 import { Player } from '../src/player';
 
 describe('Game', function () {
@@ -82,18 +82,18 @@ describe('Game', function () {
       it('throws if user does not have the played card in hand', function () {
         const curr = game.currentPlayer;
 
-        curr.hand = [new Card(Values.ZERO, Colors.RED)];
+        curr.hand = [new Card(Value.ZERO, Color.RED)];
 
-        expect(() => game.play(new Card(Values.EIGHT, Colors.BLUE))).toThrow();
+        expect(() => game.play(new Card(Value.EIGHT, Color.BLUE))).toThrow();
       });
 
       it('throws if the card on discard pile does not match with played card', function () {
         const curr = game.currentPlayer;
         const discardedCard = game.discardedCard;
 
-        const blueZero = new Card(Values.ZERO, Colors.BLUE);
-        const redOne = new Card(Values.ONE, Colors.RED);
-        const yellowTwo = new Card(Values.TWO, Colors.YELLOW);
+        const blueZero = new Card(Value.ZERO, Color.BLUE);
+        const redOne = new Card(Value.ONE, Color.RED);
+        const yellowTwo = new Card(Value.TWO, Color.YELLOW);
 
         const playerCard = discardedCard.matches(blueZero)
           ? discardedCard.matches(redOne)
@@ -112,7 +112,7 @@ describe('Game', function () {
 
       it('throws if the played wild card does not have a color set', function () {
         const curr = game.currentPlayer;
-        const playerCard = new Card(Values.WILD);
+        const playerCard = new Card(Value.WILD);
 
         curr.hand = [playerCard];
 
@@ -124,7 +124,7 @@ describe('Game', function () {
         const discardedCard = game.discardedCard;
         const playerCard = new Card(
           discardedCard.value,
-          discardedCard.color == Colors.BLUE ? Colors.RED : Colors.BLUE,
+          discardedCard.color == Color.BLUE ? Color.RED : Color.BLUE,
         );
 
         curr.hand = [playerCard];
@@ -146,7 +146,7 @@ describe('Game', function () {
         const discardedCard = game.discardedCard;
         const playerCard = new Card(
           discardedCard.value,
-          discardedCard.color == Colors.BLUE ? Colors.RED : Colors.BLUE,
+          discardedCard.color == Color.BLUE ? Color.RED : Color.BLUE,
         );
 
         curr.hand = [playerCard, playerCard];
@@ -162,8 +162,8 @@ describe('Game', function () {
         let curr = game.currentPlayer;
         let discardedCard = game.discardedCard;
         let wildCard = new Card(
-          Values.WILD,
-          discardedCard.color == Colors.RED ? Colors.BLUE : Colors.RED,
+          Value.WILD,
+          discardedCard.color == Color.RED ? Color.BLUE : Color.RED,
         );
 
         curr.hand = [wildCard];
@@ -174,8 +174,8 @@ describe('Game', function () {
         curr = game.currentPlayer;
         discardedCard = game.discardedCard;
         wildCard = new Card(
-          Values.WILD_DRAW_FOUR,
-          discardedCard.color == Colors.RED ? Colors.BLUE : Colors.RED,
+          Value.WILD_DRAW_FOUR,
+          discardedCard.color == Color.RED ? Color.BLUE : Color.RED,
         );
 
         curr.hand = [wildCard];
@@ -188,7 +188,7 @@ describe('Game', function () {
         const curr = game.currentPlayer;
         const next = game.nextPlayer;
         const discardedCard = game.discardedCard;
-        const skip = new Card(Values.SKIP, discardedCard.color);
+        const skip = new Card(Value.SKIP, discardedCard.color);
 
         curr.hand = [skip, skip];
 
@@ -202,7 +202,7 @@ describe('Game', function () {
         const curr = game.currentPlayer;
         const next = game.nextPlayer;
         const discardedCard = game.discardedCard;
-        const reverse = new Card(Values.REVERSE, discardedCard.color);
+        const reverse = new Card(Value.REVERSE, discardedCard.color);
 
         curr.hand = [reverse, reverse];
 
@@ -218,8 +218,8 @@ describe('Game', function () {
         const oldLength = next.hand.length;
         const discardedCard = game.discardedCard;
 
-        const drawTwo = new Card(Values.DRAW_TWO, discardedCard.color);
-        const reverse = new Card(Values.REVERSE, discardedCard.color);
+        const drawTwo = new Card(Value.DRAW_TWO, discardedCard.color);
+        const reverse = new Card(Value.REVERSE, discardedCard.color);
 
         curr.hand = [drawTwo, drawTwo];
 
@@ -268,8 +268,8 @@ describe('Game', function () {
       it('makes user with 1 card that not yelled UNO! to draw 2 cards', function () {
         const curr = game.currentPlayer;
         let discardedCard = game.discardedCard;
-        const drawTwo = new Card(Values.DRAW_TWO, discardedCard.color);
-        const reverse = new Card(Values.REVERSE, discardedCard.color);
+        const drawTwo = new Card(Value.DRAW_TWO, discardedCard.color);
+        const reverse = new Card(Value.REVERSE, discardedCard.color);
 
         curr.hand = [reverse, drawTwo];
 
@@ -285,8 +285,8 @@ describe('Game', function () {
       it('does not make user draw if he has already drawn', function () {
         const curr = game.currentPlayer;
         const discardedCard = game.discardedCard;
-        const drawTwo = new Card(Values.DRAW_TWO, discardedCard.color);
-        const reverse = new Card(Values.REVERSE, discardedCard.color);
+        const drawTwo = new Card(Value.DRAW_TWO, discardedCard.color);
+        const reverse = new Card(Value.REVERSE, discardedCard.color);
 
         curr.hand = [reverse, drawTwo];
 
@@ -304,8 +304,8 @@ describe('Game', function () {
       it('does not make user draw if he has already yelled UNO!', function () {
         const curr = game.currentPlayer;
         const discardedCard = game.discardedCard;
-        const drawTwo = new Card(Values.DRAW_TWO, discardedCard.color);
-        const reverse = new Card(Values.REVERSE, discardedCard.color);
+        const drawTwo = new Card(Value.DRAW_TWO, discardedCard.color);
+        const reverse = new Card(Value.REVERSE, discardedCard.color);
 
         curr.hand = [reverse, drawTwo];
         game.uno();
@@ -331,8 +331,8 @@ describe('Game', function () {
       it('maintains current player turn when played REVERSE', function () {
         const curr = game.currentPlayer;
         const discardedCard = game.discardedCard;
-        const reverse = new Card(Values.REVERSE, discardedCard.color);
-        const one = new Card(Values.ONE, discardedCard.color);
+        const reverse = new Card(Value.REVERSE, discardedCard.color);
+        const one = new Card(Value.ONE, discardedCard.color);
 
         curr.hand = [reverse, one, one];
 
@@ -343,11 +343,11 @@ describe('Game', function () {
         expect(game.currentPlayer).not.toBe(curr);
       });
 
-      it('should maintain current player turn when played SKIP', function() {
+      it('should maintain current player turn when played SKIP', function () {
         const curr = game.currentPlayer;
         const discardedCard = game.discardedCard;
-        const skip = new Card(Values.SKIP, discardedCard.color);
-        const one = new Card(Values.ONE, discardedCard.color);
+        const skip = new Card(Value.SKIP, discardedCard.color);
+        const one = new Card(Value.ONE, discardedCard.color);
 
         curr.hand = [skip, one, one];
 
@@ -358,12 +358,12 @@ describe('Game', function () {
         expect(game.currentPlayer).not.toBe(curr);
       });
 
-      it('should maintain current player turn when played SKIP, then REVERSE', function() {
+      it('should maintain current player turn when played SKIP, then REVERSE', function () {
         const curr = game.currentPlayer;
         const discardedCard = game.discardedCard;
-        const skip = new Card(Values.SKIP, discardedCard.color);
-        const reverse = new Card(Values.REVERSE, discardedCard.color);
-        const one = new Card(Values.ONE, discardedCard.color);
+        const skip = new Card(Value.SKIP, discardedCard.color);
+        const reverse = new Card(Value.REVERSE, discardedCard.color);
+        const one = new Card(Value.ONE, discardedCard.color);
 
         curr.hand = [skip, reverse, one, one];
 
@@ -413,16 +413,16 @@ describe('Game', function () {
     describe('#discardedCard', function () {
       it('changes discarded card', function () {
         expect(
-          () => (game.discardedCard = new Card(Values.ZERO, Colors.RED)),
+          () => (game.discardedCard = new Card(Value.ZERO, Color.RED)),
         ).not.toThrow();
-        expect(game.discardedCard.value).toBe(Values.ZERO);
-        expect(game.discardedCard.color).toBe(Colors.RED);
+        expect(game.discardedCard.value).toBe(Value.ZERO);
+        expect(game.discardedCard.color).toBe(Color.RED);
       });
 
       it('does not change discarded card to card with no color', function () {
         const originalCard = game.discardedCard;
         expect(
-          () => (game.discardedCard = new Card(Values.WILD, undefined)),
+          () => (game.discardedCard = new Card(Value.WILD, undefined)),
         ).toThrow();
         expect(game.discardedCard.value).toBe(originalCard.value);
         expect(game.discardedCard.color).toBe(originalCard.color);
@@ -432,9 +432,9 @@ describe('Game', function () {
     describe('#playingDirection', function () {
       it('changes gameplay direction', function () {
         expect(
-          () => (game.playingDirection = GameDirections.COUNTER_CLOCKWISE),
+          () => (game.playingDirection = GameDirection.COUNTER_CLOCKWISE),
         ).not.toThrow();
-        expect(game.playingDirection).toBe(GameDirections.COUNTER_CLOCKWISE);
+        expect(game.playingDirection).toBe(GameDirection.COUNTER_CLOCKWISE);
       });
     });
   });

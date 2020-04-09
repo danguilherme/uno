@@ -1,4 +1,4 @@
-import { Values } from '../card';
+import { Value } from '../card';
 import {
   BeforeCardPlayEvent,
   BeforeDrawEvent,
@@ -31,7 +31,7 @@ function CumulativeDrawTwo(game: Game) {
   function onCardPlay(game: Game, event: CardPlayEvent) {
     const { card } = event;
 
-    if (card.is(Values.DRAW_TWO)) {
+    if (card.is(Value.DRAW_TWO)) {
       cardsToDraw += 2;
       state = 'stacking';
 
@@ -59,7 +59,7 @@ function CumulativeDrawTwo(game: Game) {
   function beforePlay(game: Game, event: BeforeCardPlayEvent) {
     const { card, player } = event;
 
-    if (isStacking() && !card.is(Values.DRAW_TWO))
+    if (isStacking() && !card.is(Value.DRAW_TWO))
       throw new Error(`${player} must draw cards`);
   }
 

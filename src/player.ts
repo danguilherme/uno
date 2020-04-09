@@ -1,4 +1,4 @@
-import { Card, Values } from './card';
+import { Card, Value } from './card';
 
 export class Player {
   name: string;
@@ -11,17 +11,17 @@ export class Player {
     this.name = name;
   }
 
-  getCardByValue(value: Values) {
+  getCardByValue(value: Value) {
     if (!value) return undefined;
 
-    return this.hand.find(c => c.value === value);
+    return this.hand.find((c) => c.value === value);
   }
 
   hasCard(card: Card) {
     if (!card) return false;
 
     return this.hand.some(
-      c => c.value === card.value && c.color === card.color,
+      (c) => c.value === card.value && c.color === card.color,
     );
   }
 
@@ -29,7 +29,7 @@ export class Player {
     if (!this.hasCard(card)) return;
 
     const i = this.hand.findIndex(
-      c => c.value === card.value && c.color === card.color,
+      (c) => c.value === card.value && c.color === card.color,
     );
     this.hand.splice(i, 1);
   }
