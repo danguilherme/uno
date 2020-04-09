@@ -16,7 +16,7 @@ describe('Deck', function () {
     deck = new Deck();
   });
 
-  it('should have a public API', function () {
+  it('has a public API', function () {
     expect(deck).toHaveProperty('cards');
     expect(deck).toHaveProperty('length');
     expect(typeof deck.length).toBe('number');
@@ -24,11 +24,11 @@ describe('Deck', function () {
     expect(typeof deck.draw).toBe('function');
   });
 
-  it('should have 108 cards', function () {
+  it('has 108 cards', function () {
     expect(deck).toHaveLength(108);
   });
 
-  it('should have 25 cards for each color', function () {
+  it('has 25 cards for each color', function () {
     expect({
       RED: deck.cards.filter(filterByColor(Colors.RED)).length,
       BLUE: deck.cards.filter(filterByColor(Colors.BLUE)).length,
@@ -42,62 +42,62 @@ describe('Deck', function () {
     });
   });
 
-  it('should have 76 numbers', function () {
+  it('has 76 numbers', function () {
     const numbers = (card: Card) =>
       card.value >= Values.ZERO && card.value <= Values.NINE;
     expect(deck.cards.filter(numbers)).toHaveLength(76);
   });
 
-  it('should have 4 zeros', function () {
+  it('has 4 zeros', function () {
     const zeroes = deck.cards.filter(filterByValue(Values.ZERO));
     expect(zeroes).toHaveLength(4);
   });
 
-  it('should have 8 nines', function () {
+  it('has 8 nines', function () {
     const nines = deck.cards.filter(filterByValue(Values.NINE));
     expect(nines).toHaveLength(8);
   });
 
-  it('should have 8 draw two', function () {
+  it('has 8 draw two', function () {
     const drawTwos = deck.cards.filter(filterByValue(Values.DRAW_TWO));
     expect(drawTwos).toHaveLength(8);
   });
 
-  it('should have 8 skip', function () {
+  it('has 8 skip', function () {
     const skips = deck.cards.filter(filterByValue(Values.SKIP));
     expect(skips).toHaveLength(8);
   });
 
-  it('should have 8 reverse', function () {
+  it('has 8 reverse', function () {
     const reverses = deck.cards.filter(filterByValue(Values.REVERSE));
     expect(reverses).toHaveLength(8);
   });
 
-  it('should have 4 wild', function () {
+  it('has 4 wild', function () {
     const wilds = deck.cards.filter(filterByValue(Values.WILD));
     expect(wilds).toHaveLength(4);
   });
 
-  it('should have 4 wild draw four', function () {
+  it('has 4 wild draw four', function () {
     const wildDrawFours = deck.cards.filter(
       filterByValue(Values.WILD_DRAW_FOUR),
     );
     expect(wildDrawFours).toHaveLength(4);
   });
 
-  it('should have 107 cards after a draw', function () {
+  it('has 107 cards after a draw', function () {
     expect(deck).toHaveLength(108);
     deck.draw(1);
     expect(deck).toHaveLength(107);
   });
 
-  it('should have 108 cards after all cards are drawn', function () {
+  it('has 108 cards after all cards are drawn', function () {
     expect(deck).toHaveLength(108);
     deck.draw(108);
     expect(deck).toHaveLength(108);
   });
 
-  it('should have 107 cards after all cards + 1 are drawn', function () {
+  it('has 107 cards after all cards + 1 are drawn', function () {
     expect(deck).toHaveLength(108);
     deck.draw(109);
     expect(deck).toHaveLength(107);
@@ -105,54 +105,54 @@ describe('Deck', function () {
 
   describe('Card', function () {
     describe('#constructor', function () {
-      it('should create a number card', function () {
+      it('creates a number card', function () {
         const redEight = new Card(Values.EIGHT, Colors.RED);
         expect(redEight.value).toBe(Values.EIGHT);
         expect(redEight.color).toBe(Colors.RED);
       });
 
-      it('should create a wild card with no color', function () {
+      it('creates a wild card with no color', function () {
         const wild = new Card(Values.WILD);
         expect(wild.value).toBe(Values.WILD);
         expect(wild.color).toBeFalsy();
       });
 
-      it('should throw when creating a normal card with no color', function () {
+      it('throws when creating a normal card with no color', function () {
         expect(() => new Card(Values.SIX)).toThrow();
       });
     });
 
     describe('#matches()', function () {
-      it('should match a card with same value and color', function () {
+      it('matches a card with same value and color', function () {
         const redSkip = new Card(Values.SKIP, Colors.RED);
         expect(redSkip.matches(new Card(Values.SKIP, Colors.RED))).toBe(true);
       });
 
-      it('should match a card with same value', function () {
+      it('matches a card with same value', function () {
         const redSkip = new Card(Values.SKIP, Colors.RED);
         expect(redSkip.matches(new Card(Values.SKIP, Colors.BLUE))).toBe(true);
       });
 
-      it('should match a card with same color', function () {
+      it('matches a card with same color', function () {
         const redSkip = new Card(Values.SKIP, Colors.RED);
         expect(redSkip.matches(new Card(Values.REVERSE, Colors.RED))).toBe(
           true,
         );
       });
 
-      it('should not match a card with different value and color', function () {
+      it('does not match a card with different value and color', function () {
         const redSkip = new Card(Values.SKIP, Colors.RED);
         expect(redSkip.matches(new Card(Values.REVERSE, Colors.YELLOW))).toBe(
           false,
         );
       });
 
-      it('should match wild card with same color', function () {
+      it('matches wild card with same color', function () {
         const redSkip = new Card(Values.SKIP, Colors.RED);
         expect(redSkip.matches(new Card(Values.WILD, Colors.RED))).toBe(true);
       });
 
-      it('should throw when one or more cards do not have a color set and it is not a wild', function () {
+      it('throws when one or more cards do not have a color set and it is not a wild', function () {
         const wild1 = new Card(Values.WILD);
         const wild2 = new Card(Values.WILD_DRAW_FOUR);
         const wild3 = new Card(Values.WILD_DRAW_FOUR, Colors.BLUE);
@@ -164,12 +164,12 @@ describe('Deck', function () {
     });
 
     describe('#color', function () {
-      it('should throw exception when setting color of a normal card', function () {
+      it('throws exception when setting color of a normal card', function () {
         const yellowReverse = new Card(Values.REVERSE, Colors.YELLOW);
         expect(() => (yellowReverse.color = Colors.RED)).toThrow();
       });
 
-      it('should change color from none to green to a wild card', function () {
+      it('changes color from none to green to a wild card', function () {
         const wild = new Card(Values.WILD);
         expect(wild.color).toBeUndefined();
 
@@ -179,7 +179,7 @@ describe('Deck', function () {
         expect(wild.color).toBe(Colors.GREEN);
       });
 
-      it('should change color from red to yellow to a wild draw four card', function () {
+      it('changes color from red to yellow to a wild draw four card', function () {
         const wildDrawFour = new Card(Values.WILD_DRAW_FOUR, Colors.RED);
         expect(wildDrawFour.color).toBeDefined();
         expect(wildDrawFour.color).toBe(Colors.RED);
@@ -192,7 +192,7 @@ describe('Deck', function () {
     });
 
     describe('#score', function () {
-      it('should return correct values', function () {
+      it('returns correct values', function () {
         expect(new Card(Values.ZERO, Colors.YELLOW).score).toBe(0);
         expect(new Card(Values.ONE, Colors.YELLOW).score).toBe(1);
         expect(new Card(Values.TWO, Colors.YELLOW).score).toBe(2);
