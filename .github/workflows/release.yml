@@ -13,7 +13,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
           matrix:
-            node-version: ['10.x', '12.x', '14.x', '16.x']
+            node-version: ['20.x', '22.x', 'lts/*']
         concurrency:
             group: test:${{ github.event_name }}:${{ github.ref }}:node-${{ matrix.node-version }}
             cancel-in-progress: true
