@@ -59,7 +59,7 @@
     "babel-loader": "^8.0.6",
     "chai": "^4.2.0",
     "jest": "^24.9.0",
-    "semantic-release": "^17.0.0",
+    "semantic-release": "^19.0.3",
     "ts-jest": "^24.3.0",
     "tslint": "^5.20.1",
     "typedoc": "^0.17.4",
