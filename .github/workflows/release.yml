@@ -8,12 +8,15 @@ on:
 permissions:
     contents: write
 jobs:
-    release:
-        name: 'Test, Lint, Build and Release'
+    test:
+        name: 'Test & Lint'
         runs-on: ubuntu-latest
         concurrency:
             group: test:${{ github.event_name }}:${{ github.ref }}
             cancel-in-progress: true
+        strategy:
+            matrix:
+                node-version: ['10.x', '12.x', '14.x', '16.x']
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -21,10 +24,10 @@ jobs:
                   fetch-depth: 0
             - name: Enable Corepack
               run: corepack enable
-            - name: Setup Node.js
+            - name: Setup Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v4
               with:
-                  node-version-file: '.nvmrc'
+                  node-version: ${{ matrix.node-version }}
                   cache: 'yarn'
             - name: Install dependencies
               run: yarn install --immutable
@@ -34,33 +37,61 @@ jobs:
             # Lint
             - name: 📐 Lint
               run: yarn lint
-            # Build
+    build:
+        name: 'Build'
+        runs-on: ubuntu-latest
+        concurrency:
+            group: build:${{ github.event_name }}:${{ github.ref }}
+            cancel-in-progress: true
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Enable Corepack
+              run: corepack enable
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: '.nvmrc'
+                  cache: 'yarn'
+            - name: Install dependencies
+              run: yarn install --immutable
             - name: 📦 Build
               run: yarn build
-            # Release
-            - name: 🚀 Semantic Release
-              id: release
-              uses: cycjimmy/semantic-release-action@v4
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-                  DEBUG: ${{ secrets.ACTIONS_STEP_DEBUG == 'true' && 'semantic-release:*' || '' }}
+            - name: ⬆️ Upload built library
+              uses: actions/upload-artifact@v4 # upload built files to be used in release job
               with:
-                  semantic_version: 22.0.12 # semantic-release version, same as in package.json
-            - name: 📝 Add release notes to build summary
-              if: steps.release.outputs.new_release_published == 'true'
-              run: |
-                  NEW_RELEASE_VERSION=${{ steps.release.outputs.new_release_version }}
-                  echo "# New package version published: \`v$NEW_RELEASE_VERSION\`" >> $GITHUB_STEP_SUMMARY
-                  echo "" >> $GITHUB_STEP_SUMMARY
-                  echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-                  echo "yarn add uno-engine@$NEW_RELEASE_VERSION" >> $GITHUB_STEP_SUMMARY
-                  echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-                  echo "" >> $GITHUB_STEP_SUMMARY
-                  yarn exec ts-node build/append-to-file.ts $GITHUB_STEP_SUMMARY <<"END_OF_CONTENT"
-                  ${{ steps.release.outputs.new_release_notes }}
-                  END_OF_CONTENT
-            - name: ∅ No new package published
-              if: steps.release.outputs.new_release_published == 'false'
-              run: |
-                  echo "# No new version published" >> $GITHUB_STEP_SUMMARY
+                  name: dist
+                  path: dist
+                  retention-days: 1
+    release:
+        name: 'Release'
+        needs: [test, build]
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            issues: write
+            pull-requests: write
+            packages: write
+        concurrency:
+            group: release:${{ github.event_name }}:${{ github.ref }}
+            cancel-in-progress: true
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  persist-credentials: false
+            - name: Enable Corepack
+              run: corepack enable
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: '.nvmrc'
+                  cache: 'yarn'
+            - name: Install dependencies
+              run: yarn install --immutable
+            - name: ⬇️ Download built library
+              uses: actions/download-artifact@v4
+              with:
+                  name: dist
+                  path: dist
