@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/danguilherme/uno/compare/v2.0.1...v2.0.2) (2024-04-30)
+
+
+### Bug Fixes
+
+* use Rollup for bundling instead of Webpack + Babel runtime ([9f1c4c6](https://github.com/danguilherme/uno/commit/9f1c4c61f7048ddf417126d436ad5e14606ca315))
+
 ## [2.0.1](https://github.com/danguilherme/uno/compare/v2.0.0...v2.0.1) (2024-04-30)
 
 
