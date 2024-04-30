@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "description": "Uno game implementation in JavaScript",
   "homepage": "https://github.com/danguilherme/uno#readme",
-  "main": "dist/studio-essentials.cjs.js",
-  "module": "dist/studio-essentials.esm.js",
-  "browser": "dist/studio-essentials.umd.js",
+  "main": "dist/uno-engine.cjs.js",
+  "module": "dist/uno-engine.esm.js",
+  "browser": "dist/uno-engine.umd.js",
   "types": "dist/src/uno-engine.d.ts",
   "scripts": {
     "build": "rollup -c --bundleConfigAsCjs",
