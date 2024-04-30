@@ -1,0 +1,66 @@
+name: 'Build & Publish'
+on:
+    push:
+        branches:
+            - '**'
+        tags-ignore:
+            - '**'
+permissions:
+    contents: write
+jobs:
+    release:
+        name: 'Test, Lint, Build and Release'
+        runs-on: ubuntu-latest
+        concurrency:
+            group: test:${{ github.event_name }}:${{ github.ref }}
+            cancel-in-progress: true
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - name: Enable Corepack
+              run: corepack enable
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: '.nvmrc'
+                  cache: 'yarn'
+            - name: Install dependencies
+              run: yarn install --immutable
+            # Test
+            - name: 🧪 Test
+              run: yarn test
+            # Lint
+            - name: 📐 Lint
+              run: yarn lint
+            # Build
+            - name: 📦 Build
+              run: yarn build
+            # Release
+            - name: 🚀 Semantic Release
+              id: release
+              uses: cycjimmy/semantic-release-action@v4
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  DEBUG: ${{ secrets.ACTIONS_STEP_DEBUG == 'true' && 'semantic-release:*' || '' }}
+              with:
+                  semantic_version: 22.0.12 # semantic-release version, same as in package.json
+            - name: 📝 Add release notes to build summary
+              if: steps.release.outputs.new_release_published == 'true'
+              run: |
+                  NEW_RELEASE_VERSION=${{ steps.release.outputs.new_release_version }}
+                  echo "# New package version published: \`v$NEW_RELEASE_VERSION\`" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+                  echo "yarn add uno-engine@$NEW_RELEASE_VERSION" >> $GITHUB_STEP_SUMMARY
+                  echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  yarn exec ts-node build/append-to-file.ts $GITHUB_STEP_SUMMARY <<"END_OF_CONTENT"
+                  ${{ steps.release.outputs.new_release_notes }}
+                  END_OF_CONTENT
+            - name: ∅ No new package published
+              if: steps.release.outputs.new_release_published == 'false'
+              run: |
+                  echo "# No new version published" >> $GITHUB_STEP_SUMMARY

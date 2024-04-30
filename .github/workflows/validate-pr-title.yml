@@ -1,0 +1,33 @@
+name: 'Validate PR Title'
+on:
+    pull_request:
+        types: [opened, reopened, synchronize, edited]
+jobs:
+    lint-pr-title:
+        name: 'Lint PR Title'
+        runs-on: ubuntu-latest
+        concurrency:
+            group: lint-pr-title:${{ github.event_name }}:${{ github.ref }}
+            cancel-in-progress: true
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  persist-credentials: false
+            - name: Enable Corepack
+              run: corepack enable
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: '.nvmrc'
+                  cache: 'yarn'
+            - name: Install dependencies
+              run: yarn install --immutable
+            - name: Lint
+              run: |
+                  yarn lint:commit-message <<"EOM"
+                  ${{ github.event.pull_request.title }}
+
+                  ${{ github.event.pull_request.body }}
+                  EOM
