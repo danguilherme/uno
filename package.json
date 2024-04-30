@@ -42,5 +42,6 @@
     "tslint": "^5.10.0",
     "typescript": "^2.9.2",
     "webpack": "^2.2.1"
-  }
+  },
+  "packageManager": "yarn@1.22.19"
 }
