@@ -8,8 +8,8 @@ on:
 permissions:
     contents: write
 jobs:
-    test:
-        name: 'Test & Lint Code'
+    release:
+        name: 'Test, Lint, Build and Release'
         runs-on: ubuntu-latest
         concurrency:
             group: test:${{ github.event_name }}:${{ github.ref }}
@@ -28,68 +28,16 @@ jobs:
                   cache: 'yarn'
             - name: Install dependencies
               run: yarn install --immutable
-            - name: 📐 Lint
-              run: yarn lint
+            # Test
             - name: 🧪 Test
               run: yarn test
-    build:
-        name: 'Build'
-        runs-on: ubuntu-latest
-        concurrency:
-            group: build:${{ github.event_name }}:${{ github.ref }}
-            cancel-in-progress: true
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
-            - name: Enable Corepack
-              run: corepack enable
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version-file: '.nvmrc'
-                  cache: 'yarn'
-            - name: Install dependencies
-              run: yarn install --immutable
+            # Lint
+            - name: 📐 Lint
+              run: yarn lint
+            # Build
             - name: 📦 Build
               run: yarn build
-            - name: ⬆️ Upload built library
-              uses: actions/upload-artifact@v4 # upload built files to be used in release job
-              with:
-                  name: dist
-                  path: dist
-                  retention-days: 1
-    release:
-        name: 'Release'
-        needs: [test, build]
-        runs-on: ubuntu-latest
-        permissions:
-            contents: write
-            issues: write
-            pull-requests: write
-            packages: write
-        concurrency:
-            group: release:${{ github.event_name }}:${{ github.ref }}
-            cancel-in-progress: true
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
-                  persist-credentials: false
-            - name: Enable Corepack
-              run: corepack enable
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version-file: '.nvmrc'
-                  cache: 'yarn'
-            - name: Install dependencies
-              run: yarn install --immutable
-            - name: ⬇️ Download built library
-              uses: actions/download-artifact@v4
-              with:
-                  name: dist
-                  path: dist
+            # Release
             - name: 🚀 Semantic Release
               id: release
               uses: cycjimmy/semantic-release-action@v4
