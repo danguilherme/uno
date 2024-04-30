@@ -1,0 +1,12 @@
+# Specify a non-default branch for pull requests for npm
+
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    # Raise pull requests for version updates
+    # to pip against the `develop` branch
+    target-branch: "develop"
+    # Labels on pull requests for security and version updates
+    labels:
+      - "dependencies"
