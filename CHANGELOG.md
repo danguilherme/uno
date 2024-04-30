@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/danguilherme/uno/compare/v2.0.0...v2.0.1) (2024-04-30)
+
+
+### Bug Fixes
+
+* add changelog to package ([3eddb35](https://github.com/danguilherme/uno/commit/3eddb3505d88f0b347f3ef0d2ba820951d4424d2))
+
 ## [2.0.0](https://github.com/danguilherme/uno/compare/v1.1.0...v2.0.0) (2024-04-30)
 
 
