@@ -1,7 +1,12 @@
 # UNO
-> Uno game implemented in JavaScript
 
-[![Build Status](https://travis-ci.org/danguilherme/uno.svg?branch=master)](https://travis-ci.org/danguilherme/uno)
+Uno game implemented in JavaScript.
+
+[![npm package](https://img.shields.io/npm/v/uno-engine.svg?label=uno-engine)](https://www.npmjs.com/package/uno-engine)
+[![Build Status](https://img.shields.io/travis/danguilherme/uno/master.svg)](https://travis-ci.org/danguilherme/uno)
+[![License](https://img.shields.io/github/license/danguilherme/uno.svg)](LICENSE)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
+
 
 ## Installation
 ```bash
@@ -39,34 +44,34 @@ const card = player.getCardByValue(value);  // get the exact card in the player'
 
 ### Card Properties
 ```ts
-import { Colors, Values } from 'uno-engine';
+import { Color, Value } from 'uno-engine';
 
 const card = game.discardedCard;  // current card in-play
 const cardColor = card.color;     // get the index of the card color: 0 to 3
                                   // (WILD and WILD DRAW FOUR will not have this property set)
-Colors[cardColor];                // get the name of the color: RED, BLUE, GREEN, or YELLOW
+Color[cardColor];                 // get the name of the color: RED, BLUE, GREEN, or YELLOW
 
 // Card value
 const cardValue = card.value; // get the index of the card value: 0 to 14
-Values[cardValue];            // get the name of the card:
+Value[cardValue];             // get the name of the card:
                               // 0-9, SKIP, REVERSE, DRAW_TWO, WILD, or WILD_DRAW_TWO
 
 // Get card from value/color strings
-const value = Values.SIX;
-const color = Colors.BLUE;
+const value = Value.SIX;
+const color = Color.BLUE;
 const card = new Card(value, color);
 
 // Set WILD or WD4 color
 const [color, value] = ['GREEN', 'WILD'];   // get args from player input
 const card = player.getCardByValue(value);  // get exact WILD/WD4 in player's hand
-card.color = Colors[color];                 // set color of WILD/WD4 in hand
+card.color = Color[color];                  // set color of WILD/WD4 in hand
 
 // Get Card from args function
 const getCard = ([color, value], player) => {
-  let card = new Card(Values[value], Colors[color]);
+  let card = new Card(Value[value], Color[color]);
   if (value === 'WILD' || value === 'WILD_DRAW_FOUR') {
-    card = player.getCardByValue(Values[value]);
-    card.color = Colors[color];
+    card = player.getCardByValue(Value[value]);
+    card.color = Color[color];
   }
   return card;
 };

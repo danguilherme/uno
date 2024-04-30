@@ -1,4 +1,4 @@
-import { Card, Values } from './card';
+import { Card, Value } from './card';
 import { Deck } from './deck';
 import {
   BeforeCardPlayEvent,
@@ -10,44 +10,25 @@ import {
   GameEndEvent,
   NextPlayerEvent,
 } from './events';
-import { GameDirections } from './game-directions';
+import { GameDirection } from './game-directions';
 import { Player } from './player';
 
 const CARDS_PER_PLAYER = 7;
 
+/**
+ * Uno game.
+ *
+ * @fires `beforedraw`
+ * @fires `draw`
+ * @fires `beforepass`
+ * @fires `beforecardplay`
+ * @fires `cardplay`
+ * @fires `nextplayer`
+ * @fires `end`
+ */
 export class Game extends CancelableEventEmitter {
-  // events:
-  /**
-   * @event Game#beforedraw
-   * @type {BeforeDrawEvent}
-   */
-  /**
-   * @event Game#draw
-   * @type {DrawEvent}
-   */
-  /**
-   * @event Game#beforepass
-   * @type {BeforePassEvent}
-   */
-  /**
-   * @event Game#beforecardplay
-   * @type {BeforeCardPlayEvent}
-   */
-  /**
-   * @event Game#cardplay
-   * @type {CardPlayEvent}
-   */
-  /**
-   * @event Game#nextplayer
-   * @type {NextPlayerEvent}
-   */
-  /**
-   * @event Game#end
-   * @type {GameEndEvent}
-   */
-
   private drawPile: Deck;
-  private direction: GameDirections;
+  private direction: GameDirection;
   private _currentPlayer: Player;
   private _players: Player[] = [];
   private _discardedCard: Card;
@@ -69,15 +50,17 @@ export class Game extends CancelableEventEmitter {
     super();
 
     this._players = this.fixPlayers(playerNames);
-    houseRules.forEach(rule => rule.setup(this));
+    houseRules.forEach((rule) => rule.setup(this));
     this.newGame();
   }
 
   newGame() {
     this.drawPile = new Deck();
-    this.direction = GameDirections.CLOCKWISE;
+    this.direction = GameDirection.CLOCKWISE;
 
-    this._players.forEach(p => (p.hand = this.drawPile.draw(CARDS_PER_PLAYER)));
+    this._players.forEach(
+      (p) => (p.hand = this.drawPile.draw(CARDS_PER_PLAYER)),
+    );
 
     // do not start with special cards (REVERSE, DRAW, etc)
     do {
@@ -135,10 +118,10 @@ export class Game extends CancelableEventEmitter {
     return this.direction;
   }
 
-  set playingDirection(dir: GameDirections) {
+  set playingDirection(dir: GameDirection) {
     if (
-      dir !== GameDirections.CLOCKWISE &&
-      dir != GameDirections.COUNTER_CLOCKWISE
+      dir !== GameDirection.CLOCKWISE &&
+      dir != GameDirection.COUNTER_CLOCKWISE
     )
       throw new Error('Invalid direction');
 
@@ -146,8 +129,8 @@ export class Game extends CancelableEventEmitter {
   }
 
   /**
-   * @fires Game#beforedraw
-   * @fires Game#draw
+   * @fires `beforedraw`
+   * @fires `draw`
    */
   public draw(player?: Player, qty?: number, { silent } = { silent: false }) {
     if (arguments.length == 0) player = this._currentPlayer;
@@ -168,8 +151,8 @@ export class Game extends CancelableEventEmitter {
   }
 
   /**
-   * @fires Game#beforepass
-   * @fires Game#nextplayer
+   * @fires `beforepass`
+   * @fires `nextplayer`
    */
   pass() {
     if (!this.drawn)
@@ -182,10 +165,10 @@ export class Game extends CancelableEventEmitter {
   }
 
   /**
-   * @fires Game#beforecardplay
-   * @fires Game#cardplay
-   * @fires Game#nextplayer
-   * @fires Game#end
+   * @fires `beforecardplay`
+   * @fires `cardplay`
+   * @fires `nextplayer`
+   * @fires `end`
    */
   play(card: Card, { silent } = { silent: false }) {
     const currentPlayer = this._currentPlayer;
@@ -226,18 +209,18 @@ export class Game extends CancelableEventEmitter {
     }
 
     switch (this._discardedCard.value) {
-      case Values.WILD_DRAW_FOUR:
+      case Value.WILD_DRAW_FOUR:
         this.privateDraw(this.getNextPlayer(), 4);
         this.goToNextPlayer(true);
         break;
-      case Values.DRAW_TWO:
+      case Value.DRAW_TWO:
         this.privateDraw(this.getNextPlayer(), 2);
         this.goToNextPlayer(true);
         break;
-      case Values.SKIP:
+      case Value.SKIP:
         this.goToNextPlayer(true);
         break;
-      case Values.REVERSE:
+      case Value.REVERSE:
         this.reverseGame();
         if (this._players.length == 2)
           // Reverse works like Skip
@@ -248,6 +231,16 @@ export class Game extends CancelableEventEmitter {
     this.goToNextPlayer();
   }
 
+  /**
+   * Yell UNO!
+   *
+   * @param yellingPlayer
+   * Who is yelling UNO!
+   * If no player is given, {@link Game.currentPlayer} is used for this value.
+   *
+   * @returns
+   * The players that need to draw because they did not yell Uno while having 1 card.
+   */
   uno(yellingPlayer?: Player) {
     yellingPlayer = yellingPlayer || this._currentPlayer;
 
@@ -265,7 +258,7 @@ export class Game extends CancelableEventEmitter {
 
       // is there anyone with 1 card at hand that did not yell uno?
       drawingPlayers = this._players.filter(
-        p => p.hand.length == 1 && !this.yellers[p.name],
+        (p) => p.hand.length == 1 && !this.yellers[p.name],
       );
 
       // if there isn't anyone...
@@ -275,7 +268,7 @@ export class Game extends CancelableEventEmitter {
       }
     }
 
-    drawingPlayers.forEach(p => this.privateDraw(p, 2));
+    drawingPlayers.forEach((p) => this.privateDraw(p, 2));
 
     // return who drawn
     return drawingPlayers;
@@ -292,7 +285,7 @@ export class Game extends CancelableEventEmitter {
     else if (findDuplicates(playerNames).length)
       throw new Error('Player names must be different');
 
-    return playerNames.map(player => {
+    return playerNames.map((player) => {
       return new Player(player);
     });
   }
@@ -308,7 +301,7 @@ export class Game extends CancelableEventEmitter {
   getPlayerIndex(playerName: string | Player) {
     if (typeof playerName !== 'string') playerName = playerName.name;
 
-    return this._players.map(p => p.name).indexOf(playerName);
+    return this._players.map((p) => p.name).indexOf(playerName);
   }
 
   /**
@@ -316,7 +309,7 @@ export class Game extends CancelableEventEmitter {
    * with no validations, reseting all per-turn controllers
    * (`draw`, ...)
    *
-   * @fires Game#nextplayer
+   * @fires `nextplayer`
    */
   goToNextPlayer(silent?: boolean) {
     this.drawn = false;
@@ -328,9 +321,9 @@ export class Game extends CancelableEventEmitter {
   reverseGame() {
     this._players.reverse();
     this.direction =
-      this.direction == GameDirections.CLOCKWISE
-        ? GameDirections.COUNTER_CLOCKWISE
-        : GameDirections.CLOCKWISE;
+      this.direction == GameDirection.CLOCKWISE
+        ? GameDirection.COUNTER_CLOCKWISE
+        : GameDirection.CLOCKWISE;
   }
 
   /**
@@ -353,10 +346,12 @@ export class Game extends CancelableEventEmitter {
   }
 
   calculateScore() {
-    return this._players.map(player => player.hand).reduce((amount, cards) => {
-      amount += cards.reduce((s: number, c: Card) => (s += c.score), 0);
-      return amount;
-    }, 0);
+    return this._players
+      .map((player) => player.hand)
+      .reduce((amount, cards) => {
+        amount += cards.reduce((s: number, c: Card) => (s += c.score), 0);
+        return amount;
+      }, 0);
   }
 }
 
@@ -383,11 +378,7 @@ function findDuplicates(array: string[]) {
       return a;
     }, {});
 
-  const duplicates = Object.keys(uniq).filter(a => uniq[a] > 1);
+  const duplicates = Object.keys(uniq).filter((a) => uniq[a] > 1);
 
   return duplicates;
-}
-
-function isObject(val: any) {
-  return val !== null && typeof val === 'object';
 }

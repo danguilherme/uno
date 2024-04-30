@@ -1,5 +1,6 @@
 import { shuffle } from 'shuffle';
-import { Card, Colors, Values } from './card';
+
+import { Card, Color, colors, Value } from './card';
 
 function createUnoDeck() {
   /*
@@ -15,7 +16,7 @@ function createUnoDeck() {
 
   const deck: Card[] = [];
 
-  const createCards = (qty: number, value: Values, color?: Colors) => {
+  const createCards = (qty: number, value: Value, color?: Color) => {
     const cards = [];
 
     for (let i = 0; i < qty; i++) cards.push(new Card(value, color));
@@ -24,20 +25,20 @@ function createUnoDeck() {
   };
 
   // for each color...
-  for (let color = 1; color <= 4; color++) {
+  colors.forEach((color) => {
     // CREATE NUMBERS
-    deck.push.apply(deck, createCards(1, Values.ZERO, color));
-    for (let n = Values.ONE; n <= Values.NINE; n++) {
+    deck.push.apply(deck, createCards(1, Value.ZERO, color));
+    for (let n = Value.ONE; n <= Value.NINE; n++) {
       deck.push.apply(deck, createCards(2, n, color));
     }
 
-    deck.push.apply(deck, createCards(2, Values.DRAW_TWO, color));
-    deck.push.apply(deck, createCards(2, Values.SKIP, color));
-    deck.push.apply(deck, createCards(2, Values.REVERSE, color));
-  }
+    deck.push.apply(deck, createCards(2, Value.DRAW_TWO, color));
+    deck.push.apply(deck, createCards(2, Value.SKIP, color));
+    deck.push.apply(deck, createCards(2, Value.REVERSE, color));
+  });
 
-  deck.push.apply(deck, createCards(4, Values.WILD));
-  deck.push.apply(deck, createCards(4, Values.WILD_DRAW_FOUR));
+  deck.push.apply(deck, createCards(4, Value.WILD));
+  deck.push.apply(deck, createCards(4, Value.WILD_DRAW_FOUR));
 
   return deck;
 }

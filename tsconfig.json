@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "lib": ["ES6"],
+    "declaration": true,
     "esModuleInterop": true,
     "target": "es5",
     "noImplicitAny": true,
@@ -12,5 +14,5 @@
       "*": ["node_modules/*", "src/types/*"]
     }
   },
-  "include": ["src/**/*", "build/**/*"]
+  "include": ["build/**/*", "src/**/*", "src/global"]
 }

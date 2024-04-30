@@ -1,20 +1,20 @@
-import { Card, Values } from '../../src/card';
+import { Card, Value } from '../../src/card';
 import { Game } from '../../src/game';
 import CumulativeDrawTwo from '../../src/house-rules/cumulative-draw-two';
 
-describe('House Rule: Cumulative draw two', function() {
-  let game;
+describe('House Rule: Cumulative draw two', function () {
+  let game: Game;
 
-  beforeEach(function() {
+  beforeEach(function () {
     game = new Game(['Player 1', 'Player 2', 'Player 3'], [CumulativeDrawTwo]);
     game.newGame();
   });
 
-  it('should force player to draw after a DRAW TWO', function() {
+  it('forces player to draw after a DRAW TWO', function () {
     let curr = game.currentPlayer;
     const discardedCard = game.discardedCard;
-    const drawTwo = new Card(Values.DRAW_TWO, discardedCard.color);
-    const reverse = new Card(Values.REVERSE, discardedCard.color);
+    const drawTwo = new Card(Value.DRAW_TWO, discardedCard.color);
+    const reverse = new Card(Value.REVERSE, discardedCard.color);
 
     curr.hand = [drawTwo, drawTwo];
 
@@ -35,11 +35,11 @@ describe('House Rule: Cumulative draw two', function() {
     expect(game.currentPlayer.name).not.toBe(curr.name);
   });
 
-  it('should stack DRAW TWO values', function() {
+  it('stacks DRAW TWO values', function () {
     let curr = game.currentPlayer;
     const discardedCard = game.discardedCard;
-    const drawTwo = new Card(Values.DRAW_TWO, discardedCard.color);
-    const reverse = new Card(Values.REVERSE, discardedCard.color);
+    const drawTwo = new Card(Value.DRAW_TWO, discardedCard.color);
+    const reverse = new Card(Value.REVERSE, discardedCard.color);
 
     curr.hand = [drawTwo, drawTwo];
     expect(() => game.play(drawTwo)).not.toThrow();
@@ -61,10 +61,10 @@ describe('House Rule: Cumulative draw two', function() {
     expect(game.currentPlayer.name).not.toBe(curr.name);
   });
 
-  it('should not interfere if no DRAW TWO is played', () => {
+  it('does not interfere if no DRAW TWO is played', () => {
     let curr = game.currentPlayer;
     const discardedCard = game.discardedCard;
-    const reverse = new Card(Values.REVERSE, discardedCard.color);
+    const reverse = new Card(Value.REVERSE, discardedCard.color);
 
     curr.hand = [reverse, reverse];
 

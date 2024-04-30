@@ -3,6 +3,8 @@ src/
 docs/
 coverage/
 
+.babelrc
+.browserslistrc
 .prettierrc
 .travis.yml
 jest.config.js
