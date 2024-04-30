@@ -1,3 +1,10 @@
+## [2.0.3](https://github.com/danguilherme/uno/compare/v2.0.2...v2.0.3) (2024-04-30)
+
+
+### Bug Fixes
+
+* fix node release by targetting ES6 ([31c7f8d](https://github.com/danguilherme/uno/commit/31c7f8d001ae736db4144ea03342b823bc9eb122))
+
 ## [2.0.2](https://github.com/danguilherme/uno/compare/v2.0.1...v2.0.2) (2024-04-30)
 
 
