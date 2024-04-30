@@ -2,8 +2,9 @@
 
 const path = require('path');
 const webpack = require('webpack');
-const webpackMerge = require('webpack-merge');
+const { merge: webpackMerge } = require('webpack-merge');
 const nodeExternals = require('webpack-node-externals');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 const baseConfig = {
   devtool: 'source-map',
@@ -42,6 +43,7 @@ const nodeTarget = {
     new webpack.DefinePlugin({
       'process.env.PLATFORM': JSON.stringify('node'),
     }),
+    new NodePolyfillPlugin(),
   ],
 };
 const webTarget = {
