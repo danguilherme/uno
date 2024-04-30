@@ -1,18 +1,20 @@
 {
   "name": "uno-engine",
-  "version": "0.1.1-alpha",
+  "version": "0.0.0",
   "description": "Uno game implementation in JavaScript",
   "homepage": "https://github.com/danguilherme/uno#readme",
   "main": "dist/main.js",
   "scripts": {
     "build:web": "webpack --config webpack.config.js",
-    "build": "yarn run build:ts && yarn run tslint",
+    "build": "yarn run build:ts && yarn run lint",
     "build:ts": "tsc --declaration",
     "build:ts:watch": "tsc -w",
-    "tslint": "tslint -c tslint.json -p tsconfig.json",
+    "lint": "tslint -c tslint.json -p tsconfig.json",
     "test": "jest --coverage --verbose",
     "test:watch": "yarn test --watchAll",
-    "prepublish": "yarn build"
+    "prepublish": "yarn build",
+    "semantic-release": "semantic-release",
+    "lint:commit-message": "commitlint --help-url https://github.com/danguilherme/uno/blob/main/CONTRIBUTING.md#committing"
   },
   "keywords": [
     "uno",
@@ -34,14 +36,65 @@
     "shuffle": "^0.2.2"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.3.0",
+    "@commitlint/config-conventional": "^19.2.2",
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/git": "^9.0.1",
     "@types/events": "^1.2.0",
     "@types/jest": "^23.1.0",
     "chai": "^3.5.0",
     "jest": "^23.1.0",
+    "semantic-release": "22.0.12",
     "ts-jest": "^22.4.6",
     "tslint": "^5.10.0",
-    "typescript": "^2.9.2",
+    "typescript": "^5.4.5",
     "webpack": "^2.2.1"
+  },
+  "release": {
+    "branches": [
+      "+([0-9])?(.{+([0-9]),x}).x",
+      "main",
+      "next",
+      "next-major",
+      {
+        "name": "beta",
+        "prerelease": true
+      },
+      {
+        "name": "alpha",
+        "prerelease": true
+      }
+    ],
+    "plugins": [
+      [
+        "@semantic-release/commit-analyzer",
+        {
+          "preset": "conventionalcommits"
+        }
+      ],
+      [
+        "@semantic-release/release-notes-generator",
+        {
+          "preset": "conventionalcommits"
+        }
+      ],
+      "@semantic-release/npm",
+      "@semantic-release/github",
+      [
+        "@semantic-release/changelog",
+        {
+          "changelogFile": "CHANGELOG.md"
+        }
+      ],
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "CHANGELOG.md"
+          ]
+        }
+      ]
+    ]
   },
   "packageManager": "yarn@1.22.19"
 }
