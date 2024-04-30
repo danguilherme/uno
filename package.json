@@ -15,7 +15,6 @@
     "test": "jest",
     "test:report": "yarn test --coverage --verbose",
     "test:watch": "yarn test --watchAll",
-    "prepare": "yarn build",
     "semantic-release": "semantic-release",
     "lint:commit-message": "commitlint --help-url https://github.com/danguilherme/uno/blob/main/CONTRIBUTING.md#committing"
   },
@@ -36,7 +35,8 @@
   },
   "license": "MIT",
   "files": [
-    "dist"
+    "dist",
+    "CHANGELOG.md"
   ],
   "dependencies": {
     "events": "^3.1.0",
